@@ -9,8 +9,8 @@ export const QrCode = () => {
     return (
         <div className="mb-8 rounded-lg flex items-center justify-center gap-6">
             <div>
-                <h2 className="text-2xl font-bold text-brand-text">Scan with your phone camera or the Crypto.com App to login instantly.</h2>
-                <ol className="list-decimal list-inside space-y-2 mt-4">
+                <h2 className="text-2xl font-bold">Scan with your phone camera or the Crypto.com App to login instantly.</h2>
+                <ol className="list-decimal list-inside space-y-2 text-brand-muted mt-4">
                     Scan with App:
                     {
                         items.map((item, index) => (

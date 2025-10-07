@@ -1,15 +1,15 @@
+import Link from "next/link";
 
-export const AuthButtons = () => {
+export const AuthButtons = ({ active }: { active: string }) => {
     return (
-        <div className="flex rounded-xl bg-brand-gray/50 p-1">
-
-            <button className="w-1/2 py-3 rounded-lg text-brand-dark bg-brand-yellow font-semibold transition-colors ">
+        <div className="flex rounded-xl bg-brand-gray p-1 w-full">
+            <Link href="/login" className={`w-1/2 py-3 rounded-lg text-center font-semibold transition-colors ${active === "login" ? "bg-brand-yellow text-black" : "bg-transparent text-brand-muted"}`} >
                 Log In
-            </button>
+            </Link>
 
-            <button className="w-1/2 py-3 rounded-lg text-brand-text-muted bg-transparent font-semibold transition-colors ">
+            <Link href="/signup" className={`w-1/2 py-3 rounded-lg text-center font-semibold transition-colors ${active === "signup" ? "bg-brand-yellow text-black" : "bg-transparent text-brand-muted"}`} >
                 Sign Up
-            </button>
+            </Link>
         </div>
-    )
-}
+    );
+};

@@ -2,12 +2,10 @@
 
 
 @theme {
-    --color-brand-dark: #1C1C1E;
-    --color-brand-gray: #2C2C2E;
-    --color-brand-light-gray: #3A3A3C;
-    --color-brand-yellow: #FFD60A;
-    --color-brand-text: #F2F2F7;
-    --color-brand-text-muted: #8E8E93;
+    --color-brand-gray: rgba(31, 40, 60, 0.49);
+    --color-brand-glass: rgba(255, 255, 255, 0.2);
+    --color-brand-muted: rgba(255, 255, 255, 0.6);
+    --color-brand-yellow: #EDC240;
 }
 
 * {

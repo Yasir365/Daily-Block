@@ -1,6 +1,6 @@
 export const Footer = () => {
     return (
-        <footer className="py-4 border-t border-brand-text-muted/50 text-brand-text-muted text-sm">
+        <footer className="py-4 border-t border-brand-muted text-brand-muted text-sm">
             <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 justify-between">
                 <p>© {new Date().getFullYear()} DailyBlock. All rights reserved.</p>
 

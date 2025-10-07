@@ -4,7 +4,7 @@ import { Search, Star, Moon, Menu, Bell, UserRoundPen } from 'lucide-react'; // 
 
 export const Navbar = () => {
     return (
-        <nav className="py-2 px-4 md:px-12 flex justify-between items-center text-brand-text-muted">
+        <nav className="py-2 px-4 md:px-12 flex justify-between items-center text-brand-muted">
 
             {/* 1. Left Section: Logo & Main Navigation Links */}
             <div className="flex items-center space-x-6">
@@ -41,12 +41,12 @@ export const Navbar = () => {
                     </button>
 
                     {/* Search Input */}
-                    <div className="flex items-center px-4 py-2 rounded-xl bg-brand-text/25">
-                        <Search className="w-4 h-4 text-brand-text-muted mr-2" />
+                    <div className="flex items-center px-4 py-2 rounded-xl bg-brand-glass">
+                        <Search className="w-4 h-4 text-brand-muted mr-2" />
                         <input
                             type="text"
                             placeholder="Search"
-                            className="bg-transparent text-sm text-white placeholder-brand-text-muted focus:outline-none w-40"
+                            className="bg-transparent text-sm text-white placeholder-brand-muted focus:outline-none w-40"
                         />
                     </div>
                 </div>
