@@ -2,6 +2,6 @@ import { ComingSoon } from '@/components/layout/ComingSoon'
 
 export default function Page() {
     return (
-        <ComingSoon title='Reset Password page'></ComingSoon>
+        <ComingSoon title='Verify Otp'></ComingSoon>
     );
 }
