@@ -2,6 +2,6 @@ import { ComingSoon } from '@/components/layout/ComingSoon'
 
 export default function Page() {
     return (
-        <ComingSoon title='Home Page'></ComingSoon>
+        <ComingSoon title='Watchlist'></ComingSoon>
     );
 }
