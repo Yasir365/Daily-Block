@@ -115,7 +115,7 @@ export const LoginForm = () => {
                     />
                     <label htmlFor="keep-logged-in" className="text-brand-muted">Keep me logged in</label>
                 </div>
-                <Link href="/forgot-password" className="font-medium underline">Forgot your password?</Link>
+                <Link href="/auth/forgot-password" className="font-medium underline">Forgot your password?</Link>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 justify-between">
@@ -129,7 +129,7 @@ export const LoginForm = () => {
 
                 <p className="w-full text-center text-sm text-brand-muted flex items-center justify-center">
                     Don't have an account?{" "}
-                    <Link href="./auth/signup" className="font-medium text-brand-yellow hover:underline ml-1">
+                    <Link href="/auth/signup" className="font-medium text-brand-yellow hover:underline ml-1">
                         Sign up
                     </Link>
                 </p>
