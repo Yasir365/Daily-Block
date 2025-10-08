@@ -24,3 +24,22 @@ body {
     background-repeat: no-repeat;
     background-size: cover;
 }
+
+.ticker-tape-animation {
+    animation: marquee 60s linear infinite;
+    white-space: nowrap;
+}
+
+.ticker-tape-animation:hover {
+    animation-play-state: paused;
+}
+
+@keyframes marquee {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-33.33%);
+    }
+}
