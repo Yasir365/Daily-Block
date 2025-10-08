@@ -1,6 +1,8 @@
-
-export default function RootLayout({ children, }: { children: React.ReactNode; }) {
+export default function UserLayout({ children, }: { children: React.ReactNode; }) {
     return (
-        { children }
+        <>
+            <h1>User Layout</h1>
+            {children}
+        </>
     );
 }
