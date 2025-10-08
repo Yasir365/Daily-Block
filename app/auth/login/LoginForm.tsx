@@ -129,7 +129,7 @@ export const LoginForm = () => {
 
                 <p className="w-full text-center text-sm text-brand-muted flex items-center justify-center">
                     Don't have an account?{" "}
-                    <Link href="/signup" className="font-medium text-brand-yellow hover:underline ml-1">
+                    <Link href="./auth/signup" className="font-medium text-brand-yellow hover:underline ml-1">
                         Sign up
                     </Link>
                 </p>
