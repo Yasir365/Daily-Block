@@ -66,7 +66,7 @@ export const Navbar = () => {
 
                 {/* Login Button */}
                 <Link
-                    href="/login"
+                    href="/auth/login"
                     className="py-1 px-6 bg-[#fec84e] text-black font-semibold rounded-md hover:bg-yellow-400 transition-colors hidden sm:block"
                 >
                     Login

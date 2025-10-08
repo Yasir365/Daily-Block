@@ -10,7 +10,7 @@ export const SignupForm = () => {
     const submitForm = (e: React.FormEvent) => {
         e.preventDefault();
         toast.success("Account created successfully!");
-        router.push("/login");
+        router.push("/auth/login");
     };
     return (
         <form className="space-y-6" onSubmit={submitForm}>
@@ -120,7 +120,7 @@ export const SignupForm = () => {
 
                 <p className="w-full text-center text-sm text-brand-muted flex items-center justify-center">
                     Already have an account?{" "}
-                    <Link href="/login" className="font-medium text-brand-yellow hover:underline ml-1">
+                    <Link href="/auth/login" className="font-medium text-brand-yellow hover:underline ml-1">
                         Log in
                     </Link>
                 </p>

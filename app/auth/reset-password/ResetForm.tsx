@@ -9,7 +9,7 @@ export const ResetForm = () => {
     const submitForm = (e: React.FormEvent) => {
         e.preventDefault();
         toast.success("Password reset successfully!");
-        router.push("/login");
+        router.push("/auth/login");
     };
 
     return (

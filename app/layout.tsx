@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
+import { Footer } from "@/components/layout/footer/Footer";
 import { Titillium_Web } from "next/font/google";
 import "./globals.css";
 
