@@ -3,7 +3,7 @@ import { AuthImage } from "@/components/auth/AuthImage";
 import { QrCode } from "@/components/auth/QrCode";
 import { AuthButtons } from "@/components/auth/AuthButtons";
 import { SignupForm } from "./SignupForm";
-const authImage = "/svg/login.svg";
+const authImage = "/svg/auth1.svg";
 
 export default function Page() {
     return (

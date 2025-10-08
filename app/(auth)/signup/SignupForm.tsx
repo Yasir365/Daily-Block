@@ -1,10 +1,19 @@
 import { SocialLoginButtons } from "@/components/auth/SocialLoginButtons"
 import { ChevronDown, EyeOff, Mail } from "lucide-react"
+import { useRouter } from "next/navigation";
 import Link from "next/link"
+import toast from "react-hot-toast";
 
 export const SignupForm = () => {
+    const router = useRouter();
+
+    const submitForm = (e: React.FormEvent) => {
+        e.preventDefault();
+        toast.success("Account created successfully!");
+        router.push("/login");
+    };
     return (
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={submitForm}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label htmlFor="firstName" className="text-sm font-medium text-brand-muted">First Name</label>

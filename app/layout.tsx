@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { Titillium_Web } from 'next/font/google';
+import { Titillium_Web } from "next/font/google";
 import "./globals.css";
+
+// 👇 Import Providers here
+import { Providers } from "@/providers/Providers";
 
 export const metadata: Metadata = {
   title: "DailyBlock",
@@ -10,9 +13,9 @@ export const metadata: Metadata = {
 };
 
 const titilliumWeb = Titillium_Web({
-  subsets: ['latin'],
-  weight: ['200', '300', '400', '600', '700', '900'],
-  display: 'swap',
+  subsets: ["latin"],
+  weight: ["200", "300", "400", "600", "700", "900"],
+  display: "swap",
 });
 
 export default function RootLayout({
@@ -24,7 +27,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${titilliumWeb.className} min-h-screen flex flex-col`}>
         <Navbar />
-        <main className="flex-grow">{children}</main>
+        <main className="flex-grow">
+          <Providers>{children}</Providers>
+        </main>
         <Footer />
       </body>
     </html>
