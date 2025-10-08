@@ -1,12 +1,19 @@
 "use client";
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState } from "react";
 import { HotToastr } from "./HotToastr";
+import { AuthProvider } from "@/context/AuthContext";
 
 export function Providers({ children }: { children: React.ReactNode }) {
+    const [queryClient] = useState(() => new QueryClient());
+
     return (
-        <>
-            {children}
-            <HotToastr />
-        </>
+        <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+                {children}
+                <HotToastr />
+            </AuthProvider>
+        </QueryClientProvider>
     );
 }
