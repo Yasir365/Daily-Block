@@ -1,7 +1,7 @@
 
 export const FeatureSection = () => {
     return (
-        <div className='container  mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-center mb-20 lg:mb-40 px-5 lg:px-0'>
+        <div className='container  mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-center py-12'>
             <div className="lg:pr-10">
                 {/* Top Block */}
                 <h2 className="text-2xl md:text-3xl font-bold leading-tight text-white mb-6">

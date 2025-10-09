@@ -35,10 +35,10 @@ export const Navbar = () => {
                 <div className="hidden md:flex items-center space-x-3 rounded-lg p-2">
 
                     {/* Watchlist */}
-                    <button className="flex items-center text-sm font-medium hover:text-white transition-colors rounded-md p-1">
-                        <Star className="w-4 h-4 mr-1 text-[#fec84e]" />
+                    <Link href="/watchlist" className="flex items-center text-sm font-medium hover:text-brand-yellow transition-colors rounded-md p-1">
+                        <Star className="w-4 h-4 mr-1" />
                         Watchlist
-                    </button>
+                    </Link>
 
                     {/* Search Input */}
                     <div className="flex items-center px-4 py-2 rounded-xl bg-brand-glass">

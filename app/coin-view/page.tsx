@@ -1,7 +1,7 @@
-import { ComingSoon } from '@/components/layout/ComingSoon'
 
 export default function Page() {
     return (
-        <ComingSoon title='Coin View'></ComingSoon>
+        <h1 className='text-3xl font-bold text-brand-muted text-center'>Coin View</h1>
+
     );
 }

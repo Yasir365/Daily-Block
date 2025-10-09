@@ -1,8 +1,10 @@
+import { Sidebar } from "@/components/layout/sidebar/sidebar";
+
 export default function UserLayout({ children, }: { children: React.ReactNode; }) {
     return (
-        <>
-            <h1>User Layout</h1>
+        <div className="container mx-auto flex flex-col md:flex-row gap-8 mt-6">
+            <Sidebar />
             {children}
-        </>
+        </div>
     );
 }

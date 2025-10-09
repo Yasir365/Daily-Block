@@ -1,7 +1,5 @@
-import { ComingSoon } from '@/components/layout/ComingSoon'
-
 export default function Page() {
     return (
-        <ComingSoon title='Watchlist'></ComingSoon>
+        <h1 className='text-3xl font-bold text-brand-muted text-center'>Watchlist</h1>
     );
 }

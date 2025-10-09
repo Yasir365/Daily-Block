@@ -18,7 +18,6 @@ export const Newsletter = () => {
 
                 {/* Right Side: Submission Form */}
                 <NewsletterForm />
-
             </div>
         </div>
     );

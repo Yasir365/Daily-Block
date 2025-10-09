@@ -12,7 +12,6 @@ import { useRouter } from "next/navigation"
 import { Post_loginUser } from "@/lib/api/auth"
 import { useAuth } from "@/hooks/useAuth"
 
-
 const LoginSchema = z.object({
     email: z.string().email({ message: "Invalid email address" }),
     password: z.string().min(8, { message: "Password must be at least 8 characters" }),
@@ -38,8 +37,14 @@ export const LoginForm = () => {
         },
     })
 
+    // Dummy login
+    const dumyloginUser = async (data: LoginFormData) => {
+        router.push("/user/dashboard")
+        return await Post_loginUser(data)
+    }
+
     const loginMutation = useMutation({
-        mutationFn: loginUser,
+        mutationFn: dumyloginUser,
         onSuccess: (data: any) => {
             login(data)
 

@@ -10,7 +10,7 @@ const faqData = [
 
 export const FAQSection = () => {
     return (
-        <div className='container mx-auto grid grid-cols-1 lg:grid-cols-[70%_30%] gap-10 mb-10 px-5 lg:px-0'>
+        <div className='container mx-auto grid grid-cols-1 lg:grid-cols-[70%_30%] gap-10 mb-12'>
             {/* Accordion List */}
             <Accordion />
             <div className="space-y-10">

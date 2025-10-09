@@ -1,9 +1,9 @@
-import { FAQSection } from '@/components/site/FAQSection';
-import { FeatureSection } from '@/components/site/FeatureSection';
-import { HeroSection } from '@/components/site/hero/HeroSection';
-import { Newsletter } from '@/components/site/news-letter/NewsLetter';
-import { ProjectCardsSection } from '@/components/site/ProjectCard/ProjectCardsSection';
-import { ProjectsFilterTable } from '@/components/site/ProjectCard/ProjectsFilterTable';
+import { FAQSection } from '@/components/FAQSection';
+import { FeatureSection } from '@/components/FeatureSection';
+import { HeroSection } from '@/components/hero/HeroSection';
+import { Newsletter } from '@/components/news-letter/NewsLetter';
+import { ProjectCardsSection } from '@/components/ProjectCard/ProjectCardsSection';
+import { ProjectsFilterTable } from '@/components/ProjectCard/ProjectsFilterTable';
 
 export default function Page() {
     return (

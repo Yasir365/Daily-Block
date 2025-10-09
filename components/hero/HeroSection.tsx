@@ -7,10 +7,10 @@ export const HeroSection = () => {
     return (
         // Main container with dark background
         <section className="pt-10">
-            <div className="container mx-auto px-4 md:px-8 lg:px-12">
+            <div className="container mx-auto">
 
                 {/* --- Hero Content Box (Matching the image) --- */}
-                <div className="shadow-2xl flex flex-col lg:flex-row gap-3">
+                <div className="shadow-2xl flex flex-col lg:flex-row gap-6">
                     {/* Left Column: Text, Search, and Widgets */}
                     <div className="space-y-6 w-full lg:w-1/3">
 

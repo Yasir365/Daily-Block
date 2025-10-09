@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Navbar } from "@/components/layout/Navbar";
+import { Navbar } from "@/components/layout/navbar/Navbar";
 import { Footer } from "@/components/layout/footer/Footer";
 import { Titillium_Web } from "next/font/google";
 import "./globals.css";

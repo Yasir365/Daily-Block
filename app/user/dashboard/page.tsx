@@ -1,7 +1,6 @@
-import { ComingSoon } from '@/components/layout/ComingSoon'
 
 export default function Page() {
     return (
-        <ComingSoon title='User Dashboard'></ComingSoon>
+        <h1 className='text-3xl font-bold text-brand-muted'>User Dashboard</h1>
     );
 }

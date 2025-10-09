@@ -9,11 +9,9 @@ export const Footer = () => {
     const pathname = usePathname();
     const isAuthPage = pathname.includes('/auth');
     return (
-        <footer className="text-muted pt-12">
-            <div className="container mx-auto px-4 md:px-8 lg:px-12">
-                {!isAuthPage && <FooterMenu />}
-                <Copyright />
-            </div>
+        <footer className="container mx-auto text-muted pt-12 border-t border-brand-glass mt-12">
+            {!isAuthPage && <FooterMenu />}
+            <Copyright />
         </footer>
     );
 };
