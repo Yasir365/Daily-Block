@@ -19,7 +19,7 @@ const TickerItem = ({ name, price, change, trend }: typeof mockCoins[0]) => {
 
     return (
         <div className="flex items-center space-x-2 mr-10 whitespace-nowrap">
-            <span className="text-white font-medium">{name}</span>
+            {/* <span className="text-white font-medium">{name}</span> */}
             <span className="text-white">{price.toLocaleString()}</span>
             <div className={`flex items-center ${textColor}`}>
                 {isUp ? <TrendingUp size={14} /> : <TrendingDown size={14} />}

@@ -1,5 +1,11 @@
+import Main from "@/components/watchlist/Main";
+import Section from "@/components/watchlist/Section";
+
 export default function Page() {
     return (
-        <h1 className='text-3xl font-bold text-brand-muted text-center'>Watchlist</h1>
+        <div className="min-h-screen flex flex-col max-w-[1800px] px-4 mx-auto mt-6 gap-8 ">
+            <Main />
+            <Section />
+        </div>
     );
 }

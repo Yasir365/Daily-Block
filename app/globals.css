@@ -6,12 +6,14 @@
     --color-brand-glass: rgba(255, 255, 255, 0.2);
     --color-brand-muted: rgba(255, 255, 255, 0.6);
     --color-brand-yellow: #EDC240;
+    --color-brand-red: #EC5058;
+    --color-brand-green: #19DE92;
 }
 
 * {
     font-family: "Titillium Web", serif;
 }
-
+ 
 
 
 body {
