@@ -24,8 +24,9 @@ export const ProjectRow = ({ project, date, launchpad, fundRaised }: Omit<Projec
     const isAvailable = Math.random() > 0.5; // Mock availability
 
     return (
-        <div className="grid grid-cols-10 items-center p-4 bg-brand-glass/50 rounded-lg mb-4">
+        <div className="grid grid-cols-11 items-center p-4 bg-brand-glass/50 rounded-lg mb-4">
             {/* Project (2 cols) */}
+            <div className="col-span-1 text-gray-400">{date}</div>
             <div className="col-span-2 flex items-center space-x-3 text-white">
                 <div className="w-8 h-8 rounded-full bg-gray-600 flex-shrink-0"></div>
                 <p className="font-medium">{project}</p>

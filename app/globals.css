@@ -1,5 +1,6 @@
 @import "tailwindcss";
-
+ 
+@import "../styles/antd-overrides.css";
 
 @theme {
     --color-brand-gray: rgba(31, 40, 60, 0.49);

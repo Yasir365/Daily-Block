@@ -3,11 +3,11 @@ import Image from 'next/image'
 import React from 'react'
 import IconCircle from '../ui/IconCircle'
 
-const Main = () => {
+const WatchListMain = () => {
     return (
         <div className='flex flex-col gap-4  mt-2 md:mt-12  '>
             <div className='grid grid-cols-1 md:grid-cols-2  gap-4 items-center'>
-                <div className='order-2 md:order-1 flex flex-col gap-8'>
+                <div className=' flex flex-col gap-8'>
                     <h1 className='text-4xl md:text-6xl font-bold'>
                         Decentralized Finance 101: <br /> Exploring the Power of<br />  Blockchain and AI.
                     </h1>
@@ -46,7 +46,7 @@ const Main = () => {
                         </a>
                     </h3>
                 </div>
-                <div className="order-1 md:order-2 flex justify-center">
+                <div className=" flex justify-center">
                     <Image src="/svg/watchlist/eth.svg" alt="coin" width={826} height={417} />
                 </div>
             </div >
@@ -55,4 +55,4 @@ const Main = () => {
     )
 }
 
-export default Main
+export default WatchListMain

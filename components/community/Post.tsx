@@ -1,5 +1,6 @@
 import React from "react";
 import { Heart, MessageCircle, Repeat2, Share2 } from "lucide-react";
+import CumulativeFlowChart from "../ui/Chart";
 
 interface Props {
     username: string;
@@ -30,7 +31,10 @@ const Post: React.FC<Props> = ({ username, time, title, description, image }) =>
             <p className="text-gray-300 text-sm">{description}</p>
 
             <div className="mt-3">
-                <img src={image} alt="post" className="w-full rounded-xl" />
+                {/* <img src={image} alt="post" className="w-full rounded-xl" /> */}
+                <CumulativeFlowChart />
+
+
             </div>
 
             {/* Reaction Buttons */}

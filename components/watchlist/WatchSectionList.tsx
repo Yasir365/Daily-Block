@@ -1,6 +1,6 @@
 import React from 'react'
 
-const SectionList = ({ list, text, heading }: { list?: string[], text: string, heading: string }) => {
+const WatchSectionList = ({ list, text, heading }: { list?: string[], text: string, heading: string }) => {
     return (
         <div className='flex flex-col gap-6  '>
             <h3 className='text-2xl font-bold text-brand-yellow'>{heading}</h3>
@@ -19,4 +19,4 @@ const SectionList = ({ list, text, heading }: { list?: string[], text: string, h
     )
 }
 
-export default SectionList
+export default WatchSectionList

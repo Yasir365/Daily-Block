@@ -1,10 +1,14 @@
-import { ChevronDown, Search } from 'lucide-react';
+"use client"
+import { ArrowUpDown, ChevronDown, Search } from 'lucide-react';
 import { ProjectRow } from './ProjectRow';
+import { Switch } from 'antd';
+import SwitchGroup from '../ui/SwitchGroup';
+import { useState } from 'react';
 
 const TABS = ['Presale/Whitelist', 'Active', 'Upcoming', 'Past'];
 
 // Mock filter options (using placeholder data)
-const FILTER_OPTIONS = ['Industry', 'Type', 'Whitelis?', 'KYC', 'Audit', 'Active'];
+const FILTER_OPTIONS = ['Industry', 'Type'];
 
 const mockProjectData = [
     { project: "Antidote", date: "22 Aug", fundRaised: "$4,000,000", launchpad: "" },
@@ -16,7 +20,36 @@ const mockProjectData = [
     { project: "Antidote", date: "22 Aug", fundRaised: "$4,000,000", launchpad: "" },
 ];
 
+const handleSwitchChange = (activeSwitches: string[]) => {
+    console.log("Active switches:", activeSwitches);
+};
+
+
+const columns = [
+    { key: "score", label: "Score" },
+    { key: "project", label: "Project" },
+    { key: "start", label: "Start" },
+    { key: "end", label: "End" },
+    { key: "launch", label: "Launch" },
+    { key: "launchpad", label: "Launchpad" },
+    { key: "active", label: "Active" },
+    { key: "totalRaised", label: "Total Raised" },
+];
 export const ProjectsFilterTable = () => {
+    const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
+
+    const handleSort = (key: string) => {
+        let direction = "asc";
+        if (sortConfig.key === key && sortConfig.direction === "asc") {
+            direction = "desc";
+        }
+        setSortConfig({ key, direction });
+        onSort(key, direction);
+    };
+    const onSort = (key: string, direction: string) => {
+        // Implement sorting logic here
+        console.log(`Sorting by ${key} ${direction}`);
+    };
     return (
         <section className="container mx-auto py-10">
             <div className="bg-[#2D2D2D] p-6 md:p-8 rounded-2xl shadow-xl">
@@ -34,6 +67,7 @@ export const ProjectsFilterTable = () => {
                             {tab}
                         </button>
                     ))}
+
                 </div>
 
                 {/* --- 2. Filters and Search --- */}
@@ -50,6 +84,11 @@ export const ProjectsFilterTable = () => {
                                 <ChevronDown size={16} />
                             </button>
                         ))}
+                        <SwitchGroup
+                            options={["White List", "KYC", "Bounty"]}
+                            defaultActive={["White List", "KYC"]}
+                            onChange={handleSwitchChange}
+                        />
                     </div>
 
                     {/* Search Bar */}
@@ -64,14 +103,23 @@ export const ProjectsFilterTable = () => {
                 </div>
 
                 {/* --- 3. Table Header (Using Grid for alignment) --- */}
-                <div className="grid grid-cols-10 items-center p-4 border-b-2 border-gray-700 text-gray-400 font-semibold text-xs uppercase">
-                    <div className="col-span-2">Project</div>
-                    <div className="col-span-1">Start</div>
-                    <div className="col-span-1">End</div>
-                    <div className="col-span-1">Launch</div>
-                    <div className="col-span-2">Launchpad</div>
-                    <div className="col-span-1 text-center">Active</div>
-                    <div className="col-span-2">Total Raised</div>
+                <div className="grid grid-cols-11 items-center p-4 border-b-2 border-gray-700 text-gray-300 font-semibold text-xs uppercase select-none">
+                    {columns.map((col, i) => (
+                        <div
+                            key={col.key}
+                            className={`col-span-${i === 0 ? 1 : i === 1 ? 2 : i === 5 ? 2 : 1} flex items-center gap-1 cursor-pointer group`}
+                            onClick={() => handleSort(col.key)}
+                        >
+                            <span className="group-hover:text-white transition">{col.label}</span>
+                            <ArrowUpDown
+                                size={14}
+                                className={`transition ${sortConfig.key === col.key
+                                    ? "text-blue-400"
+                                    : "text-gray-600 group-hover:text-gray-400"
+                                    }`}
+                            />
+                        </div>
+                    ))}
                 </div>
 
                 {/* --- 4. Table Rows --- */}
