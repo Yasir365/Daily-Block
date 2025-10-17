@@ -60,7 +60,7 @@ const TrendArray: TrendItem[] = [
         value: "12.52K"
     },
 ]
-const LeftSide = () => {
+const CoinViewLeft = () => {
     return (
         <div className="flex flex-col col-span-2 gap-3">
             <div className="flex flex-col gap-3 bg-brand-glass py-4 px-5 rounded-xl">
@@ -178,7 +178,7 @@ const LeftSide = () => {
     )
 }
 
-export default LeftSide
+export default CoinViewLeft
 const TrendComponent = ({ trend, percent, time = "" }: TrendComponentProps) => {
     return (
         <span className={`items-center flex gap-1 ${trend === "up" ? "text-brand-green" : "text-brand-red"}`}>

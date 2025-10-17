@@ -1,16 +1,24 @@
-import React from 'react'
+import React from 'react';
 
-export default function ArticleCard({ title, description }: { title: string, description: string }) {
+interface ArticleCardProps {
+    title: string;
+    description: string;
+}
+
+export default function ArticleCard({ title, description }: ArticleCardProps) {
     return (
-        <article className="flex items-start space-x-6 rounded-xl hover:bg-gray-800 transition-colors cursor-pointer">
-
-            <div className="w-50 flex-shrink-0 overflow-hidden bg-purple-900/50">
-                <div className="w-full h-full flex items-center justify-center text-xl text-purple-400">
-                    <img src="/svg/blog/blog.svg" alt="blog illustration" />
-                </div>
+        <article className="grid grid-cols-1 md:grid-cols-2 rounded-xl hover:bg-gray-800 transition-colors cursor-pointer overflow-hidden" >
+            {/* Left (Image Section) */}
+            <div className="flex items-center justify-center">
+                <img
+                    src="/svg/blog/blog.svg"
+                    alt="blog illustration"
+                    className="max-w-full h-auto"
+                />
             </div>
 
-            <div className="flex-grow pr-4">
+            {/* Right (Content Section) */}
+            <div className="pl-6 flex flex-col">
                 <h2 className="text-xl font-bold text-white leading-snug">
                     {title}
                 </h2>
@@ -20,5 +28,5 @@ export default function ArticleCard({ title, description }: { title: string, des
                 </p>
             </div>
         </article>
-    )
+    );
 }

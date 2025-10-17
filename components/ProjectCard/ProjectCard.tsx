@@ -25,7 +25,7 @@ export const ProjectCard = ({ name, description, isTopProject = false }: Project
                 </div>
             </div>
 
-            <Link href="#" className="flex items-center bg-brand-yellow text-black text-xs font-bold py-1 px-3 rounded-md hover:bg-yellow-400 transition-colors" >
+            <Link href="/coin-view" className="flex items-center bg-brand-yellow text-black text-xs font-bold py-1 px-3 rounded-md hover:bg-yellow-400 transition-colors" >
                 Project
             </Link>
         </div>
