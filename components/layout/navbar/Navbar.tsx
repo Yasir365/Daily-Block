@@ -1,7 +1,7 @@
 "use client";
 import { useState } from 'react';
 import Link from "next/link";
-import { Search, Star, Moon, Menu, UserRoundPen, X } from 'lucide-react';
+import { Search, Star, Menu, UserRoundPen, X } from 'lucide-react';
 import Notifications from '@/components/dropdowns/Notification';
 
 
@@ -58,16 +58,8 @@ export const Navbar = () => {
                     </div>
                 </div>
 
-                {/* Icons (Theme Toggle & Other Controls) */}
-                <div className="flex items-center space-x-2">
-                    {/* Theme Toggle Button (Dark/Light mode) */}
-                    <button className="p-2 hover:bg-brand-yellow rounded-full transition-colors">
-                        <Moon className="w-5 h-5 text-white" />
-                    </button>
-
-                    {/* Notification Icon with Dropdown and Badge */}
-                    <Notifications />
-                </div>
+                {/* Notification Icon with Dropdown and Badge */}
+                <Notifications />
 
                 {/* Login Button */}
                 <Link

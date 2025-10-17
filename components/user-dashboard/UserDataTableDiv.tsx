@@ -3,6 +3,7 @@ import { ArrowUpDown } from 'lucide-react'
 import Image from 'next/image'
 import React, { useState } from 'react'
 import { ProjectRow } from '../ProjectCard/ProjectRow';
+import Link from 'next/link';
 
 const columns = [
     { key: "score", label: "Score" },
@@ -17,9 +18,6 @@ const columns = [
 ];
 
 const mockProjectData = [
-    { project: "Antidote", date: "22 Aug", fundRaised: "$4,000,000", launchpad: "" },
-    { project: "Antidote", date: "22 Aug", fundRaised: "$4,000,000", launchpad: "" },
-    { project: "Antidote", date: "22 Aug", fundRaised: "$4,000,000", launchpad: "" },
     { project: "Antidote", date: "22 Aug", fundRaised: "$4,000,000", launchpad: "" },
     { project: "Antidote", date: "22 Aug", fundRaised: "$4,000,000", launchpad: "" },
     { project: "Antidote", date: "22 Aug", fundRaised: "$4,000,000", launchpad: "" },
@@ -53,7 +51,7 @@ const UserDataTableDiv = ({ title }: { title: string }) => {
                         className="rounded-full invert-[74%] sepia-[78%] saturate-[1918%] hue-rotate-[357deg] brightness-[101%] contrast-[104%]"
                     />
 
-                    <span className='font-bold'>Add New Now</span>
+                    <Link href='/user/add-coin' className='font-bold'>Add New Coin</Link>
                 </span>
             </div>
             <div className="bg-brand-glass p-6 md:p-8 rounded-2xl shadow-xl">
@@ -61,11 +59,7 @@ const UserDataTableDiv = ({ title }: { title: string }) => {
                 {/* --- 3. Table Header (Using Grid for alignment) --- */}
                 <div className="grid grid-cols-12 items-center p-4 border-b-2 border-gray-700 text-gray-300 font-semibold text-xs uppercase select-none">
                     {columns.map((col, i) => {
-                        const colSpan = i === 0 ? 1 :
-                            i === 1 ? 2 :
-                                i === 5 ? 2 :
-                                    i === 6 ? 2 : 1
-                        // Project name + icon
+                        const colSpan = i === 0 ? 1 : i === 1 ? 2 : i === 5 ? 2 : i === 6 ? 2 : 1
 
 
                         return (
@@ -95,14 +89,6 @@ const UserDataTableDiv = ({ title }: { title: string }) => {
                         <ProjectRow key={index} {...data} />
                     ))}
                 </div>
-
-                {/* --- 5. Footer Button --- */}
-                <div className="text-center pt-8">
-                    <button className="text-brand-yellow font-semibold hover:underline">
-                        View All Projects
-                    </button>
-                </div>
-
             </div>
         </div>
     )
