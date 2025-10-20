@@ -30,6 +30,7 @@ const SwitchGroup: React.FC<SwitchGroupProps> = ({
                 <div key={label} className="flex items-center gap-3">
                     <h5 className="text-sm text-white">{label}</h5>
                     <Switch
+                        className="primary"
                         checked={active.includes(label)}
                         onChange={(checked) => handleToggle(label, checked)}
                     />

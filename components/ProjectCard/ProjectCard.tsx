@@ -20,7 +20,7 @@ export const ProjectCard = ({ name, description, isTopProject = false }: Project
                     <span className="text-lg font-bold text-white">Z</span>
                 </div>
                 <div>
-                    <p className="text-white font-medium text-sm">{name}</p>
+                    <p className="text-white font-medium text-sm font-lato">{name}</p>
                     {description && <p className="text-gray-400 text-xs">{description}</p>}
                 </div>
             </div>

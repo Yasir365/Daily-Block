@@ -47,16 +47,18 @@ const faqData = [
 export const Accordion = () => {
     const items: CollapseProps["items"] = faqData.map((item, index) => ({
         key: String(index),
-        label: <span className="text-white font-medium text-base">{item.title}</span>,
+        label: <span className="text-white font-titilliumWeb font-semibold text-[24px] leading-[28px]">
+            {item.title}
+        </span>,
         children: (
-            <div className="text-gray-300 text-sm leading-relaxed px-6 pb-4">
+            <div className="text-gray-300 font-inter font-normal text-[15.27px] leading-relaxed px-6 pb-4">
                 {item.content}
             </div>
         ),
     }));
 
     return (
-        <div className="w-full">
+        <div className="w-full order-1 lg:order-none">
             <Collapse
                 accordion
                 defaultActiveKey={["0"]}
@@ -85,8 +87,10 @@ export const Accordion = () => {
                 }
                 
                 .ant-collapse-expand-icon {
-                    color: white !important;
-                    font-size: 14px;
+                color: #ffffff !important;
+                font-size: 26px !important;
+                font-weight: 800 !important;
+                transition: transform 0.3s ease;
                 }
                 
                 .ant-collapse-ghost .ant-collapse-item:hover {

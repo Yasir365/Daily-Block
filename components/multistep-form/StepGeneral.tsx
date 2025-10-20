@@ -57,7 +57,7 @@ const StepGeneral: React.FC<Props> = ({ data, onChange }) => {
                 {/* File Upload */}
                 <div className="flex flex-col gap-2">
                     <label className="text-gray-400 text-sm">ICO Icon</label>
-                    <div className="bg-brand-glass flex items-center justify-end p-2 rounded-md gap-3">
+                    <div className="bg-brand-glass flex items-center justify-end p-2 rounded-xl gap-3">
                         <input
                             type="file"
                             id="icoIcon"

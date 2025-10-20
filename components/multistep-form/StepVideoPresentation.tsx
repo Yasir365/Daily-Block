@@ -1,3 +1,4 @@
+import { Plus } from "lucide-react";
 import InputField from "../ui/Input";
 
 interface Props {
@@ -11,12 +12,18 @@ const StepVideoPresentation: React.FC<Props> = ({ data, onChange }) => {
 
     return (
         <div>
+            <div className="absolute top-5 right-5">
+                <span className="flex gap-1 text-[14px] font-inter font-bold leading-[18px] items-center cursor-pointer">
+                    <Plus />
+                    <span className="text-brand-yellow">Add New</span>
+                </span>
+            </div>
             <h2 className="text-xl font-semibold text-white mb-2">Video Presentation</h2>
             <p className="text-gray-400 text-sm mb-6">
                 Details listed into the Video Presentation Group
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+            <div className="grid grid-cols-1   gap-4 md:gap-6">
                 <InputField
                     label="Video tour"
                     name="videoTour"

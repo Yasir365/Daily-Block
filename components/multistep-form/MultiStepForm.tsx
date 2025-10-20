@@ -5,11 +5,13 @@ import StepGeneral from "./StepGeneral";
 import StepSocialMedia from "./StepSocialMedia";
 import StepTokenSupply from "./StepTokenSupply";
 import StepVideoPresentation from "./StepVideoPresentation";
+import FaqSection from "./FaqSection";
 
 const steps = [
     { id: 1, title: "General", desc: "Details listed into the General Group" },
     { id: 2, title: "Social Media", desc: "Details listed into the Social Media Group" },
     { id: 3, title: "Token Supply", desc: "Details listed into the Token Supply Group" },
+    { id: 3, title: "FAQ's", desc: "Detail Listed into the Video Presentation Group" },
     { id: 4, title: "Video Presentation", desc: "Details listed into the Video Presentation Group" },
 ];
 
@@ -64,7 +66,7 @@ const MultiStepForm = () => {
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 w-full bg-brand-glass/50 rounded-md p-6 md:p-8 mx-auto max-w-[1400px]">
+            <div className="flex-1 w-full bg-brand-glass/50 rounded-md p-6 md:p-8 mx-auto max-w-[1600px] relative">
                 {currentStep === 1 && (
                     <StepGeneral data={formData} onChange={handleChange} />
                 )}
@@ -75,6 +77,9 @@ const MultiStepForm = () => {
                     <StepTokenSupply data={formData} onChange={handleChange} />
                 )}
                 {currentStep === 4 && (
+                    <FaqSection data={formData} onChange={handleChange} />
+                )}
+                {currentStep === 5 && (
                     <StepVideoPresentation data={formData} onChange={handleChange} />
                 )}
 

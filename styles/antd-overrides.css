@@ -1,17 +1,16 @@
 /* Ant Design Switch Custom Theme */
-.ant-switch {
+.ant-switch.primary {
   position: relative;
   background-color: transparent;
   border: 2px solid var(--color-brand-yellow);
   box-shadow: none !important;
-    transition: all 0.3s ease;
+  transition: all 0.3s ease;
   border-radius: 9999px;
-  height: 22px; /* Control switch height */
-
+  height: 22px;
 }
 
 /* Switch inner circle */
-.ant-switch-handle::before {
+.ant-switch.primary .ant-switch-handle::before {
   background-color: var(--color-brand-yellow) !important;
   width: 14px !important;
   height: 14px !important;
@@ -19,24 +18,39 @@
 }
 
 /* Active (checked) state */
-.ant-switch-checked {
+.ant-switch.primary.ant-switch-checked {
   background-color: var(--color-brand-red) !important;
   border-color: var(--color-brand-yellow) !important;
 }
 
+/* Active (checked) state */
+.ant-switch.white.ant-switch-checked {
+  background-color: var(--color-brand-yellow) !important;
+  border-color: var(--color-brand-yellow) !important;
+}
+
 /* Hover state */
-.ant-switch:hover {
+.ant-switch.primary:hover {
   border-color: var(--color-brand-yellow);
   background-color: rgba(237, 194, 64, 0.1);
 }
 
-/* Make handle always yellow */
-.ant-switch-checked .ant-switch-handle::before {
+/* Checked handle */
+.ant-switch.primary.ant-switch-checked .ant-switch-handle::before {
   background-color: white !important;
 }
 
-/* Optional – slightly rounded ends */
-.ant-switch {
+/* Optional – ensure full round edges */
+.ant-switch.primary {
   border-radius: 9999px;
 }
 
+.ant-switch.white {
+  background-color: #ececf1; 
+}
+.ant-switch.white:hover {
+  background-color: #ececf1; 
+}
+.ant-switch.white.ant-switch-checked {
+  background-color: var(--color-brand-yellow); 
+}

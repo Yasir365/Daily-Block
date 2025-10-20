@@ -4,6 +4,7 @@ import Header from "@/components/community/Header";
 import MarketCap from "@/components/community/MarketCap";
 import Sentiments from "@/components/community/Sentiments";
 import Post from "@/components/community/Post";
+import { CoinCardDetail, MarketWatch } from "@/components/coin-view/CoinViewLeft";
 
 export default function Page() {
     return (
@@ -25,11 +26,11 @@ export default function Page() {
                 <Header />
 
                 {/* Tabs */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full bg-brand-gray rounded-2xl p-1 w-fit mx-auto">
-                    <button className="bg-brand-yellow text-black font-semibold px-6 py-3 rounded-xl">
+                <div className="grid grid-cols-1 md:grid-cols-2 font-inter gap-4 w-full text-[16px] bg-brand-black font-inter rounded-2xl p-1 w-fit mx-auto">
+                    <button className="bg-brand-yellow text-black font-semibold  px-6 py-3 rounded-xl">
                         Top
                     </button>
-                    <button className="text-gray-400 px-6 py-3 rounded-xl hover:text-white">
+                    <button className="text-brand-gray2 px-6 py-3 rounded-xl hover:text-white">
                         Latest
                     </button>
                 </div>
@@ -55,9 +56,10 @@ export default function Page() {
             </main>
 
             {/* Right Sidebar */}
-            <aside className="w-full md:w-80 p-4 space-y-4">
+            <aside className="w-full md:w-120 p-4 space-y-4">
                 <Sentiments />
-                <CoinDetails />
+                <CoinCardDetail />
+                <MarketWatch />
                 <MarketCap />
             </aside>
         </div>

@@ -51,83 +51,95 @@ export const ProjectsFilterTable = () => {
         console.log(`Sorting by ${key} ${direction}`);
     };
     return (
-        <section className="container mx-auto py-10">
-            <div className="bg-[#2D2D2D] p-6 md:p-8 rounded-2xl shadow-xl">
+        <section className="container mx-auto px-4 py-10">
+            <div className="bg-brand-glass/70 backdrop-blur-xl border border-gray-700/50 p-4 sm:p-6 md:p-8 rounded-2xl shadow-[0_0_20px_rgba(0,0,0,0.3)]">
 
                 {/* --- 1. Tabs --- */}
-                <div className="flex flex-wrap space-x-4 mb-6 border-b border-gray-700/50">
+                <div className="flex flex-wrap justify-center sm:justify-start space-x-2 sm:space-x-4 mb-6 border-b border-gray-700/50 overflow-x-auto scrollbar-hide">
                     {TABS.map((tab) => (
                         <button
                             key={tab}
-                            className={`pb-3 text-sm font-semibold transition-colors ${tab === 'Presale/Whitelist'
-                                ? 'text-white border-b-2 border-white'
-                                : 'text-gray-400 hover:text-white'
+                            className={`pb-3 text-sm sm:text-base font-semibold transition-colors whitespace-nowrap ${tab === "Presale/Whitelist"
+                                ? "text-white border-b-2 border-white"
+                                : "text-gray-400 hover:text-white"
                                 }`}
                         >
                             {tab}
                         </button>
                     ))}
-
                 </div>
 
                 {/* --- 2. Filters and Search --- */}
-                <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
 
                     {/* Filter Dropdowns */}
-                    <div className="flex flex-wrap gap-3">
+                    <div className="flex flex-wrap justify-center sm:justify-start gap-2 sm:gap-3">
                         {FILTER_OPTIONS.map((option) => (
                             <button
                                 key={option}
-                                className="flex items-center space-x-1 bg-brand-glass text-gray-400 text-sm py-2 px-4 rounded-md hover:bg-gray-800 transition-colors"
+                                className="flex items-center space-x-1 bg-brand-glass text-gray-400 text-sm py-2 px-3 sm:px-4 rounded-md hover:bg-gray-800 transition-colors"
                             >
                                 <span>{option}</span>
                                 <ChevronDown size={16} />
                             </button>
                         ))}
-                        <SwitchGroup
-                            options={["White List", "KYC", "Bounty"]}
-                            defaultActive={["White List", "KYC"]}
-                            onChange={handleSwitchChange}
-                        />
+                        <div className="mt-2 sm:mt-0">
+                            <SwitchGroup
+                                options={["White List", "KYC", "Bounty"]}
+                                defaultActive={["White List", "KYC"]}
+                                onChange={handleSwitchChange}
+                            />
+                        </div>
                     </div>
 
                     {/* Search Bar */}
-                    <div className="relative max-w-xs w-full sm:w-auto">
+                    <div className="relative w-full sm:max-w-xs">
                         <input
                             type="text"
                             placeholder="Search"
                             className="w-full p-2 pl-10 bg-gray-800/80 border border-gray-700 rounded-full text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-brand-yellow"
                         />
-                        <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                        <Search
+                            size={18}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                        />
                     </div>
                 </div>
 
-                {/* --- 3. Table Header (Using Grid for alignment) --- */}
-                <div className="grid grid-cols-11 items-center p-4 border-b-2 border-gray-700 text-gray-300 font-semibold text-xs uppercase select-none">
-                    {columns.map((col, i) => (
-                        <div
-                            key={col.key}
-                            className={`col-span-${i === 0 ? 1 : i === 1 ? 2 : i === 5 ? 2 : 1} flex items-center gap-1 cursor-pointer group`}
-                            onClick={() => handleSort(col.key)}
-                        >
-                            <span className="group-hover:text-white transition">{col.label}</span>
-                            <ArrowUpDown
-                                size={14}
-                                className={`transition ${sortConfig.key === col.key
-                                    ? "text-blue-400"
-                                    : "text-gray-600 group-hover:text-gray-400"
-                                    }`}
-                            />
+                {/* --- 3 & 4. Table (Scrollable on Mobile) --- */}
+                <div className="w-full overflow-x-auto rounded-xl scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
+                    <div className="min-w-full lg:min-w-[900px]">
+                        {/* --- 3. Table Header --- */}
+                        <div className="grid grid-cols-11 items-center p-4 border-b-2 border-gray-700 text-gray-300 font-semibold text-xs uppercase select-none min-w-max">
+                            {columns.map((col, i) => (
+                                <div
+                                    key={col.key}
+                                    className={`col-span-${i === 0 ? 1 : i === 1 ? 2 : i === 5 ? 2 : 1
+                                        } flex items-center gap-1 cursor-pointer group`}
+                                    onClick={() => handleSort(col.key)}
+                                >
+                                    <span className="group-hover:text-white transition">{col.label}</span>
+                                    <ArrowUpDown
+                                        size={14}
+                                        className={`transition ${sortConfig.key === col.key
+                                            ? "text-blue-400"
+                                            : "text-gray-600 group-hover:text-gray-400"
+                                            }`}
+                                    />
+                                </div>
+                            ))}
                         </div>
-                    ))}
+
+                        {/* --- 4. Table Rows --- */}
+                        <div className="divide-y divide-gray-700/50 min-w-max">
+                            {mockProjectData.map((data, index) => (
+                                <ProjectRow key={index} {...data} />
+                            ))}
+                        </div>
+                    </div>
                 </div>
 
-                {/* --- 4. Table Rows --- */}
-                <div className="divide-y divide-gray-700/50">
-                    {mockProjectData.map((data, index) => (
-                        <ProjectRow key={index} {...data} />
-                    ))}
-                </div>
+
 
                 {/* --- 5. Footer Button --- */}
                 <div className="text-center pt-8">
@@ -135,8 +147,8 @@ export const ProjectsFilterTable = () => {
                         View All Projects
                     </button>
                 </div>
-
             </div>
         </section>
+
     );
 };

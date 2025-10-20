@@ -1,6 +1,14 @@
 import React from "react";
 import { Heart, MessageCircle, Repeat2, Share2 } from "lucide-react";
+import Image from "next/image";
 
+
+const PostOptions = [
+    { id: 1, icon: <Heart size={18} />, count: 35 },
+    { id: 2, icon: <MessageCircle size={18} />, count: 35 },
+    { id: 3, icon: <Repeat2 size={18} />, count: 35 },
+    { id: 4, icon: <Share2 size={18} />, count: 35 },
+]
 interface Props {
     username: string;
     time: string;
@@ -18,9 +26,12 @@ const Post: React.FC<Props> = ({ username, time, title, description, image }) =>
                     alt={username}
                     className="w-10 h-10 rounded-full"
                 />
-                <div>
+                <div className="flex items-center gap-1">
                     <h4 className="font-semibold text-sm">{username}</h4>
-                    <span className="text-xs text-gray-500">{time}</span>
+                    <span className="flex gap-1 items-center">
+                        <Image src="/svg/verified.svg" alt="coin" width={16} height={16} />
+                        <span className="text-xs text-gray-500">{time}</span>
+                    </span>
                 </div>
             </div>
 
@@ -36,18 +47,11 @@ const Post: React.FC<Props> = ({ username, time, title, description, image }) =>
             {/* Reaction Buttons */}
             <div className="flex justify-between items-center text-gray-400 text-sm mt-4">
                 <div className="flex gap-4">
-                    <button className="flex items-center gap-1 hover:text-red-400">
-                        <Heart size={18} /> 35
-                    </button>
-                    <button className="flex items-center gap-1 hover:text-blue-400">
-                        <MessageCircle size={18} /> 21
-                    </button>
-                    <button className="flex items-center gap-1 hover:text-green-400">
-                        <Repeat2 size={18} /> 6
-                    </button>
-                    <button className="flex items-center gap-1 hover:text-yellow-400">
-                        <Share2 size={18} /> 38
-                    </button>
+                    {PostOptions.map((option) => (
+                        <button key={option.id} className={`flex items-center gap-1  rounded-full px-3 py-1 border border-[rgb(36, 46, 64)] hover:text-${option.id === 1 ? "red-400" : option.id === 2 ? "blue-400" : option.id === 3 ? "green-400" : "yellow-400"}`}>
+                            {option.icon} {option.count}
+                        </button>
+                    ))}
                 </div>
             </div>
         </div>
@@ -55,3 +59,4 @@ const Post: React.FC<Props> = ({ username, time, title, description, image }) =>
 };
 
 export default Post;
+

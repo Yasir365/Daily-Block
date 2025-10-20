@@ -9,7 +9,7 @@ export default function Page() {
             <div className="min-h-screen container grid grid-cols-1 md:grid-cols-7 p-12 mx-auto gap-4">
                 <CoinViewLeft />
                 <CoinViewContent />
-                <CoinViewRight />
+                <CoinViewRight /> 
             </div>
             <Newsletter />
         </div>

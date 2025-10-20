@@ -12,8 +12,9 @@ export const FAQSection = () => {
     return (
         <div className='container mx-auto grid grid-cols-1 lg:grid-cols-[70%_30%] gap-10 mb-12'>
             {/* Accordion List */}
+
             <Accordion />
-            <div className="space-y-10">
+            <div className="space-y-10 1">
                 {/* FAQ Heading */}
                 <div className="mb-8">
                     <h3 className="text-4xl font-bold text-white">

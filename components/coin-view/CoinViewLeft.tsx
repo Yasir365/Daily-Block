@@ -63,42 +63,10 @@ const TrendArray: TrendItem[] = [
 const CoinViewLeft = () => {
     return (
         <div className="flex flex-col col-span-2 gap-3">
-            <div className="flex flex-col gap-3 bg-brand-glass py-4 px-5 rounded-xl">
-                <div className="flex justify-between items-center">
-                    <div className="flex gap-2 items-center">
-                        <Image src="/svg/coins/perl.svg" alt="coin" width={25} height={25} className="rounded-full" />
-                        <span className="text-lg font-semibold">PERL.eco</span>
-                        <span className="relative w-20">
-                            <span className="text-xs ">PERL</span>
-                            <span className="absolute top-0 right-0 text-xs bg-gray-500 py-[1px] px-2 rounded-full">#2959</span>
-                        </span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                        <div className="flex items-center gap-1 py-2 px-3  bg-[#FFFFFF2B]  rounded-xl">
-                            <Star className="w-4 h-4" />
-                            <span>21k</span>
-                        </div>
-                        <div className="flex items-center gap-1 py-3 px-3  bg-[#FFFFFF2B]  rounded-xl">
-                            <Share2 className="w-4 h-4 text-gray-300" />
-                        </div>
-                    </div>
-                </div>
-                <div className="flex gap-4">
-                    <h3 className="text-3xl font-bold text-white">$0.0003110</h3>
-                    <TrendComponent trend='down' percent="-5.08%" time='24h' />
-                </div>
-            </div>
-            <div className='flex flex-col px-4 gap-2'>
-                <MarketDiv text='Market Cap' value='$20.15K' />
-                <div className="flex flex-col gap-3    rounded-xl">
 
-                    <div className='grid grid-cols-2 gap-2'>
-                        {TrendArray.map((item, index) => (
-                            <MarketDiv key={index} text={item.text} value={item.value} trend={item.trend} trendVal={item.trendVal} />
-                        ))}
-                    </div>
-                </div>
-                <MarketDiv text='Market Cap' value='$20.15K' />
+            <div className='flex flex-col px-4 gap-2'>
+
+                <MarketWatch />
 
                 {/* === Profile Score === */}
                 <div className="flex justify-between items-center bg-[#0E0E0E]/60 border border-[#1F1F1F] rounded-xl p-4 mt-2">
@@ -192,10 +160,10 @@ const TrendComponent = ({ trend, percent, time = "" }: TrendComponentProps) => {
 const MarketDiv = ({ text, value, trend = false, trendVal }: TrendItem) => {
     return (
 
-        <div className="flex flex-col items-center justify-center bg-transparent border border-[#1F1F1F] rounded-xl p-3 hover:bg-[#1B1B1B]/70   transition-colors">
-            <span className='flex flex-col  items-center justify-center gap-[2px]'>
+        <div className="flex flex-col items-center justify-center bg-transparent border border-[#1F1F1F]  rounded-xl p-3 hover:bg-[#1B1B1B]/70   transition-colors">
+            <span className='flex flex-col  items-center justify-center gap-[2px] font-inter'>
                 <span className='text-[#616E85] flex gap-1 items-center font-medium'>
-                    <span>{text}</span>
+                    <span  >{text}</span>
                     <Image src="/svg/coins/info.svg" alt="coin" width={16} height={16} />
                 </span>
                 <span className='flex gap-2'>
@@ -222,5 +190,51 @@ const Tab = ({ icon, text }: { icon: React.ReactNode, text: string }) => {
             <span className="flex items-center justify-center w-6 h-6">{icon}</span>
             <h5 className='text-white font-semibold text-sm  leading-none'>{text}</h5>
         </span>
+    )
+}
+
+export const CoinCardDetail = () => {
+    return <div className="flex flex-col gap-3 bg-brand-glass py-4 px-5 rounded-xl">
+        <div className="flex justify-between items-center">
+            <div className="flex gap-2 items-center">
+                <Image src="/svg/coins/perl.svg" alt="coin" width={25} height={25} className="rounded-full" />
+                <span className="text-lg font-semibold">PERL.eco</span>
+                <span className="relative w-20">
+                    <span className="text-xs ">PERL</span>
+                    <span className="absolute top-0 right-0 text-xs bg-gray-500 py-[1px] px-2 rounded-full">#2959</span>
+                </span>
+            </div>
+            <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 py-2 px-3  bg-[#FFFFFF2B]  rounded-xl">
+                    <Star className="w-4 h-4" />
+                    <span>21k</span>
+                </div>
+                <div className="flex items-center gap-1 py-3 px-3  bg-[#FFFFFF2B]  rounded-xl">
+                    <Share2 className="w-4 h-4 text-gray-300" />
+                </div>
+            </div>
+        </div>
+        <div className="flex gap-4">
+            <h3 className="text-3xl font-bold text-white">$0.0003110</h3>
+            <TrendComponent trend='down' percent="-5.08%" time='24h' />
+        </div>
+    </div>
+}
+
+export const MarketWatch = () => {
+    return (
+        <>
+            <MarketDiv text='Market Cap' value='$20.15K' />
+            <div className="flex flex-col gap-3    rounded-xl">
+
+                <div className='grid grid-cols-2 gap-2'>
+                    {TrendArray.map((item, index) => (
+                        <MarketDiv key={index} text={item.text} value={item.value} trend={item.trend} trendVal={item.trendVal} />
+                    ))}
+                </div>
+            </div>
+            <MarketDiv text='Market Cap' value='$20.15K' />
+        </>
+
     )
 }

@@ -2,7 +2,7 @@ import React from "react";
 
 const CoinDetails = () => {
     return (
-        <div className="bg-gray-900 p-4 rounded-2xl border border-gray-800">
+        <div className="bg-brand-glass p-4 rounded-2xl border border-gray-800">
             <div className="flex items-center justify-between mb-2">
                 <h3 className="font-semibold">PERL.eco (PERL)</h3>
                 <span className="text-gray-400">#2586</span>

@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
+<<<<<<< Updated upstream
 import { Titillium_Web, Lato } from "next/font/google";
 import LayoutWrapper from "@/providers/Layout";
+=======
+import { Navbar } from "@/components/layout/navbar/Navbar";
+import { Footer } from "@/components/layout/footer/Footer";
+import { Titillium_Web, Lato, Unbounded, Mulish, Inter } from "next/font/google";
+>>>>>>> Stashed changes
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -20,12 +26,49 @@ const lato = Lato({
   variable: "--font-lato",
   display: "swap",
 });
+<<<<<<< Updated upstream
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className={`${titilliumWeb.className} ${lato.variable} min-h-screen flex flex-col`}>
         <LayoutWrapper>{children}</LayoutWrapper>
+=======
+// ✅ Unbounded → for special headings or highlights
+const unbounded = Unbounded({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  variable: "--font-unbounded",
+  display: "swap",
+});
+// ✅ Mulish → for UI labels, buttons, or modern clean text
+const mulish = Mulish({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-mulish",
+  display: "swap",
+});
+// Inter → for dashboard numbers, labels, etc.
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-inter",
+  display: "swap",
+});
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body className={`${titilliumWeb.className}  ${unbounded.variable} ${lato.variable}  ${mulish.variable} ${inter.variable}  min-h-screen flex flex-col`}>
+        <Navbar />
+        <main className="flex-grow ">
+          <Providers>{children}</Providers>
+        </main>
+        <Footer />
+>>>>>>> Stashed changes
       </body>
     </html>
   );

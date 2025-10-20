@@ -25,7 +25,7 @@ export const ProjectCardsSection = () => {
 
                 {/* Column 1: Top ICO/IDO/IEO Projects */}
                 <div>
-                    <h3 className="text-xl font-bold text-white mb-6 flex items-center">
+                    <h3 className="text-xl font-medium text-white mb-6 flex items-center  font-unbounded">
                         Top ICO/IEO/IDO Projects <span className="ml-2 text-2xl">🔥</span>
                     </h3>
                     <div className="space-y-4">
@@ -37,7 +37,9 @@ export const ProjectCardsSection = () => {
 
                 {/* Column 2: Newly Listed Coins */}
                 <div>
-                    <h3 className="text-xl font-bold text-white mb-6">Newly Listed Coins</h3>
+                    <h3 className="text-xl font-medium text-white mb-6 flex items-center  font-unbounded">
+                        Newly Listed Coins
+                    </h3>
                     <div className="space-y-4">
                         {mockListedCoins.map((p, index) => (
                             <ProjectCard key={index} name={p.name} />
@@ -47,7 +49,9 @@ export const ProjectCardsSection = () => {
 
                 {/* Column 3: Top Ranking Coins (Same as Newly Listed, just different title) */}
                 <div>
-                    <h3 className="text-xl font-bold text-white mb-6">Top Ranking Coins</h3>
+                    <h3 className="text-xl font-medium text-white mb-6 flex items-center  font-unbounded">
+                        Top Ranking Coins
+                    </h3>
                     <div className="space-y-4">
                         {mockListedCoins.map((p, index) => (
                             <ProjectCard key={index} name={p.name} />

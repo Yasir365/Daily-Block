@@ -39,7 +39,7 @@ const InputField: React.FC<InputFieldProps> = ({
                 onChange={onChange}
                 required={required}
                 disabled={disabled}
-                className={`flex-1 w-full bg-brand-glass text-gray-200 rounded-lg px-4 py-3 placeholder-gray-400 
+                className={`flex-1 w-full bg-brand-glass text-gray-200 rounded-xl px-4 py-2 placeholder-gray-400 
           focus:outline-none focus:ring-2 focus:ring-brand-primary transition disabled:opacity-50`}
             />
         </div>
