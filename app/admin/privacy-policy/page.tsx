@@ -4,7 +4,7 @@ export default function PrivacyPolicyPage() {
     const initialContent = "";
 
     return (
-        <div className="p-4 min-h-screen text-white">
+        <div className="min-h-screen text-white">
             <h1 className="text-2xl font-semibold text-white">Privacy Policy</h1>
             <p className="text-sm text-brand-muted mb-6">
                 Manage & Update Your Privacy Policy Content
