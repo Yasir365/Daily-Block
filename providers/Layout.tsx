@@ -16,9 +16,9 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
             <Providers>
                 <div className="flex flex-1 min-h-screen">
                     <AdminSidebar />
-                    <div className="flex-1 flex flex-col">
+                    <div className="flex-1 flex flex-col  ml-64">
                         <AdminHeader />
-                        <main className="flex-grow p-6">{children}</main>
+                        <main className="flex-1 overflow-y-auto  p-6 ">{children}</main>
                     </div>
                 </div>
             </Providers>
