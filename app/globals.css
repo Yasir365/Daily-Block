@@ -1,66 +1,86 @@
 @import "tailwindcss";
- 
+
 @import "../styles/antd-overrides.css";
- 
+
 @theme {
-    --color-brand-gray: rgba(31, 40, 60, 0.49);
-    --color-brand-glass: rgba(255, 255, 255, 0.2);
-    --color-brand-muted: rgba(255, 255, 255, 0.6);
-    --color-brand-gray2: rgb(97, 110, 133);
-    --color-brand-black: rgb(26, 26, 26);
-    --color-brand-yellow: #EDC240;
-    --color-brand-red: #EC5058;
-    --color-brand-green: #19DE92;
+  --color-brand-gray: rgba(31, 40, 60, 0.49);
+  --color-brand-glass: rgba(255, 255, 255, 0.2);
+  --color-brand-muted: rgba(255, 255, 255, 0.6);
+  --color-brand-gray2: rgb(97, 110, 133);
+  --color-brand-black: rgb(26, 26, 26);
+  --color-brand-yellow: #EDC240;
+  --color-brand-red: #EC5058;
+  --color-brand-green: #19DE92;
 }
 
 * {
-    font-family: "Titillium Web", serif;
+  font-family: "Titillium Web", serif;
 }
- 
+
 
 
 body {
-    background-color: #1C1C1E;
-    color: #F2F2F7;
-    overflow-x: hidden;
-    font-family: 'Inter', sans-serif;
-    background: url(/svg/background.svg);
-    background-position: top;
-    background-repeat: no-repeat;
-    background-color: #121212;
+  background-color: #1C1C1E;
+  color: #F2F2F7;
+  overflow-x: hidden;
+  font-family: 'Inter', sans-serif;
+  background: url(/svg/background.svg);
+  background-position: top;
+  background-repeat: no-repeat;
+  background-color: #121212;
 }
 
 .ticker-tape-animation {
-    animation: marquee 60s linear infinite;
-    white-space: nowrap;
+  animation: marquee 60s linear infinite;
+  white-space: nowrap;
 }
 
 .ticker-tape-animation:hover {
-    animation-play-state: paused;
+  animation-play-state: paused;
 }
 
 @keyframes marquee {
-    from {
-        transform: translateX(0);
-    }
+  from {
+    transform: translateX(0);
+  }
 
-    to {
-        transform: translateX(-33.33%);
-    }
+  to {
+    transform: translateX(-33.33%);
+  }
 }
 
 .font-unbounded {
   font-family: var(--font-unbounded);
 }
+
 .font-lato {
   font-family: var(--font-lato);
 }
+
 .font-mulish {
   font-family: var(--font-mulish);
 }
+
 .font-inter {
   font-family: var(--font-inter);
 }
+
 .font-titilliumWeb {
   font-family: var(--font-titilliumWeb);
+}
+
+.ql-toolbar.ql-snow,
+.ql-container.ql-snow {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.ql-editor.ql-blank:before {
+  color: #fff9 !important;
+}
+
+.ql-snow .ql-picker-label:before,
+.ql-snow .ql-stroke,
+.ql-snow .ql-fill {
+  color: #fff !important;
+  stroke: #ffffff !important;
 }

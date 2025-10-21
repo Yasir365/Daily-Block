@@ -63,12 +63,12 @@ export const AdminSidebar = () => {
         },
         {
             name: "Privacy Policy",
-            href: "/admin/privacy",
+            href: "/admin/privacy-policy",
             icon: Lock,
         },
         {
             name: "Terms & Conditions",
-            href: "/admin/terms",
+            href: "/admin/terms-&-conditions",
             icon: FileText,
         },
     ];
