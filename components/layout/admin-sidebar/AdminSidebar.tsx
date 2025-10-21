@@ -1,8 +1,8 @@
 "use client";
 
-import { LayoutGrid, Users, BarChart2, BookOpen, Settings, Lock, FileText, HelpCircle, Mail, DollarSign } from "lucide-react";
+import { LayoutGrid, Users, BookOpen, Settings, Lock, FileText, HelpCircle, Mail, DollarSign } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image"; // Use next/image for better image handling
+import Image from "next/image";
 
 type SidebarLinkProps = {
     href: string;
@@ -12,12 +12,10 @@ type SidebarLinkProps = {
 };
 
 const SidebarLink = ({ href, children, isActive = false, icon: Icon }: SidebarLinkProps) => {
-    // Styles for the active state (Dashboard)
     const activeClasses = isActive
-        ? "bg-yellow-500 text-gray-900 font-semibold rounded-lg shadow-lg"
+        ? "bg-brand-yellow text-black font-semibold rounded-lg shadow-lg"
         : "text-gray-300 hover:bg-white/10 hover:text-white transition-colors duration-200";
 
-    // Styles for the inactive state
     const defaultClasses = "flex items-center gap-4 px-4 py-3 text-sm";
 
     return (
@@ -29,10 +27,8 @@ const SidebarLink = ({ href, children, isActive = false, icon: Icon }: SidebarLi
 };
 
 export const AdminSidebar = () => {
-    // Determine the current path for active link logic (simplified here)
     const currentPath = "/admin";
 
-    // An array to easily manage all the sidebar links and their icons
     const navItems = [
         {
             name: "Dashboard",
@@ -43,7 +39,7 @@ export const AdminSidebar = () => {
         {
             name: "ICO Management",
             href: "/admin/ico",
-            icon: DollarSign, // Using a dollar sign for ICO/Finance
+            icon: DollarSign,
         },
         {
             name: "User Management",
@@ -68,7 +64,7 @@ export const AdminSidebar = () => {
         {
             name: "Privacy Policy",
             href: "/admin/privacy",
-            icon: Lock, // Using a lock for policy/security
+            icon: Lock,
         },
         {
             name: "Terms & Conditions",
@@ -78,23 +74,11 @@ export const AdminSidebar = () => {
     ];
 
     return (
-        // The background is a gradient from a very dark gray (900) to a darker gray-black (950)
-        // to mimic the slight vertical gradient in the image.
-        <aside className="w-64 bg-gradient-to-b from-gray-900 to-gray-950 text-white p-4 flex flex-col h-screen fixed">
-
+        <aside className="w-64 bg-brand-glass text-white p-4 flex flex-col h-screen">
             {/* Logo Section */}
-            <div className="flex items-center h-20 px-2 mb-4">
-                {/* NOTE: I've replaced the simple <img> with a component 
-                    that closely matches the "DailyBlock" logo in the image.
-                    In a real app, you would use a single logo image.
-                */}
+            <div className="flex items-center h-20 px-2 mb-4  pb-2 border-b border-brand-gray">
                 <div className="flex items-center gap-1">
-                    {/* Placeholder for the hexagon logo icon (yellow) */}
-                    <div className="w-8 h-8 bg-yellow-500 clip-path-hexagon flex items-center justify-center">
-                        <LayoutGrid className="w-4 h-4 text-gray-900" />
-                    </div>
-                    {/* Placeholder for the name "DailyBlock" */}
-                    <span className="text-xl font-bold text-white">DailyBlock</span>
+                    <img src="/svg/logo.svg" alt="" />
                 </div>
             </div>
 
@@ -124,7 +108,7 @@ export const AdminSidebar = () => {
                 <div className="p-2 flex items-center gap-3 bg-white/5 rounded-lg">
                     {/* Placeholder for Admin User Image */}
                     <Image
-                        src="/path/to/admin-profile.jpg" // Replace with the actual image path
+                        src="/svg/profile.svg"
                         alt="Admin User"
                         width={40}
                         height={40}

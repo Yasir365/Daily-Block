@@ -2,6 +2,6 @@ import React from 'react'
 
 export default function page() {
     return (
-        <div>admin Dashbaord</div>
+        <div>Welcome to Admin Dashbaord</div>
     )
 }
