@@ -2,7 +2,7 @@
 import DataTable from '@/components/admin/table/DataTable';
 import { TopHeader } from '@/components/admin/TopHeader'
 import StatusBadge from '@/components/ui/Badge';
-import { Ban, Check, Edit, Eye, Funnel, MessageSquare, Shield, X } from 'lucide-react';
+import { Ban, Edit, Funnel, Shield } from 'lucide-react';
 import Image from 'next/image'
 import React from 'react'
 
@@ -31,12 +31,25 @@ const page = () => {
     ];
     const columns = [
         {
-            key: "project", label: "project",
+            key: "name", label: "Name",
             className: "text-brand-text-secondary font-inter font-semibold text-[16px] leading-[20px]", // white bold
         },
-        { key: "owner", label: "owner" },
-        { key: "launchpad", label: "launchpad" },
+        { key: "email", label: "Email" },
+        {
+            key: "role", label: "Role",
+            render: (value: string) => (
+                <span
+                    className={`px-3 py-1 inline-flex items-center gap-2 rounded-full text-sm font-semibold  border border-black
+                        text-white 
+                       
+                        }`}
+                >
+                    <Shield />{value}
+                </span>
+            ),
 
+        },
+        { key: "joined", label: "Joined" },
         {
             key: "status",
             label: "Status",
@@ -45,33 +58,17 @@ const page = () => {
                 return <StatusBadge value={value === "suspended" ? "suspended" : value} text={value} />
             },
         },
-        {
-            key: "discussion",
-            label: "discussion",
-            render: (value: string) => {
-                console.log({ value })
-                return (
-                    <span className='inline-flex relative font-lato text-[#F1F4F4] font-semibold text-sm bg-[#484C4F] rounded-xl py-2 px-4 items-center gap-4'>
-                        <span className='absolute top-[-8px] -right-2 flex items-center justify-center size-6 text-black bg-brand-yellow rounded-full'>2</span>
-                        <MessageSquare /> Discuss
-                    </span>
-                )
-            },
-        },
 
         {
             key: "actions",
             label: "Actions",
             render: () => (
-                <div className="flex gap-4">
+                <div className="flex gap-3">
                     <button className="text-gray-300 hover:text-white">
-                        <Eye size={16} />
-                    </button>
-                    <button className="text-gray-300 hover:text-white">
-                        <Check size={16} className='text-brand-green' />
+                        <Edit size={16} />
                     </button>
                     <button className="text-red-500 hover:text-red-400">
-                        <X size={16} />
+                        <Ban size={16} />
                     </button>
                 </div>
             ),
@@ -80,72 +77,11 @@ const page = () => {
 
     const users = [
         {
-            project: "John Doe",
-            owner: "john@example.com",
-            launchpad: "User",
-            joined: "21 Sep 2024",
-            status: "active",
-            discussion: "3",
-
-        },
-        {
-            name: "Alice Smith",
-            email: "alice@example.com",
-            role: "Moderator",
-            joined: "15 Aug 2024",
-            status: "active",
-        },
-        {
-            name: "Bob Johnson",
-            email: "bob@example.com",
+            name: "John Doe",
+            email: "john@example.com",
             role: "User",
-            joined: "03 Oct 2024",
-            status: "suspended",
-        },
-        {
-            name: "Carol Williams",
-            email: "carol@example.com",
-            role: "Admin",
-            joined: "10 Jul 2024",
-            status: "suspended",
-        },
-        {
-            project: "John Doe",
-            owner: "john@example.com",
-            launchpad: "User",
             joined: "21 Sep 2024",
             status: "active",
-            discussion: "3",
-
-        },
-        {
-            name: "Alice Smith",
-            email: "alice@example.com",
-            role: "Moderator",
-            joined: "15 Aug 2024",
-            status: "active",
-        },
-        {
-            name: "Bob Johnson",
-            email: "bob@example.com",
-            role: "User",
-            joined: "03 Oct 2024",
-            status: "suspended",
-        },
-        {
-            name: "Carol Williams",
-            email: "carol@example.com",
-            role: "Admin",
-            joined: "10 Jul 2024",
-            status: "suspended",
-        },
-        {
-            project: "John Doe",
-            owner: "john@example.com",
-            launchpad: "User",
-            joined: "21 Sep 2024",
-            status: "active",
-            discussion: "3",
 
         },
         {
@@ -171,10 +107,10 @@ const page = () => {
         },
     ];
     return (
-        <div className="flex flex-col gap-8  w-full   ">
+        <div className="flex flex-col gap-8  h-screen w-full   ">
             <TopHeader
-                pageName="Newsletter Management"
-                pageDescription="Manage your email subscribers and token registrations"
+                pageName="Dashboard Overview"
+                pageDescription="Welcome back! Here's what's happening with DailyBlock today."
             ><button className='font-inter font-semibold text-sm cursor-pointer leading-[20px] flex items-center justify-center gap-2 px-4 py-2 bg-[#3B3B3B] rounded-xl border border-[#2B2B31]'>
                     <Funnel className='text-sm' />   Filters
                 </button>
@@ -193,7 +129,7 @@ const page = () => {
             <div className="grid grid-cols-1 gap-4">
                 <div className="overflow-x-auto rounded-[12px] border border-[#90909066] bg-[#3B3B3B80] shadow-[0_1px_2px_0_#0000000D] backdrop-blur-[4px]">
                     <div className="min-w-full">
-                        <DataTable title="Submissions" columns={columns} data={users} />
+                        <DataTable title="User List" columns={columns} data={users} />
                     </div>
                 </div>
             </div>

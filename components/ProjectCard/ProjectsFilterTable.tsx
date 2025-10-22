@@ -92,18 +92,7 @@ export const ProjectsFilterTable = () => {
                         </div>
                     </div>
 
-                    {/* Search Bar */}
-                    <div className="relative w-full sm:max-w-xs">
-                        <input
-                            type="text"
-                            placeholder="Search"
-                            className="w-full p-2 pl-10 bg-gray-800/80 border border-gray-700 rounded-full text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-brand-yellow"
-                        />
-                        <Search
-                            size={18}
-                            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                        />
-                    </div>
+
                 </div>
 
                 {/* --- 3 & 4. Table (Scrollable on Mobile) --- */}

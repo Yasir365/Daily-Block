@@ -1,6 +1,7 @@
 "use client";
 
 import { Edit, Ban } from "lucide-react";
+import Wrapper from "../layoutCard/Wrapper";
 
 type TableColumn = {
     key: string;
@@ -11,22 +12,21 @@ type TableColumn = {
 
 type DataTableProps = {
     title?: string;
+    desc?: string;
+    children?: React.ReactNode;
     columns: TableColumn[];
     data: any[];
 };
 
-export default function DataTable({ title = "Table", columns, data }: DataTableProps) {
+export default function DataTable({ title = "Table", desc, children, columns, data }: DataTableProps) {
     return (
-        <div className="w-full rounded-[12px] p-4 border border-[#90909066] bg-[#3B3B3B80] shadow-[0_1px_2px_0_#0000000D] backdrop-blur-[6px] overflow-hidden">
-            {title && (
-                <h2 className="  p-4 font-inter font-semibold text-[24px] leading-[24px] tracking-[-0.6px] align-middle text-[#F8FAFC]">
-                    {title}
-                </h2>
-            )}
+
+        <Wrapper title={title} desc={desc} children2={children}>
 
             <div className="overflow-x-auto">
                 <table className="min-w-full text-left text-sm text-gray-300">
                     <thead className="bg-transparent text-gray-400 uppercase text-xs  ">
+
                         <tr>
                             {columns.map((col) => (
                                 <th key={col.key}
@@ -53,6 +53,6 @@ export default function DataTable({ title = "Table", columns, data }: DataTableP
                     </tbody>
                 </table>
             </div>
-        </div>
+        </Wrapper>
     );
 }

@@ -10,11 +10,17 @@
   --color-brand-black: rgb(26, 26, 26);
   --color-brand-yellow: #EDC240;
   --color-brand-red: #EC5058;
+  --color-brand-purple: #8347EB;
   --color-brand-green: #19DE92;
 }
 
 * {
   font-family: "Titillium Web", serif;
+}
+
+/* ✅ Add Segoe UI as system font + fallback */
+:root {
+  --font-segoe: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 
@@ -67,6 +73,10 @@ body {
 
 .font-titilliumWeb {
   font-family: var(--font-titilliumWeb);
+}
+/* ✅ New: Segoe UI utility class (for selective usage) */
+.font-segoe {
+  font-family: var(--font-segoe);
 }
 
 .ql-toolbar.ql-snow,

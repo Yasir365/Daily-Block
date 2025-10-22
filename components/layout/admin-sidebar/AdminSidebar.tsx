@@ -46,10 +46,10 @@ export const AdminSidebar = ({ isOpen, setIsOpen }: AdminSidebarProps) => {
         },
         {
             name: "ICO Management",
-            href: "/admin/ico",
+            href: "/admin/icto-management",
             icon: DollarSign,
             // Check if the currentPath starts with this path for nested routes
-            isActive: currentPath.startsWith("/admin/ico"),
+            isActive: currentPath.startsWith("/admin/icto-management"),
         },
         {
             name: "User Management",
