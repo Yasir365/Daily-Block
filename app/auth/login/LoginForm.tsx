@@ -129,8 +129,8 @@ export const LoginForm = () => {
                         id="keep-logged-in"
                         {...register("keepLoggedIn")}
                         className="h-4 w-4 rounded bg-brand-glass border-gray-600 
-             text-brand-yellow accent-brand-yellow 
-             focus:ring-brand-yellow focus:ring-offset-0"
+                        text-brand-yellow accent-brand-yellow 
+                        focus:ring-brand-yellow focus:ring-offset-0"
                         disabled={isLoading}
                     />
 
