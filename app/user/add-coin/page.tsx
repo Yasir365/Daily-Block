@@ -2,7 +2,7 @@ import MultiStepForm from "@/components/multistep-form/MultiStepForm";
 
 export default function Page() {
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 ">
             <div className=" flex flex-col gap-2">
                 <h1 className="text-[28px] font-bold font-lato">
                     LIST YOUR ICO / Memecoin FOR FREE!</h1>

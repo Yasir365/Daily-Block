@@ -54,3 +54,36 @@
 .ant-switch.white.ant-switch-checked {
   background-color: var(--color-brand-yellow); 
 }
+/* Force Ant Design OTP input to use grid layout */
+:where(.ant-otp) {
+  display: grid !important;
+  grid-template-columns: repeat(5, 1fr) !important;
+  gap: 8px !important;
+  width: 100% !important;
+  justify-content: space-between !important;
+}
+
+/* 🔹 Make Ant Design OTP boxes full-width using grid */
+:where(.ant-otp) {
+  display: grid !important;
+  grid-template-columns: repeat(5, 1fr) !important;
+  gap: 10px !important;
+  width: 100% !important;
+}
+
+/* 🔹 Style each individual OTP input box */
+:where(.ant-otp) .ant-input {
+  height: 48px !important;              /* ⬆️ Increase box height */
+  font-size: 18px !important;           /* Bigger text */
+  text-align: center !important;        /* Center text */
+  border-radius: 10px !important;       /* Smooth corners */
+   border: 1px solid #364349 !important; /* Subtle border */
+   transition: all 0.2s ease-in-out !important;
+}
+
+/* 🔹 Focus state (when typing) */
+:where(.ant-otp) .ant-input:focus {
+  border-color: #facc15 !important; /* brand-yellow */
+  box-shadow: 0 0 8px #facc1580 !important;
+  outline: none !important;
+}

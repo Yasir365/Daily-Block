@@ -30,9 +30,8 @@ const page = () => {
             <TopHeader
                 pageName="Blog Management"
                 pageDescription="Review, approve, or reject ICO submissions"
-            ><button className='font-inter font-bold text-sm cursor-pointer leading-[20px] flex items-center justify-center gap-2 px-4 py-2 bg-brand-yellow rounded-xl border border-[#2B2B31] text-[#2B2B31]'>
-                    <Plus className='text-sm' />   Add FAQ
-                </button>
+            >
+
 
             </TopHeader>
 
@@ -46,17 +45,7 @@ const page = () => {
                             {/* Search Bar */}
                             <div className='flex gap-2 items-center'>
 
-                                <div className="relative w-full min-w-[200px] md:min-w-[300px] max-w-xs">
-                                    <input
-                                        type="text"
-                                        placeholder="Search Posts..."
-                                        className="w-full p-3 pl-10 bg-[#313133] border border-[#90909066]/40 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-brand-yellow"
-                                    />
-                                    <Search
-                                        size={18}
-                                        className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-                                    />
-                                </div>
+                                <BtnComp title="Add New Post" />
 
                             </div>
                         </FaqList>
@@ -68,3 +57,18 @@ const page = () => {
 }
 
 export default page
+
+
+export const BtnComp = ({ title, onClick, icon }: { title: string, onClick?: () => void, icon?: React.ReactNode }) => {
+    return (<button onClick={onClick} className="font-inter font-bold text-sm cursor-pointer leading-[20px] flex items-center justify-center gap-2 px-4 py-2 
+    bg-brand-yellow rounded-xl border border-[#2B2B31] text-[#2B2B31] 
+    w-full sm:w-auto sm:ml-auto
+    transition-all duration-300
+    hover:bg-yellow-400 hover:shadow-md active:scale-95">
+        {icon ? <React.Fragment>{icon}</React.Fragment> : <Plus className="text-sm" />}
+        {title}
+    </button>
+    )
+
+
+}

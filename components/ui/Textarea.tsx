@@ -13,6 +13,7 @@ interface TeextareaProps {
     className?: string;
     rows?: number;
     cols?: number;
+    cls?: string;
 }
 
 const Teextarea: React.FC<TeextareaProps> = ({
@@ -26,6 +27,7 @@ const Teextarea: React.FC<TeextareaProps> = ({
     className = "",
     rows = 4,
     cols = 50,
+    cls = "bg-brand-glass text-gray-200"
 }) => {
     return (
         <div className={`flex flex-col gap-2 ${className}`}>
@@ -42,7 +44,7 @@ const Teextarea: React.FC<TeextareaProps> = ({
                 disabled={disabled}
                 rows={rows}
                 cols={cols}
-                className={`flex-1 w-full bg-brand-glass text-gray-200 rounded-lg px-4 py-3 placeholder-gray-400 
+                className={`flex-1 w-full ${cls}  rounded-lg px-4 py-3 placeholder-gray-400 
           focus:outline-none focus:ring-2 focus:ring-brand-primary transition disabled:opacity-50`}
             />
         </div>

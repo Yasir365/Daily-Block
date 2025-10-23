@@ -11,6 +11,7 @@ import { toast } from "react-hot-toast"
 import { useRouter } from "next/navigation"
 import { Post_loginUser } from "@/lib/api/auth"
 import { useAuth } from "@/hooks/useAuth"
+import { CustomToast } from "@/components/ui/ReactToast"
 
 const LoginSchema = z.object({
     email: z.string().email({ message: "Invalid email address" }),
@@ -48,12 +49,24 @@ export const LoginForm = () => {
         onSuccess: (data: any) => {
             login(data)
 
-            toast.success(data.message || "Login successful!")
+            toast.custom((t) => (
+                <CustomToast
+                    t={t}
+                    status="Success"
+                    message={data.message || "Login successful!"}
+                />
+            ));
             router.push("/")
         },
         onError: (error: any) => {
             const errorMessage = error.message || "An unexpected error occurred during login."
-            toast.error(errorMessage)
+            toast.custom((t) => (
+                <CustomToast
+                    t={t}
+                    status="error"
+                    message={errorMessage}
+                />
+            ));
             console.error("Login Error:", error)
         },
     })
@@ -115,9 +128,12 @@ export const LoginForm = () => {
                         type="checkbox"
                         id="keep-logged-in"
                         {...register("keepLoggedIn")}
-                        className="h-4 w-4 rounded bg-brand-glass border-gray-600 text-brand-yellow focus:ring-brand-yellow"
+                        className="h-4 w-4 rounded bg-brand-glass border-gray-600 
+             text-brand-yellow accent-brand-yellow 
+             focus:ring-brand-yellow focus:ring-offset-0"
                         disabled={isLoading}
                     />
+
                     <label htmlFor="keep-logged-in" className="text-brand-muted">Keep me logged in</label>
                 </div>
                 <Link href="/auth/forgot-password" className="font-medium underline">Forgot your password?</Link>

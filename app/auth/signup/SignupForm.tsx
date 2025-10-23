@@ -3,13 +3,20 @@ import { ChevronDown, EyeOff, Mail } from "lucide-react"
 import { useRouter } from "next/navigation";
 import Link from "next/link"
 import toast from "react-hot-toast";
+import { CustomToast } from "@/components/ui/ReactToast";
 
 export const SignupForm = () => {
     const router = useRouter();
 
     const submitForm = (e: React.FormEvent) => {
         e.preventDefault();
-        toast.success("Account created successfully!");
+        toast.custom((t) => (
+            <CustomToast
+                t={t}
+                status="Success"
+                message={"Account created successfully!"}
+            />
+        ));
         router.push("/auth/login");
     };
     return (
@@ -104,11 +111,15 @@ export const SignupForm = () => {
             <div className="flex flex-col gap-2 text-sm">
                 <p className="text-brand-muted">Use 8 or more characters with a mix of letters, numbers & symbols</p>
                 <div className="flex gap-2">
-                    <input type="checkbox" id="keep-logged-in" className="h-4 w-4 rounded bg-brand-glass border-gray-600 text-brand-yellow focus:ring-brand-yellow" />
+                    <input type="checkbox" id="keep-logged-in" className="h-4 w-4 rounded  bg-brand-glass border-gray-600 
+             text-brand-yellow accent-brand-yellow 
+             focus:ring-brand-yellow focus:ring-offset-0" />
                     <label htmlFor="keep-logged-in" className="text-brand-muted">By creating an account, I agree to our Terms of use and Privacy Policy </label>
                 </div>
                 <div className="flex gap-2">
-                    <input type="checkbox" id="keep-logged-in" className="h-4 w-4 rounded bg-brand-glass border-gray-600 text-brand-yellow focus:ring-brand-yellow" />
+                    <input type="checkbox" id="keep-logged-in" className="h-4 w-4 rounded  bg-brand-glass border-gray-600 
+             text-brand-yellow accent-brand-yellow 
+             focus:ring-brand-yellow focus:ring-offset-0" />
                     <label htmlFor="keep-logged-in" className="text-brand-muted w-100 w-lg-75">By creating an account, I am also consenting to receive SMS messages and emails, including product new feature updates, events, and marketing promotions. </label>
                 </div>
             </div>

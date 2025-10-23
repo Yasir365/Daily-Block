@@ -24,16 +24,17 @@
 }
 
 
-
 body {
-  background-color: #1C1C1E;
   color: #F2F2F7;
   overflow-x: hidden;
   font-family: 'Inter', sans-serif;
-  background: url(/svg/background.svg);
-  background-position: top;
+
+  background-image: url(/svg/background.svg);
+  background-position: center;
   background-repeat: no-repeat;
-  background-color: #121212;
+  background-attachment: fixed; /* ✅ Keeps image fixed when scrolling */
+  background-size: cover; /* ✅ Ensures it fills the screen */
+  background-color: #121212; /* Fallback color */
 }
 
 .ticker-tape-animation {
@@ -78,6 +79,35 @@ body {
 .font-segoe {
   font-family: var(--font-segoe);
 }
+@keyframes toast-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes toast-leave {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+.animate-enter {
+  animation: toast-enter 0.3s ease-out forwards;
+}
+
+.animate-leave {
+  animation: toast-leave 0.2s ease-in forwards;
+}
 
 .ql-toolbar.ql-snow,
 .ql-container.ql-snow {
@@ -93,4 +123,15 @@ body {
 .ql-snow .ql-fill {
   color: #fff !important;
   stroke: #ffffff !important;
+}
+
+/* ✅ Hide scrollbar but allow scrolling */
+.hide-scrollbar {
+  overflow-y: auto;            /* enable vertical scroll */
+  scrollbar-width: none;       /* Firefox */
+  -ms-overflow-style: none;    /* IE and Edge */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;               /* Chrome, Safari */
 }

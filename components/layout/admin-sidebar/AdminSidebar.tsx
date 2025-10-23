@@ -1,9 +1,12 @@
 "use client";
 
-import { LayoutGrid, Users, BookOpen, Settings, Lock, FileText, HelpCircle, Mail, DollarSign, X } from "lucide-react"; // 👈 Added 'X' icon
+import { LayoutGrid, Users, BookOpen, Settings, Lock, FileText, HelpCircle, Mail, DollarSign, X, User, Shield, LogOut } from "lucide-react"; // 👈 Added 'X' icon
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { UniversalContainer } from "@/components/ui/UniversalContainer";
+import { createPortal } from "react-dom";
 
 type SidebarLinkProps = {
     href: string;
@@ -34,7 +37,19 @@ type AdminSidebarProps = {
 };
 
 export const AdminSidebar = ({ isOpen, setIsOpen }: AdminSidebarProps) => {
-    const currentPath = usePathname();
+    const currentPath = usePathname(); const [open, setOpen] = useState(false);
+
+    const ref = useRef<HTMLDivElement>(null);
+    // Close on outside click
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (ref.current && !ref.current.contains(e.target as Node)) {
+                setOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     const navItems = [
         {
@@ -57,7 +72,7 @@ export const AdminSidebar = ({ isOpen, setIsOpen }: AdminSidebarProps) => {
             icon: Users,
             isActive: currentPath.startsWith("/admin/users"),
         },
-        {
+        { 
             name: "News Letter",
             href: "/admin/newsletter",
             icon: Mail,
@@ -144,9 +159,9 @@ export const AdminSidebar = ({ isOpen, setIsOpen }: AdminSidebarProps) => {
                     </SidebarLink>
                 </nav>
 
-                <div className="mt-auto pt-4 space-y-4">
+                <div className="mt-auto pt-4 space-y-4 relative" ref={ref}>
                     {/* User Profile Card */}
-                    <div className="p-2 flex items-center gap-3 bg-white/5 rounded-lg">
+                    <div className="p-2 flex items-center gap-3 bg-white/5 rounded-lg cursor-pointer" onClick={() => setOpen(!open)}>
                         <Image
                             src="/svg/profile.svg"
                             alt="Admin User"
@@ -159,6 +174,55 @@ export const AdminSidebar = ({ isOpen, setIsOpen }: AdminSidebarProps) => {
                             <span className="text-xs text-gray-400">admin@dailyblock.io</span>
                         </div>
                     </div>
+                    {/* ✅ Dropdown Menu */}
+                    {open &&
+                        typeof window !== "undefined" &&
+                        createPortal(
+                            <UniversalContainer
+                                size="sm"
+                                className="absolute bottom-[74px] left-[20px] w-[230px] p-2
+                                            bg-gradient-to-br from-[#121212] to-[#141B1F]
+                                            border border-[#303036] rounded-[12px]
+                                            shadow-lg backdrop-blur-[4px] z-[9999]"
+                            >
+                                <div className="flex flex-col py-2">
+                                    <span
+                                        className={`text-[#F8FAFC] font-[600] text-[14px] leading-[20px] py-2 rounded-md hover:bg-white/5 font-segoe  px-6`}
+                                    >
+                                        My Account
+                                    </span>
+                                    <div className="border-t border-[#303036] my-1 w-full" />
+                                    <button
+                                        className={`text-[#F8FAFC] font-[600] flex items-center gap-1.5 text-[14px] leading-[20px] py-2 rounded-md hover:bg-white/5 font-segoe text-left  px-6`}
+                                    >
+                                        <User size={16} /> <span> Profile</span>
+                                    </button>
+                                    <div className="border-t border-[#303036] my-1 w-full" />
+                                    <button
+                                        className={`text-[#F8FAFC] font-[600] flex items-center gap-1.5 text-[14px] leading-[20px] py-2 rounded-md hover:bg-white/5 font-segoe text-left  px-6`}
+                                    >
+                                        <Settings size={16} /> <span> Settings</span>
+                                    </button>
+                                    <div className="border-t border-[#303036] my-1 w-full" />
+                                    <button
+                                        className={`text-[#F8FAFC] font-[600] flex items-center gap-1.5 text-[14px] leading-[20px] py-2 rounded-md hover:bg-white/5 font-segoe text-left  px-6`}
+                                    >
+                                        <Shield size={16} /> <span> Admin Panel</span>
+                                    </button>
+                                    <div className="border-t border-[#303036] my-1" />
+
+
+                                    <button
+                                        className={`text-[#DC2828] font-[600] flex items-center gap-1.5   text-[14px] leading-[20px] py-2 rounded-md hover:bg-white/5 font-segoe text-left  px-6`}
+                                    >
+                                        <LogOut />   Log out
+                                    </button>
+                                </div>
+                            </UniversalContainer>,
+                            document.body
+                        )}
+
+
                 </div>
             </aside>
         </>

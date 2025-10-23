@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { X, Check } from 'lucide-react';
 import CircularProgress from '../ui/CircularProgressBar';
+import Image from 'next/image';
 
 interface ProjectRowProps {
     status: 'Presale/Whitelist' | 'Active' | 'Upcoming' | 'Past';
@@ -23,7 +24,15 @@ export const ProjectRow = ({ project, date, launchpad, fundRaised }: Omit<Projec
 
             </div>
             <div className="col-span-2 flex items-center space-x-3 text-white">
-                <div className="w-8 h-8 rounded-full bg-gray-600 flex-shrink-0"></div>
+                <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+                    <Image
+                        src="/profile.jpg"
+                        alt="Profile"
+                        width={32}
+                        height={32}
+                        className="object-cover w-full h-full"
+                    />
+                </div>
                 <p className=" font-lato font-semibold tracking-tight">{project}</p>
             </div>
 

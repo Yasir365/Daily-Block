@@ -4,6 +4,7 @@ import Image from 'next/image'
 import React, { useState } from 'react'
 import { ProjectRow } from '../ProjectCard/ProjectRow';
 import Link from 'next/link';
+import { NewTableRow } from '../ProjectCard/NewTableRow';
 
 const columns = [
     { key: "score", label: "Score" },
@@ -11,10 +12,10 @@ const columns = [
     { key: "start", label: "Start" },
     { key: "end", label: "End" },
     { key: "industry", label: "Industry" },
-    { key: "btn", label: "" },
-    { key: "coin", label: "" },
     { key: "launchpad", label: "Launch Pad" },
     { key: "totalRaised", label: "Total Raised" },
+    { key: "faq", label: "FAQ's" },
+    { key: "discussion", label: "Discussion" },
 ];
 
 const mockProjectData = [
@@ -54,42 +55,34 @@ const UserDataTableDiv = ({ title }: { title: string }) => {
                     <Link href='/user/add-coin' className='font-bold'>Add New Coin</Link>
                 </span>
             </div>
-            <div className="bg-brand-glass p-6 md:p-8 rounded-2xl shadow-xl">
+            <div className="bg-brand-glass/90 p-4 md:p-6 rounded-2xl shadow-lg border border-gray-700/50 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">
+                <div className="min-w-[900px] md:min-w-full">
+                    {/* Table Header */}
+                    <div className="grid grid-cols-11 items-center p-3 border-b border-gray-600/40 text-gray-300 text-xs md:text-sm font-semibold uppercase tracking-wide">
+                        {columns.map((col, i) => {
+                            const colSpan = i === 5 || i === 1 ? 2 : 1;
 
-                {/* --- 3. Table Header (Using Grid for alignment) --- */}
-                <div className="grid grid-cols-12 items-center p-4 border-b-2 border-gray-700 text-gray-300 font-semibold text-xs uppercase select-none">
-                    {columns.map((col, i) => {
-                        const colSpan = i === 0 ? 1 : i === 1 ? 2 : i === 5 ? 2 : i === 6 ? 2 : 1
-
-
-                        return (
-                            <div
-                                key={col.key}
-                                className={`col-span-${colSpan} flex items-center gap-1 cursor-pointer group`}
-                                onClick={() => handleSort(col.key)}
-                            >
-                                {col.label && (<span className={`flex gap-2 items-center w-full ${i === 7 || i === 8 ? "justify-start" : "justify-center"} `}>
+                            return (
+                                <div
+                                    key={col.key}
+                                    className={`col-span-${colSpan} flex items-center justify-center gap-1 cursor-pointer group`}
+                                    onClick={() => handleSort(col.key)}
+                                >
                                     <span className="group-hover:text-white transition">{col.label}</span>
-                                    <ArrowUpDown
-                                        size={14}
-                                        className={`transition ${sortConfig.key === col.key
-                                            ? "text-blue-400"
-                                            : "text-gray-600 group-hover:text-gray-400"
-                                            }`}
-                                    />
-                                </span>)}
-                            </div>
-                        )
-                    })}
-                </div>
+                                </div>
+                            );
+                        })}
+                    </div>
 
-                {/* --- 4. Table Rows --- */}
-                <div className="divide-y divide-gray-700/50">
-                    {mockProjectData.map((data, index) => (
-                        <ProjectRow key={index} {...data} />
-                    ))}
+                    {/* Table Rows */}
+                    <div className="divide-y divide-gray-700/30">
+                        {mockProjectData.map((data, index) => (
+                            <NewTableRow key={index} {...data} />
+                        ))}
+                    </div>
                 </div>
             </div>
+
         </div>
     )
 }

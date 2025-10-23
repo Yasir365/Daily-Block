@@ -1,3 +1,4 @@
+import { CustomToast } from "@/components/ui/ReactToast";
 import { MoveUpRight } from "lucide-react"
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -7,7 +8,13 @@ export const ForgetForm = () => {
 
     const submitForm = (e: React.FormEvent) => {
         e.preventDefault();
-        toast.success("Code sent successfully!");
+        toast.custom((t) => (
+            <CustomToast
+                t={t}
+                status="Success"
+                message="Code sent successfully!"
+            />
+        ));
         router.push("/auth/verify-otp");
     };
 

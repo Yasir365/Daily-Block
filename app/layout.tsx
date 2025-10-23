@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import LayoutWrapper from "@/providers/Layout";
 import { Titillium_Web, Lato, Unbounded, Mulish, Inter } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "DailyBlock",
@@ -42,7 +43,7 @@ const inter = Inter({
   display: "swap",
 });
 export default function RootLayout({
-  children,
+  children, 
 }: {
   children: React.ReactNode;
 }) {
@@ -50,6 +51,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${titilliumWeb.className} ${lato.variable} min-h-screen flex flex-col`}>
         <LayoutWrapper>{children}</LayoutWrapper>
+        <Toaster position="top-right" />
+
       </body>
     </html>
   );

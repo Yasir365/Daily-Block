@@ -35,7 +35,7 @@ const MultiStepForm = () => {
     };
 
     return (
-        <div className="flex flex-col md:flex-row gap-8 md:gap-0 rounded-2xl p-4">
+        <div className="flex flex-col md:flex-row gap-8 md:gap-0 rounded-2xl">
             {/* Sidebar */}
             <div className="w-full md:w-1/4 hidden md:flex">
                 <ul className="relative space-y-6">
@@ -64,6 +64,39 @@ const MultiStepForm = () => {
                     ))}
                 </ul>
             </div>
+            <div className="w-full md:hidden flex flex-row justify-between items-start relative overflow-x-auto no-scrollbar py-6 px-2">
+                {/* Connecting Line */}
+                <div className="absolute top-[33px] left-10 right-0 h-[2px] w-[calc(100%-52px)] bg-gray-700 z-0" />
+
+                {steps.map((step, index) => (
+                    <div
+                        key={step.id}
+                        className="relative flex flex-col items-center flex-shrink-0 w-20 text-center z-10"
+                    >
+                        {/* Circle */}
+                        <div
+                            className={`w-5 h-5 rounded-full border-2 ${index < currentStep
+                                ? "border-brand-yellow bg-brand-yellow"
+                                : "border-gray-600 bg-gray-800"
+                                }`}
+                        ></div>
+
+                        {/* Step Title */}
+                        <h4
+                            className={`mt-3 text-[11px] font-semibold ${index < currentStep ? "text-white" : "text-gray-400"
+                                }`}
+                        >
+                            {step.title}
+                        </h4>
+
+                        {/* Step Description */}
+                        <p className="text-[10px] text-gray-500 leading-tight">{step.desc}</p>
+                    </div>
+                ))}
+            </div>
+
+
+
 
             {/* Main Content */}
             <div className="flex-1 w-full bg-brand-glass/50 rounded-md p-6 md:p-8 mx-auto max-w-[1600px] relative">
@@ -84,32 +117,36 @@ const MultiStepForm = () => {
                 )}
 
                 {/* Buttons */}
-                <div className="flex justify-between mt-8">
+                <div className="flex flex-col md:flex-row justify-between mt-8 gap-4 md:gap-0">
+                    {/* Back Button */}
                     {currentStep !== 1 && (
                         <button
                             onClick={handleBack}
                             disabled={currentStep === 1}
-                            className={`px-10 py-2 rounded-md text-sm font-medium bg-brand-glass text-brand-muted`}
+                            className="px-8 py-2 rounded-md text-sm font-medium bg-brand-glass text-brand-muted w-full md:w-auto"
                         >
                             Back
                         </button>
                     )}
 
-                    <div className="flex gap-3">
+                    {/* Right Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                         <button
                             onClick={handleClose}
-                            className="px-10 py-2 rounded-md text-sm font-medium bg-brand-glass text-brand-muted"
+                            className="px-8 py-2 rounded-md text-sm font-medium bg-brand-glass text-brand-muted w-full sm:w-auto"
                         >
                             Close
                         </button>
+
                         <button
                             onClick={currentStep === steps.length ? handleSubmit : handleNext}
-                            className={`px-6 py-2 rounded-md text-sm font-medium bg-brand-yellow text-black`}
+                            className="px-6 py-2 rounded-md text-sm font-medium bg-brand-yellow text-black w-full sm:w-auto"
                         >
                             {currentStep === steps.length ? "Submit For Approval" : "Next Step"}
                         </button>
                     </div>
                 </div>
+
             </div>
         </div>
     );

@@ -12,23 +12,44 @@ export const Sidebar = () => {
         { href: "/user/downloads", label: "Downloads" },
     ];
     return (
-        <aside className="flex h-fit flex-row md:flex-col w-full md:w-64 bg-brand-glass text-white rounded-lg">
-            <ul>
+        <aside className="w-full md:w-64 md:h-fit bg-brand-glass text-white rounded-lg">
+            <ul
+                className="
+      flex flex-row md:flex-col 
+      overflow-x-auto md:overflow-visible 
+      no-scrollbar
+      w-full
+    "
+            >
                 {links.map((link) => (
-                    <li key={link.href}>
+                    <li
+                        key={link.href}
+                        className="
+          flex-shrink-0 md:flex-shrink 
+          w-fit md:w-auto 
+        "
+                    >
                         <Link
                             href={link.href}
                             className={`
-                                block px-4 py-2 border-b border-brand-glass transition-colors duration-200
-                                ${pathname === link.href
+            block text-center md:text-left 
+            px-4 py-2
+            border-r md:border-r-0 md:border-b border-brand-glass
+            whitespace-nowrap
+            transition-colors duration-200
+            ${pathname === link.href
                                     ? "text-white bg-brand-primary rounded-md"
-                                    : "text-brand-muted hover:text-white hover:bg-brand-primary/20"}
-                            `}
+                                    : "text-brand-muted hover:text-white hover:bg-brand-primary/20"
+                                }
+          `}
                         >
                             {link.label}
                         </Link>
                     </li>
-                ))}  </ul >
-        </aside >
+                ))}
+            </ul>
+        </aside>
+
+
     );
 };

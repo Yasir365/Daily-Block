@@ -1,3 +1,4 @@
+import { CustomToast } from "@/components/ui/ReactToast";
 import { Input } from "antd";
 import { MoveUpRight } from "lucide-react"
 import Link from "next/link";
@@ -9,7 +10,13 @@ export const VerifyOtpForm = () => {
 
     const submitForm = (e: React.FormEvent) => {
         e.preventDefault();
-        toast.success("Code verified successfully!");
+        toast.custom((t) => (
+            <CustomToast
+                t={t}
+                status="Success"
+                message={" Code verified successfully!"}
+            />
+        ));
         router.push("/auth/reset-password");
     };
 
@@ -17,15 +24,15 @@ export const VerifyOtpForm = () => {
         <form className="space-y-6" onSubmit={submitForm}>
             <div>
                 <label htmlFor="email" className="text-sm font-medium text-brand-muted">Code</label>
-                {/* <input
-                    type="email"
-                    id="email"
-                    placeholder="Email"
-                    className="w-full p-3 mt-2 bg-brand-glass border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-yellow"
-                /> */}
-                <div className="w-full p-3 mt-2 bg-brand-glass border border-gray-600 rounded-xl flex justify-center">
-                    <Input.OTP length={5} formatter={(str) => str.toUpperCase()} className="flex justify-center" />
-
+                <div
+                    className="w-full  mt-2   "
+                >
+                    <Input.OTP
+                        id="otp"
+                        length={5}
+                        formatter={(str) => str.toUpperCase()}
+                        className="w-full text-center font-semibold tracking-widest "
+                    />
                 </div>
             </div>
 

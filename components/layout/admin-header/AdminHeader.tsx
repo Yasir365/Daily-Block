@@ -13,21 +13,23 @@ export const AdminHeader = ({ setIsSidebarOpen }: AdminHeaderProps) => {
         <header className="bg-brand-glass shadow p-4 flex justify-between items-center">
             <button
                 onClick={() => setIsSidebarOpen(true)}
-                className="lg:hidden p-2 text-white hover:text-brand-yellow transition-colors"
+                className="lg:hidden p-2 text-white hover:text-brand-yellow transition-colors cursor-pointer"
                 aria-label="Open sidebar"
             >
                 <Menu className="w-6 h-6" />
             </button>
 
             <InputField
+                lblHide={true}
                 label=""
                 name="search"
                 value=""
                 placeholder="Search..."
                 onChange={() => { }}
-                className="max-w-xs ml-4"
+                className="md:max-w-xs  w-full ml-4"
             />
             <Notifications />
+
         </header>
     );
 };

@@ -1,3 +1,4 @@
+import { CustomToast } from "@/components/ui/ReactToast";
 import { EyeOff, MoveUpRight } from "lucide-react"
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -8,7 +9,13 @@ export const ResetForm = () => {
 
     const submitForm = (e: React.FormEvent) => {
         e.preventDefault();
-        toast.success("Password reset successfully!");
+        toast.custom((t) => (
+            <CustomToast
+                t={t}
+                status="Success"
+                message={"Password reset successfully!"}
+            />
+        ));
         router.push("/auth/login");
     };
 

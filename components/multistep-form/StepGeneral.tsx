@@ -19,9 +19,11 @@ const StepGeneral: React.FC<Props> = ({ data, onChange }) => {
     const handleInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
         onChange(e.target.name, e.target.value);
 
-    const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) =>
-        onChange(e.target.name, e.target.value);
-
+    // const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) =>
+    //     onChange(e.target.name, e.target.value);
+    const handleSelect = (value: string, name: string) => {
+        onChange(name, value);
+    };
     const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] || null;
         onChange("icoIcon", file);
@@ -98,11 +100,15 @@ const StepGeneral: React.FC<Props> = ({ data, onChange }) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                 <SelectField
+                    btnClass="bg-brand-glass text-gray-800"
+                    dropBg="bg-[#545454] "
                     label="Know Your Customer (KYC)"
                     name="kyc"
                     options={tokenOptions}
                     value={data.kyc || "Yes"}
-                    onChange={handleSelect}
+                    // onChange={handleSelect}
+                    onChange={(value) => handleSelect(value, "kyc")}  // ✅ Correct: `value` is a string
+
                 />
                 <InputField
                     label="Know Your Customer (KYC)? Details"
@@ -148,12 +154,16 @@ const StepGeneral: React.FC<Props> = ({ data, onChange }) => {
                     onChange={handleInput}
                 />
                 <SelectField
+                    btnClass="bg-brand-glass text-gray-800"
+                    dropBg="bg-[#545454] "
                     label="Interest"
                     name="interest"
                     options={tokenOptions}
                     placeholder="Select Interest Level"
                     value={data.interest || "Neutral"}
-                    onChange={handleSelect}
+                    // onChange={handleSelect}
+                    onChange={(value) => handleSelect(value, "interest")}  // ✅ Correct: `value` is a string
+
                 />
                 <InputField
                     label="Token Role"

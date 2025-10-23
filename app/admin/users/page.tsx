@@ -2,11 +2,18 @@
 import DataTable from '@/components/admin/table/DataTable';
 import { TopHeader } from '@/components/admin/TopHeader'
 import StatusBadge from '@/components/ui/Badge';
-import { Ban, Edit, Funnel, Shield } from 'lucide-react';
+import InputField from '@/components/ui/Input';
+import SelectField from '@/components/ui/Select';
+import { UniversalContainer } from '@/components/ui/UniversalContainer';
+import { Ban, Edit, Funnel, Shield, X } from 'lucide-react';
 import Image from 'next/image'
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 const page = () => {
+    const [showFilter, setShowFilter] = useState(false);
+    const [data, setData] = useState({ status: "Neutral", launchpad: "All", raiseMin: "0", raiseMax: "0" });
+    const filterRef = useRef<HTMLDivElement>(null);
+
     const cards = [
         {
             title: "Total Listed ICOs",
@@ -106,16 +113,94 @@ const page = () => {
             status: "suspended",
         },
     ];
+
+    const tokenOptions = [
+        { value: "", label: "All Users" },
+        { value: "active", label: "Active Users" },
+        { value: "suspended", label: "Suspended" },
+    ];
+
+    const handleSelect = (value: string, name: string) => {
+        setData((prev) => ({ ...prev, [name]: value }));
+    };
+    // Close when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (filterRef.current && !filterRef.current.contains(e.target as Node)) {
+                setShowFilter(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
     return (
         <div className="flex flex-col gap-8  h-screen w-full   ">
             <TopHeader
                 pageName="Dashboard Overview"
                 pageDescription="Welcome back! Here's what's happening with DailyBlock today."
-            ><button className='font-inter font-semibold text-sm cursor-pointer leading-[20px] flex items-center justify-center gap-2 px-4 py-2 bg-[#3B3B3B] rounded-xl border border-[#2B2B31]'>
-                    <Funnel className='text-sm' />   Filters
-                </button>
+            >
+                <div className="relative" ref={filterRef}>
+                    <button
+                        onClick={() => setShowFilter(!showFilter)}
+                        className="font-inter font-semibold text-sm cursor-pointer leading-[20px] flex items-center justify-center gap-2 px-4 py-2 bg-[#3B3B3B] rounded-xl border border-[#2B2B31]"
+                    >
+                        <Funnel className="text-sm" /> Filters
+                    </button>
 
+                    {/* UniversalContainer Dropdown */}
+                    {showFilter && (
+                        <UniversalContainer
+                            size="lg"
+                            className="absolute right-0 mt-2  md:w-[500px]  w-[200px]   p-6 bg-gradient-to-br from-[#121212] to-[#141B1F]
+                                      border border-[#364349] rounded-[12px] shadow-[0_1px_2px_0_#0000000D] backdrop-blur-[4px] z-50"
+                        >
+                            {/* Close Button */}
+                            <div className="flex justify-end">
+                                <button onClick={() => setShowFilter(false)}>
+                                    <X className="w-5 h-5 text-gray-400 hover:text-white" />
+                                </button>
+                            </div>
+
+                            {/* Title */}
+                            <h2 className="mt-3 text-[#F8FAFC] font-inter font-semibold text-[18px] leading-[18px] tracking-[-0.45px]">
+                                Filter Users
+                            </h2>
+
+                            {/* Fields */}
+                            <div className="mt-6 space-y-8">
+                                <SelectField
+                                    label="Status"
+                                    name="status"
+                                    options={tokenOptions}
+                                    placeholder="Select status Level"
+                                    value={data.status}
+                                    lblClass='text-[14px] font-semibold leading-[14px] font-inter'
+                                    onChange={(e) => handleSelect(e, "status")} // ✅ fixed type error
+                                />
+
+
+                            </div>
+
+                            {/* Buttons */}
+                            <div className="flex md:justify-end justify-between gap-3 mt-8">
+                                <button
+                                    className="md:w-[72px] w-full h-[40px] rounded-[10px] border border-[#3B3B3B] cursor-pointer bg-[#3B3B3B] text-[#F8FAFC] text-[14px] font-semibold"
+                                    onClick={() => setData({ status: "Neutral", launchpad: "All", raiseMin: "0", raiseMax: "0" })}
+                                >
+                                    Reset
+                                </button>
+                                <button
+                                    className="md:w-[118px] w-full h-[40px] rounded-[10px] bg-[#FACC15] cursor-pointer text-black text-[14px] font-semibold"
+                                    onClick={() => setShowFilter(false)}
+                                >
+                                    Filter
+                                </button>
+                            </div>
+                        </UniversalContainer>
+                    )}
+                </div>
             </TopHeader>
+            {/* FILTER PANEL */}
 
             {/* Cards Section */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">

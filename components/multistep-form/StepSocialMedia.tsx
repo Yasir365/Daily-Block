@@ -24,6 +24,8 @@ const StepSocialMedia: React.FC<Props> = ({ data, onChange }) => {
                     placeholder='Set Facebook link url'
                     value={data.cryptoCoinName || ""}
                     onChange={handleInput}
+                    icon={<img src="/svg/social/round_fb.svg" alt="Facebook" className="w-5 h-5" />}
+                    iconPlace="right"
                     required
                 />
                 <InputField
@@ -32,6 +34,8 @@ const StepSocialMedia: React.FC<Props> = ({ data, onChange }) => {
                     placeholder='Set Linkedin link url'
                     value={data.coinAbbreviation || ""}
                     onChange={handleInput}
+                    icon={<img src="/svg/social/insta.svg" alt="Facebook" className="w-4 h-4" />}
+                    iconPlace="right"
                     required
                 />
                 <InputField
@@ -40,6 +44,8 @@ const StepSocialMedia: React.FC<Props> = ({ data, onChange }) => {
                     placeholder='Set Twitter link url'
                     value={data.coinAbbreviation || ""}
                     onChange={handleInput}
+                    icon={<img src="/svg/social/x.svg" alt="Facebook" className="w-5 h-5" />}
+                    iconPlace="right"
                     required
                 />
                 <InputField
@@ -47,6 +53,8 @@ const StepSocialMedia: React.FC<Props> = ({ data, onChange }) => {
                     name="githubLink"
                     placeholder='Set Github link url'
                     value={data.coinAbbreviation || ""}
+                    icon={<img src="/svg/social/git.svg" alt="Facebook" className="w-5 h-5" />}
+                    iconPlace="right"
                     onChange={handleInput}
                     required
                 />
@@ -54,6 +62,8 @@ const StepSocialMedia: React.FC<Props> = ({ data, onChange }) => {
                     label="Telegram Link"
                     name="telegramLink"
                     placeholder='Set Telegram link url'
+                    icon={<img src="/svg/social/telegram.svg" alt="Facebook" className="w-5 h-5" />}
+                    iconPlace="right"
                     value={data.coinAbbreviation || ""}
                     onChange={handleInput}
                     required
@@ -63,6 +73,8 @@ const StepSocialMedia: React.FC<Props> = ({ data, onChange }) => {
                     name="mediumLink"
                     placeholder='Set Medium link url'
                     value={data.coinAbbreviation || ""}
+                    icon={<img src="/svg/social/medium.svg" alt="Facebook" className="w-5 h-5" />}
+                    iconPlace="right"
                     onChange={handleInput}
                     required
                 />
@@ -71,6 +83,8 @@ const StepSocialMedia: React.FC<Props> = ({ data, onChange }) => {
                     name="bitcoinLink"
                     placeholder='Set Bitcoin link url'
                     value={data.coinAbbreviation || ""}
+                    icon={<img src="/svg/social/bitcoin.svg" alt="Facebook" className="w-5 h-5" />}
+                    iconPlace="right"
                     onChange={handleInput}
                     required
                 />
@@ -78,6 +92,8 @@ const StepSocialMedia: React.FC<Props> = ({ data, onChange }) => {
                     label="YouTube Link"
                     name="youtubeLink"
                     placeholder='Set YouTube link url'
+                    icon={<img src="/svg/social/youtube.svg" alt="Facebook" className="w-5 h-5" />}
+                    iconPlace="right"
                     value={data.coinAbbreviation || ""}
                     onChange={handleInput}
                     required

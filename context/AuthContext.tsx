@@ -1,4 +1,5 @@
 "use client";
+import { CustomToast } from "@/components/ui/ReactToast";
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
 
@@ -61,13 +62,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const login = (userData: User) => {
         setUserState(userData);
         setStoredUser(userData);
-        toast.success("Welcome back!");
+        toast.custom((t) => (
+            <CustomToast
+                t={t}
+                status="Success"
+                message={"Welcome back!"}
+            />
+        ));
     };
 
     const logout = () => {
         setUserState(null);
         removeStoredUser();
-        toast.success("Logged out successfully.");
+        toast.custom((t) => (
+            <CustomToast
+                t={t}
+                status="Success"
+                message={"Logged out successfully."}
+            />
+        ));
     };
 
     const getUser = () => {
