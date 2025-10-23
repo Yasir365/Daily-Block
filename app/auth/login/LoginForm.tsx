@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation"
 import { Post_loginUser } from "@/lib/api/auth"
 import { useAuth } from "@/hooks/useAuth"
 import { CustomToast } from "@/components/ui/ReactToast"
+import InputField from "@/components/ui/Input"
 
 const LoginSchema = z.object({
     email: z.string().email({ message: "Invalid email address" }),
@@ -28,7 +29,7 @@ const loginUser = async (data: LoginFormData) => {
 export const LoginForm = () => {
     const router = useRouter()
     const { login } = useAuth()
-    const { register, handleSubmit, formState: { errors, isValid }, } = useForm<LoginFormData>({
+    const { register, handleSubmit, formState: { errors, isValid }, watch, setValue } = useForm<LoginFormData>({
         resolver: zodResolver(LoginSchema),
         mode: "onBlur",
         defaultValues: {
@@ -83,43 +84,42 @@ export const LoginForm = () => {
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
-                <label htmlFor="email" className="text-sm font-medium text-brand-muted">Email Address</label>
-                <input
+                {/* Email Field */}
+                <InputField
+                    label="Email Address"
+                    name="email"
                     type="email"
-                    id="email"
                     placeholder="Email"
-                    {...register("email")}
-                    className={`w-full p-3 mt-2 bg-brand-glass border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-yellow ${errors.email ? "border-red-500" : "border-gray-600"
-                        }`}
+                    value={watch("email")}
+                    onChange={(e) => setValue("email", e.target.value)}
+                    required
                     disabled={isLoading}
+                    inputClass={`w-full p-3 mt-2 bg-brand-glass border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-yellow ${errors.email ? "border-red-500" : "border-gray-600"}`}
+                    lblCls="text-sm font-medium text-brand-muted"
                 />
-                {errors.email && (
-                    <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
-                )}
+                {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>}
+
             </div>
 
             <div className="relative">
-                <label htmlFor="password" className="text-sm font-medium text-brand-muted">Password</label>
-                <input
+                {/* Password Field */}
+                <InputField
+                    label="Password"
+                    name="password"
                     type={showPassword ? "text" : "password"}
-                    id="password"
                     placeholder="........."
-                    {...register("password")}
-                    className={`w-full p-3 mt-2 bg-brand-glass border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-yellow ${errors.password ? "border-red-500" : "border-gray-600"
-                        }`}
+                    value={watch("password")}
+                    onChange={(e) => setValue("password", e.target.value)}
+                    required
                     disabled={isLoading}
+                    inputClass={`w-full p-3 mt-2 bg-brand-glass border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-yellow ${errors.password ? "border-red-500" : "border-gray-600"}`}
+                    lblCls="text-sm font-medium text-brand-muted"
+                    icon={showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+                    iconPlace="right"
+                    onIconClick={togglePasswordVisibility}
                 />
-                <button
-                    type="button"
-                    onClick={togglePasswordVisibility}
-                    className="absolute right-3 top-11 text-brand-muted hover:text-white transition-colors"
-                    disabled={isLoading}
-                >
-                    {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
-                </button>
-                {errors.password && (
-                    <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
-                )}
+                {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>}
+
             </div>
 
             <div className="flex items-center justify-between text-sm">
