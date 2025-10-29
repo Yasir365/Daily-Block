@@ -11,6 +11,19 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+    async headers() {
+    return [
+      {
+        source: "/ico/:path*",
+        headers: [
+          {
+            key: "Access-Control-Allow-Origin",
+            value: "*",
+          },
+        ],
+      },
+    ];
+  },
   // env: {
   //   NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
   //   NEXT_PUBLIC_API_PUBLIC_URL: process.env.NEXT_PUBLIC_API_PUBLIC_URL,

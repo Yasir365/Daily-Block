@@ -7,8 +7,8 @@ export const Sidebar = () => {
 
     const links = [
         { href: "/user/dashboard", label: "Dashboard" },
-        { href: "/user/ico-listing", label: "My ICO Listing" },
-        { href: "/user/submit-ico-listing", label: "Submit ICO Listing" },
+        { href: "/user/pending-ico-listing", label: "Pending ICO Listing" },
+        { href: "/user/rejected-ico-listing", label: "Rejected ICO Listing" },
         { href: "/user/downloads", label: "Downloads" },
     ];
     return (

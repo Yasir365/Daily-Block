@@ -28,7 +28,7 @@ const StepVideoPresentation: React.FC<Props> = ({ data, onChange }) => {
                     label="Video tour"
                     name="videoTour"
                     placeholder="Enter a YouTube link which contains the presentation of your coin"
-                    value={data.fundraisingGoal || ""}
+                    value={data.videoTour  || ""}
                     onChange={handleInput}
                 />
             </div>

@@ -6,6 +6,7 @@ import StepSocialMedia from "./StepSocialMedia";
 import StepTokenSupply from "./StepTokenSupply";
 import StepVideoPresentation from "./StepVideoPresentation";
 import FaqSection from "./FaqSection";
+import { useRouter } from "next/navigation";
 
 const steps = [
     { id: 1, title: "General", desc: "Details listed into the General Group" },
@@ -16,11 +17,33 @@ const steps = [
 ];
 
 const MultiStepForm = () => {
+    const router = useRouter();
     const [currentStep, setCurrentStep] = useState(1);
     const [formData, setFormData] = useState<any>({});
 
-    const handleNext = () => {
-        if (currentStep < steps.length) setCurrentStep(currentStep + 1);
+    const handleNext = async() => {
+        const formDataToSend = new FormData();
+        for (const key in formData) {
+        const value = formData[key];
+        if (value !== undefined && value !== null) {
+            if (typeof value === "object" && !(value instanceof File)) {
+                formDataToSend.append(key, JSON.stringify(value));
+            } else {
+                formDataToSend.append(key, value);
+            }
+        }
+        }
+
+        const response = await fetch("/api/ico/add", {
+            method: "POST",
+            body: formDataToSend
+        });
+        const result = await response.json();
+        if(result.success){
+            console.log("Successfully saved ", result.data);
+            handleChange("_id",result.data._id);
+            setCurrentStep(currentStep + 1)
+        }
     };
 
     const handleBack = () => {
@@ -28,7 +51,30 @@ const MultiStepForm = () => {
     };
 
     const handleClose = () => console.log("Form closed");
-    const handleSubmit = () => console.log("Final form data:", formData);
+    const handleSubmit = async() => {
+        const formDataToSend = new FormData();
+        for(const key in formData){
+            if(formData[key] !== undefined && formData[key] !== null ){
+                formDataToSend.append(key, formData[key])
+            }
+        }
+        console.log("Final form data:", formData);
+        const response = await fetch("/api/ico/add", {
+            method: "POST",
+            body: formDataToSend
+        });
+        const result = await response.json();
+        if(result.success){
+            console.log("Successfully saved ", result.data);
+            handleChange("_id",result.data._id);
+            setCurrentStep(currentStep + 1)
+            router.push("/user/dashboard");
+        }else {
+            console.error("Failed to save:", result.error);
+            alert("Error saving project: " + result.error);
+        }
+
+    } 
 
     const handleChange = (name: string, value: any) => {
         setFormData((prev: any) => ({ ...prev, [name]: value }));

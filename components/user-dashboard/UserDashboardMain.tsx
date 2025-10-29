@@ -68,8 +68,7 @@ const UserDashboardMain = () => {
                 </div>
             </div>
 
-            {/* User Data Table */}
-            <UserDataTableDiv title="My ICO Listings" />
+            <UserDataTableDiv title={"Verified ICO Listings"} status="verified" />
         </div>
     );
 };
