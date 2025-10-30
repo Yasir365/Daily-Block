@@ -1,5 +1,6 @@
 "use client";
 import { CustomToast } from "@/components/ui/ReactToast";
+import { useRouter } from "next/navigation";
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
 
@@ -8,6 +9,10 @@ interface User {
     id: string;
     email: string;
     name?: string;
+    type?: "admin" | "user" | "guest"; // 👈 Add this
+    status?: "active" | "inactive" | "banned";
+    lastLogin?: Date;
+
 }
 
 interface AuthContextType {
@@ -15,6 +20,8 @@ interface AuthContextType {
     isAuthenticated: boolean;
     login: (userData: User) => void;
     logout: () => void;
+    loading: boolean; // 👈 added
+
     getUser: () => User | null;
     setUser: (userData: User) => void;
 }
@@ -48,14 +55,19 @@ const useLocalStorage = () => {
 
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+    const router = useRouter(); // ✅ for navigation
+
     const { getStoredUser, setStoredUser, removeStoredUser } = useLocalStorage();
     const [user, setUserState] = useState<User | null>(null);
+    const [loading, setLoading] = useState(true); // 👈 added
 
     useEffect(() => {
         const initialUser = getStoredUser();
         if (initialUser) {
             setUserState(initialUser);
         }
+        setLoading(false); // 👈 once done loading
+
     }, [getStoredUser]);
 
 
@@ -69,6 +81,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 message={"Welcome back!"}
             />
         ));
+        // ✅ Redirect based on userType
+        if (userData.type === "admin") {
+            router.push("/admin");
+        } else if (userData.type === "user") {
+            router.push("/user");
+        } else {
+            router.push("/");
+        }
     };
 
     const logout = () => {
@@ -97,6 +117,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const contextValue = {
         user,
         isAuthenticated,
+        loading, // 👈 added
         login,
         logout,
         getUser,

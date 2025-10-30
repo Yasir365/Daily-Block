@@ -5,11 +5,14 @@ const FaqCard = ({
   faq,
   onChange,
   onRemove,
+  type = "edit",
 }: {
-  index: number;
+  index: string;
   faq: any;
-  onChange: (index: number, field: string, value: string) => void;
-  onRemove: (index: number) => void;
+  onChange: (index: string, field: string, value: string) => void;
+  onRemove: (index: string) => void;
+  type?: "edit" | "read"; // 👈 optional type prop
+
 }) => {
   return (
     <div className="w-full bg-[#0D0E1280] border border-[#21222C80] rounded-[12px] p-6 shadow-[0_1px_2px_0_#0000000D] relative flex flex-col gap-4">
@@ -19,23 +22,36 @@ const FaqCard = ({
       />
       <div className="flex flex-col gap-2 w-[95%]">
         <label className="font-semibold text-sm text-[#F8FAFC]">Question</label>
-        <input
-          type="text"
-          value={faq.question || ""}
-          onChange={(e) => onChange(index, "question", e.target.value)}
-          placeholder="Enter question..."
-          className="w-full bg-[#0D0E12] border border-[#21222C] rounded-[10px] px-3 py-2 text-white"
-        />
+
+        {type === "edit" ? (
+          <input
+            type="text"
+            value={faq.question || ""}
+            onChange={(e) => onChange(index, "question", e.target.value)}
+            placeholder="Enter question..."
+            className="w-full bg-[#0D0E12] border border-[#21222C] rounded-[10px] px-3 py-2 text-white"
+          />
+        ) : (
+          <p className="text-white bg-[#0D0E12] border border-[#21222C] rounded-[10px] px-3 py-2">
+            {faq.question || "No question available"}
+          </p>
+        )}
       </div>
 
       <div className="flex flex-col gap-2 w-[95%]">
         <label className="font-semibold text-sm text-[#F8FAFC]">Answer</label>
-        <textarea
-          value={faq.answer || ""}
-          onChange={(e) => onChange(index, "answer", e.target.value)}
-          placeholder="Enter answer..."
-          className="w-full bg-[#0D0E12] border border-[#21222C] rounded-[10px] px-3 py-2 text-white resize-none"
-        />
+        {type === "edit" ? (
+          <textarea
+            value={faq.answer || ""}
+            onChange={(e) => onChange(index, "answer", e.target.value)}
+            placeholder="Enter answer..."
+            className="w-full bg-[#0D0E12] border border-[#21222C] rounded-[10px] px-3 py-2 text-white resize-none"
+          />
+        ) : (
+          <p className="text-white bg-[#0D0E12] border border-[#21222C] rounded-[10px] px-3 py-2">
+            {faq.answer || "No answer available"}
+          </p>
+        )}
       </div>
     </div>
   );

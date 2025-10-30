@@ -1,9 +1,21 @@
+"use client"
 import { Files, ShieldCheck } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 import UserDataTableDiv from './UserDataTableDiv';
+import { useAuthContext } from '@/context/AuthContext';
 
 const UserDashboardMain = () => {
+    const { user, logout } = useAuthContext();
+    const handleLogout = async () => {
+        try {
+            await logout(); // wait for context to clear
+
+        } catch (err) {
+            console.error("Logout failed:", err);
+        }
+    };
+    console.log({ user })
     return (
         <div className="flex flex-col gap-6 w-full">
             {/* Header Section */}
@@ -12,8 +24,8 @@ const UserDashboardMain = () => {
                     <h1 className="text-lg sm:text-xl font-bold leading-snug">
                         Hello Zeeshan Vizz Web Solutions
                         <span className="text-sm font-normal text-gray-300">
-                            &nbsp;(not&nbsp;zeeshanvizzwebsolutions?&nbsp;
-                            <span className="text-brand-yellow cursor-pointer hover:underline">
+                            &nbsp;(not&nbsp;{user?.email}?&nbsp;
+                            <span className="text-brand-yellow cursor-pointer hover:underline" onClick={handleLogout}>
                                 Log out
                             </span>
                             )
@@ -46,18 +58,24 @@ const UserDashboardMain = () => {
 
                 <div className="flex flex-col gap-3 py-2">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                        <h3 className="text-xl sm:text-2xl font-bold break-all">Hello, jh**@**.com</h3>
+                        <h3 className="text-xl sm:text-2xl font-bold break-all">Hello, {user?.email}</h3>
                         <div className="flex items-center gap-2">
                             <p className="text-[13px] sm:text-[15px] opacity-85">Identification:</p>
-                            <span className="py-1 px-3 rounded-lg bg-[#16C78429]/80 text-[#00C288] flex items-center gap-1 text-[12px] font-semibold">
+                            <span
+                                className={`
+                                        py-1 px-3 rounded-lg flex items-center gap-1 text-[12px] font-semibold
+                                        ${user?.status !== "active" ? "bg-brand-red/20 text-brand-red" : "bg-[#16C78429]/80 text-[#00C288]"}
+                                    `}
+                            >
                                 <ShieldCheck className="w-4 h-4" />
-                                Verified
+                                {user?.status === "active" ? "Verified" : "Not active"}
                             </span>
+
                         </div>
                     </div>
 
                     <span className="text-[13px] sm:text-[15px] text-[#FFFFFFD9]/85">
-                        Last Login: 12-15-2024 16:13:15 USA
+                        Last Login: {user?.lastLogin ? new Date(user?.lastLogin).toLocaleString() : "N/A"}
                     </span>
 
                     <span className="flex items-center gap-2 bg-[#EFF2F529]/16 text-[#DFDFDF] px-3 py-2 text-[12px] rounded-md w-fit">
@@ -68,7 +86,7 @@ const UserDashboardMain = () => {
                 </div>
             </div>
 
-            <UserDataTableDiv title={"Verified ICO Listings"} status="verified" />
+            <UserDataTableDiv title={"Verified ICO Listings"} status="" />
         </div>
     );
 };

@@ -7,6 +7,7 @@ import { AdminSidebar } from "@/components/layout/admin-sidebar/AdminSidebar";
 import { AdminHeader } from "@/components/layout/admin-header/AdminHeader";
 import { Navbar } from "@/components/layout/navbar/Navbar";
 import { Footer } from "@/components/layout/footer/Footer";
+import { UserNavbar } from "@/components/layout/navbar/UserNavbar";
 
 const DESKTOP_BREAKPOINT = 1024;
 
@@ -21,6 +22,7 @@ const getInitialSidebarState = () => {
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const isAdminRoute = pathname.startsWith("/admin");
+    const isUserRoute = pathname.startsWith("/user");
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(getInitialSidebarState);
 
@@ -60,7 +62,19 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
             </Providers>
         );
     }
-
+    if (isUserRoute) {
+        return (
+            <>
+                <Providers>
+                    <UserNavbar />
+                    <main className="flex-grow">
+                        {children}
+                    </main>
+                    <Footer />
+                </Providers>
+            </>
+        );
+    }
     return (
         <>
             <Navbar />

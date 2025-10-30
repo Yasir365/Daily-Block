@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import LayoutWrapper from "@/providers/Layout";
 import { Titillium_Web, Lato, Unbounded, Mulish, Inter } from "next/font/google";
@@ -43,13 +44,13 @@ const inter = Inter({
   display: "swap",
 });
 export default function RootLayout({
-  children, 
+  children,
 }: {
   children: React.ReactNode;
 }) {
   return (
     <html lang="en">
-      <body className={`${titilliumWeb.className} ${lato.variable} min-h-screen flex flex-col`}>
+      <body className={`${titilliumWeb.className} ${lato.variable} min-h-screen flex flex-col`} suppressHydrationWarning>
         <LayoutWrapper>{children}</LayoutWrapper>
         <Toaster position="top-right" />
 

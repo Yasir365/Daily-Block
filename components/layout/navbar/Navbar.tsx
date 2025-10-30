@@ -5,7 +5,9 @@ import { Search, Star, Menu, UserRoundPen, X } from 'lucide-react';
 import Notifications from '@/components/dropdowns/Notification';
 
 
+
 export const Navbar = () => {
+
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const navLinkStyle = "text-sm font-medium hover:text-brand-yellow transition-colors block py-2 px-4";

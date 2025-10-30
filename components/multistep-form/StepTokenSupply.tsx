@@ -1,13 +1,12 @@
+"use client";
+
+import { useFormContext, Controller } from "react-hook-form";
 import InputField from "../ui/Input";
+import { stepTokenSupplySchema } from "@/schemas/tokenSupplySchema";
 
-interface Props {
-    data: any;
-    onChange: (name: string, value: any) => void;
-}
+const StepTokenSupply = () => {
+    const { control, formState: { errors } } = useFormContext();
 
-const StepTokenSupply: React.FC<Props> = ({ data, onChange }) => {
-    const handleInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-        onChange(e.target.name, e.target.value);
     return (
         <div>
             <h2 className="text-xl font-semibold text-white mb-2">Token Supply</h2>
@@ -16,51 +15,33 @@ const StepTokenSupply: React.FC<Props> = ({ data, onChange }) => {
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                <InputField
-                    label="Fundraising goal"
-                    name="fundraisingGoal"
-                    placeholder="Enter Fundraising Goal (Eg: 20000000 BTC)"
-                    value={data.fundraisingGoal || ""}
-                    onChange={handleInput}
-                />
-                <InputField
-                    label="Sold on pre-sale"
-                    name="soldOnPreSale"
-                    placeholder="Enter Sold on pre-sale (Eg: 40000000 BTC)"
-                    value={data.soldOnPreSale || ""}
-                    onChange={handleInput}
-                />
-                <InputField
-                    label="Total Supply"
-                    name="totalSupply"
-                    placeholder="Enter Total Number of Tokens (Eg: 40000000 BTC)"
-                    value={data.totalSupply || ""}
-                    onChange={handleInput}
-                />
-                <InputField
-                    label="Circulating Supply"
-                    name="circulatingSupply"
-                    placeholder="Enter Available for Token Sale (Eg: 35000000 BTC)"
-                    value={data.circulatingSupply || ""}
-                    onChange={handleInput}
-                />
-                <InputField
-                    label="Team Tokens"
-                    name="teamTokens"
-                    placeholder="Enter Available Tokens kept for the team (Eg: 5000000 BTC)"
-                    value={data.teamTokens || ""}
-                    onChange={handleInput}
-                />
-                <InputField
-                    label="Other Tokens"
-                    name="otherTokens"
-                    placeholder="Enter Available Tokens kept for reasons (Eg: 2000000 BTC)"
-                    value={data.otherTokens || ""}
-                    onChange={handleInput}
-                />
+                {[
+                    { label: "Fundraising goal", name: "fundraisingGoal", placeholder: "Enter Fundraising Goal (Eg: 20000000 BTC)" },
+                    { label: "Sold on pre-sale", name: "soldOnPreSale", placeholder: "Enter Sold on pre-sale (Eg: 40000000 BTC)" },
+                    { label: "Total Supply", name: "totalSupply", placeholder: "Enter Total Number of Tokens (Eg: 40000000 BTC)" },
+                    { label: "Circulating Supply", name: "circulatingSupply", placeholder: "Enter Available for Token Sale (Eg: 35000000 BTC)" },
+                    { label: "Team Tokens", name: "teamTokens", placeholder: "Enter Available Tokens kept for the team (Eg: 5000000 BTC)" },
+                    { label: "Other Tokens", name: "otherTokens", placeholder: "Enter Available Tokens kept for reasons (Eg: 2000000 BTC)" },
+                ].map((field) => (
+                    <Controller
+                        key={field.name}
+                        name={field.name}
+                        control={control}
+                        render={({ field: { value, onChange } }) => (
+                            <InputField
+                                label={field.label}
+                                name={field.name}
+                                placeholder={field.placeholder}
+                                value={value || ""}
+                                onChange={(e) => onChange(e.target.value)}
+                                error={errors[field.name]?.message as string} // display error message
+                            />
+                        )}
+                    />
+                ))}
             </div>
         </div>
     );
-}
+};
 
 export default StepTokenSupply;

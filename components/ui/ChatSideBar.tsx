@@ -6,13 +6,96 @@ import { useEffect, useRef, useState } from "react";
 import { NotificationItem } from "./NotificationItem";
 import Image from "next/image";
 import { ChatItem } from "./ChatItem";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export default function ChatSideBar({ open, setOpen }: { open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>> }) {
-    const [messages, setMessages] = useState<
-        { id: number; title: string; desc: string; time: string; isAdmin?: boolean }[]
-    >([]);
+
+interface Message {
+    _id?: string;
+    senderId?: string;
+    message: string;
+    createdAt: string;
+    senderRole?: string;
+    isOptimistic?: boolean; // 💡 for temporary messages
+}
+
+export default function ChatSideBar({ open, setOpen, chatId, setChatId }: { open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>>, chatId?: any, setChatId?: React.Dispatch<React.SetStateAction<string>> }) {
+    // const [messages, setMessages] = useState<
+    //     { id: number; title: string; desc: string; time: string; isAdmin?: boolean }[]
+    // >([]);
+    const queryClient = useQueryClient();
+    console.log({ chatId })
     const [newMessage, setNewMessage] = useState("");
     const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    // 🔹 Fetch messages for the selected chatId (ICO)
+    const {
+        data: messages = [],
+        isLoading,
+        isFetching,
+    } = useQuery<Message[]>({
+        queryKey: ["messages", chatId._id],
+        queryFn: async () => {
+            if (!chatId._id) return [];
+            const res = await fetch(`/api/messages/${chatId._id}`);
+            if (!res.ok) throw new Error("Failed to fetch messages");
+            const json = await res.json();
+            return json.messages || [];
+        },
+        enabled: !!chatId._id && open, // only fetch if sidebar is open and chatId is set
+    });
+
+    console.log({ messages })
+    // 🔹 Mutation for sending new message
+    const sendMessage = useMutation({
+        mutationFn: async (messageText: string) => {
+            const res = await fetch(`/api/messages/${chatId._id}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: messageText }),
+            });
+            if (!res.ok) throw new Error("Failed to send message");
+            return res.json();
+        },
+
+        // 💡 Optimistic UI
+        onMutate: async (messageText: string) => {
+            if (!chatId._id) return;
+            await queryClient.cancelQueries({ queryKey: ["messages", chatId._id] });
+
+            const previousMessages =
+                queryClient.getQueryData<Message[]>(["messages", chatId._id]) || [];
+
+            const optimisticMsg: Message = {
+                _id: Math.random().toString(36).substring(2, 9), // temp ID
+                message: messageText,
+                senderRole: "admin",
+                createdAt: new Date().toISOString(),
+                isOptimistic: true,
+            };
+
+            queryClient.setQueryData<Message[]>(["messages", chatId._id], [
+                ...previousMessages,
+                optimisticMsg,
+            ]);
+
+            setNewMessage("");
+            return { previousMessages };
+        },
+
+        onError: (err, newMessage, context) => {
+            if (context?.previousMessages) {
+                queryClient.setQueryData(["messages", chatId._id], context.previousMessages);
+            }
+        },
+
+        onSuccess: (data) => {
+            queryClient.setQueryData<Message[]>(["messages", chatId._id], (old = []) => {
+                // Replace optimistic message with real one
+                const filtered = old.filter((m) => !m.isOptimistic);
+                return [...filtered, data.message];
+            });
+        },
+    });
 
     // scroll to bottom on new message
     useEffect(() => {
@@ -21,18 +104,8 @@ export default function ChatSideBar({ open, setOpen }: { open: boolean, setOpen:
 
     // handle sending message
     const handleSend = () => {
-        if (!newMessage.trim()) return;
-
-        const newMsg = {
-            id: messages.length + 1,
-            title: "You",
-            desc: newMessage.trim(),
-            time: "Just now",
-            isAdmin: false,
-        };
-
-        setMessages((prev) => [...prev, newMsg]);
-        setNewMessage("");
+        if (!newMessage.trim() || sendMessage.isPending) return;
+        sendMessage.mutate(newMessage.trim());
     };
 
     // handle enter / shift+enter
@@ -57,7 +130,7 @@ export default function ChatSideBar({ open, setOpen }: { open: boolean, setOpen:
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            onClick={() => setOpen(false)} // click outside to close
+                            onClick={() => { setChatId?.(''); setOpen(false); }} // click outside to close
                         />
 
                         {/* Sidebar */}
@@ -83,7 +156,7 @@ export default function ChatSideBar({ open, setOpen }: { open: boolean, setOpen:
                             </button>
 
                             {/* Header */}
-                            <div className="flex flex-col pb-4  px-6 gap-6 ">
+                            <div className="flex flex-col pb-4  px-6 gap-6 mt-4">
                                 <span className="flex gap-4">
                                     <div className="w-16 h-16 rounded-full overflow-hidden">
                                         <Image
@@ -94,12 +167,13 @@ export default function ChatSideBar({ open, setOpen }: { open: boolean, setOpen:
                                             className="object-cover"
                                         />
                                     </div>
-                                    <span className="flex flex-col gap-3 pt-1">
+                                    <span className="flex flex-col gap-3 pt-1 capitalize">
                                         <label className="font-lato font-semibold text-[14.75px] leading-[18.43px] align-middle text-white">
-                                            Label Text
+                                            {chatId?.userId?.firstName + " " + chatId?.userId?.lastName || "Crypto Coin Owner Name"}
                                         </label>
                                         <span className="inline-block py-0.5 px-4 rounded-lg bg-[#4C4C4C] opacity-100">
-                                            Span Text
+                                            {chatId?.cryptoCoinName || "Crypto Coin Name"}
+
                                         </span>
                                     </span>
                                 </span>
@@ -108,7 +182,7 @@ export default function ChatSideBar({ open, setOpen }: { open: boolean, setOpen:
                                         Active discussion
                                     </span>
                                     <span className="inline-block bg-brand-yellow/20   border border-brand-yellow text-brand-yellow rounded-full py-1 px-3 opacity-100">
-                                        Active discussion
+                                        5 New Messages
                                     </span>
                                 </span>
                             </div>
@@ -122,11 +196,11 @@ export default function ChatSideBar({ open, setOpen }: { open: boolean, setOpen:
                                 ) : (
                                     messages.map((msg) => (
                                         <ChatItem
-                                            key={msg.id}
-                                            title={msg.title}
-                                            desc={msg.desc}
-                                            time={msg.time}
-                                            isAdmin={msg.isAdmin}
+                                            key={msg._id}
+                                            title={msg.message}
+                                            desc={msg.message}
+                                            time={msg.createdAt}
+                                            isAdmin={msg.senderRole === "admin"}
                                         />
                                     ))
                                 )}

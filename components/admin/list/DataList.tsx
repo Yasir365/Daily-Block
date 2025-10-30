@@ -4,21 +4,30 @@ import { Edit, Ban, FileText, SquarePen, Trash2 } from "lucide-react";
 import Wrapper from "../layoutCard/Wrapper";
 import StatusBadge from "@/components/ui/Badge";
 
-type TableColumn = {
-    key: string;
-    label: string;
-    render?: (value: any, row: any) => React.ReactNode;
-    className?: string;
-};
-
-type DataTableProps = {
+type DataListProps = {
     title?: string;
     desc?: string;
-    children?: React.ReactNode;
     data: any[];
+    children?: React.ReactNode;
+    onDelete?: (id: string) => void;
+    onSearch?: (value: string) => void;
+    search?: string;
+    isLoading?: boolean;
+    onEdit?: (blog: any) => void;
+    mode?: "create" | "edit";
+
 };
 
-export default function DataList({ title = "Table", desc, children, data }: DataTableProps) {
+export default function DataList({
+    title,
+    desc,
+    data,
+    children,
+    onDelete,
+    isLoading, onEdit
+}: DataListProps) {
+    if (isLoading) return <p className="text-gray-400 p-4">Loading blogs...</p>;
+
     return (
 
         <Wrapper title={title} desc={desc} children2={children}>
@@ -26,11 +35,10 @@ export default function DataList({ title = "Table", desc, children, data }: Data
                 {data.map((row, i) => (
                     <ListDiv
                         key={i}
-                        title={row.title}
-                        desc={row.desc}
-                        date={row.date}
-                        views={row.views}
-                        status={row.status}
+                        {...row}
+                        onDelete={() => onDelete && onDelete(row._id)}
+                        onEdit={() => onEdit && onEdit(row)}
+
                     />
                 ))}
             </div>
@@ -42,9 +50,12 @@ type propsList = {
     desc: string,
     date: string,
     views: string,
-    status: string
+    status: string,
+    onDelete?: () => void
+    onEdit?: () => void
+
 }
-const ListDiv = ({ title, desc, date, views, status }: propsList) => {
+const ListDiv = ({ title, desc, date, views, status, onDelete, onEdit }: propsList) => {
     return <div className="flex flex-col p-4 sm:p-6 gap-3 border border-[#21222C] rounded-xl bg-[#2f2f2f20] backdrop-blur-[4px] hover:bg-[#3a3a3a40] transition-all">
         {/* Header Row */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
@@ -56,10 +67,12 @@ const ListDiv = ({ title, desc, date, views, status }: propsList) => {
             </div>
             <div className="flex gap-4">
                 <SquarePen
+                    onClick={onEdit}
                     className="cursor-pointer text-gray-300 hover:text-white"
                     size={18}
                 />
                 <Trash2
+                    onClick={onDelete}
                     className="text-brand-red cursor-pointer hover:text-red-400"
                     size={18}
                 />

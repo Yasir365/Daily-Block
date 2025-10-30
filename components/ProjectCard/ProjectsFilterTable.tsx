@@ -1,6 +1,6 @@
 "use client"
 import { ArrowUpDown, ChevronDown, Search } from 'lucide-react';
-import { ProjectRow } from './ProjectRow';
+import { ProjectRow, ProjectRowProps } from './ProjectRow';
 import { Switch } from 'antd';
 import SwitchGroup from '../ui/SwitchGroup';
 import { useState } from 'react';
@@ -10,15 +10,86 @@ const TABS = ['Presale/Whitelist', 'Active', 'Upcoming', 'Past'];
 // Mock filter options (using placeholder data)
 const FILTER_OPTIONS = ['Industry', 'Type'];
 
-const mockProjectData = [
-    { project: "Antidote", date: "22 Aug", fundRaised: "$4,000,000", launchpad: "" },
-    { project: "Antidote", date: "22 Aug", fundRaised: "$4,000,000", launchpad: "" },
-    { project: "Antidote", date: "22 Aug", fundRaised: "$4,000,000", launchpad: "" },
-    { project: "Antidote", date: "22 Aug", fundRaised: "$4,000,000", launchpad: "" },
-    { project: "Antidote", date: "22 Aug", fundRaised: "$4,000,000", launchpad: "" },
-    { project: "Antidote", date: "22 Aug", fundRaised: "$4,000,000", launchpad: "" },
-    { project: "Antidote", date: "22 Aug", fundRaised: "$4,000,000", launchpad: "" },
+const mockProjectData: ProjectRowProps[] = [
+    {
+        project: "Antidote",
+        startdate: "22 Aug",
+        enddate: "22 Aug",
+        totalsupply: "100,000,000",
+        price: "$0.10",
+        fundRaised: "$4,000,000",
+        launchpad: "",
+        symbol: "$",
+        status: "verified"
+    },
+    {
+        project: "Antidote",
+        startdate: "22 Aug",
+        enddate: "22 Aug",
+        totalsupply: "100,000,000",
+        price: "$0.10",
+        fundRaised: "$4,000,000",
+        launchpad: "",
+        symbol: "$",
+        status: "verified"
+    },
+    {
+        project: "Antidote",
+        startdate: "22 Aug",
+        enddate: "22 Aug",
+        totalsupply: "100,000,000",
+        price: "$0.10",
+        fundRaised: "$4,000,000",
+        launchpad: "",
+        symbol: "$",
+        status: "verified"
+    },
+    {
+        project: "Antidote",
+        startdate: "22 Aug",
+        enddate: "22 Aug",
+        totalsupply: "100,000,000",
+        price: "$0.10",
+        fundRaised: "$4,000,000",
+        launchpad: "",
+        symbol: "$",
+        status: "verified"
+    },
+    {
+        project: "Antidote",
+        startdate: "22 Aug",
+        enddate: "22 Aug",
+        totalsupply: "100,000,000",
+        price: "$0.10",
+        fundRaised: "$4,000,000",
+        launchpad: "",
+        symbol: "$",
+        status: "verified"
+    },
+    {
+        project: "Antidote",
+        startdate: "22 Aug",
+        enddate: "22 Aug",
+        totalsupply: "100,000,000",
+        price: "$0.10",
+        fundRaised: "$4,000,000",
+        launchpad: "",
+        symbol: "$",
+        status: "verified"
+    },
+    {
+        project: "Antidote",
+        startdate: "22 Aug",
+        enddate: "22 Aug",
+        totalsupply: "100,000,000",
+        price: "$0.10",
+        fundRaised: "$4,000,000",
+        launchpad: "",
+        symbol: "$",
+        status: "verified"
+    }
 ];
+
 
 const handleSwitchChange = (activeSwitches: string[]) => {
     console.log("Active switches:", activeSwitches);

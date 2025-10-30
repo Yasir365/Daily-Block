@@ -1,31 +1,35 @@
 import { Plus, X } from "lucide-react";
-import InputField from "../ui/Input";
 import FaqCard from "../ui/FaqCard";
+import { useFieldArray, useFormContext } from "react-hook-form";
 
-interface Props {
-  data: any;
-  onChange: (name: string, value: any) => void;
-}
 
-const FaqSection: React.FC<Props> = ({ data, onChange }) => {
-  const faqs = data.faqs || [];
+const FaqSection = () => {
+  const { control } = useFormContext();
+
+  // useFieldArray to manage the dynamic FAQs
+  const { fields, append, remove, update } = useFieldArray({
+    control,
+    name: "faqs", // this key will be used in the form state
+  });
 
   const handleAddFaq = () => {
-    const newFaqs = [...faqs, { question: "", answer: "" }];
-    onChange("faqs", newFaqs);
+    append({ question: "", answer: "" });
+  };
+  const handleUpdateFaq = (index: string, field: string, value: string) => {
+    const idx = Number(index); // ✅ convert to number first
+    if (isNaN(idx)) return; // ✅ safety check
+
+    update(idx, { ...fields[idx], [field]: value });
   };
 
-  const handleUpdateFaq = (index: number, field: string, value: string) => {
-    const updatedFaqs = faqs.map((faq: any, i: number) =>
-      i === index ? { ...faq, [field]: value } : faq
-    );
-    onChange("faqs", updatedFaqs);
+  const handleRemoveFaq = (index: string) => {
+    const idx = Number(index); // ✅ convert to number first
+    if (isNaN(idx)) return; // ✅ safety check
+
+    remove(idx);
   };
 
-  const handleRemoveFaq = (index: number) => {
-    const updatedFaqs = faqs.filter((_: any, i: number) => i !== index);
-    onChange("faqs", updatedFaqs);
-  };
+
 
   return (
     <div>
@@ -48,10 +52,10 @@ const FaqSection: React.FC<Props> = ({ data, onChange }) => {
       </div>
 
       <div className="flex flex-col gap-4">
-        {faqs.map((faq: any, index: number) => (
+        {fields.map((faq: any, index: number) => (
           <FaqCard
             key={index}
-            index={index}
+            index={index + ""}
             faq={faq}
             onChange={handleUpdateFaq}
             onRemove={handleRemoveFaq}

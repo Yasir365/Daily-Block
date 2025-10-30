@@ -49,13 +49,19 @@ export const ChatItem = ({
                     </div>
 
                     {/* Time */}
-                    <span className="font-inter text-[12px] text-[#94A3B8]">{time} ago</span>
+                    <span className="font-inter text-[12px] text-[#94A3B8]">  {new Date(time).toLocaleString(undefined, {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    })} ago</span>
                 </div>
 
                 {/* Description / Message */}
-                <p className="font-lato font-normal text-[14px] leading-[22.75px] text-[#F1F4F4] mt-1">
+                {/* <p className="font-lato font-normal text-[14px] leading-[22.75px] text-[#F1F4F4] mt-1">
                     {desc}
-                </p>
+                </p> */}
             </div>
 
 

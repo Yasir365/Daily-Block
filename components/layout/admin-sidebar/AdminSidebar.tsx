@@ -3,10 +3,11 @@
 import { LayoutGrid, Users, BookOpen, Settings, Lock, FileText, HelpCircle, Mail, DollarSign, X, User, Shield, LogOut } from "lucide-react"; // 👈 Added 'X' icon
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { UniversalContainer } from "@/components/ui/UniversalContainer";
 import { createPortal } from "react-dom";
+import { useAuthContext } from "@/context/AuthContext";
 
 type SidebarLinkProps = {
     href: string;
@@ -40,10 +41,31 @@ export const AdminSidebar = ({ isOpen, setIsOpen }: AdminSidebarProps) => {
     const currentPath = usePathname(); const [open, setOpen] = useState(false);
 
     const ref = useRef<HTMLDivElement>(null);
+    const { logout, user } = useAuthContext();
+    const router = useRouter();
+
+    const handleLogout = async () => {
+        try {
+            console.log("Logout clicked");
+            await logout(); // wait for context to clear
+            setIsOpen(false);
+            setOpen(false);
+            router.push("/auth/login"); // navigate to homepage
+        } catch (err) {
+            console.error("Logout failed:", err);
+        }
+    };
+    // const { email } = user;
     // Close on outside click
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
-            if (ref.current && !ref.current.contains(e.target as Node)) {
+            const dropdown = document.querySelector(".universal-dropdown"); // give dropdown a class
+            if (
+                ref.current &&
+                !ref.current.contains(e.target as Node) &&
+                dropdown &&
+                !dropdown.contains(e.target as Node)
+            ) {
                 setOpen(false);
             }
         };
@@ -72,7 +94,7 @@ export const AdminSidebar = ({ isOpen, setIsOpen }: AdminSidebarProps) => {
             icon: Users,
             isActive: currentPath.startsWith("/admin/users"),
         },
-        { 
+        {
             name: "News Letter",
             href: "/admin/newsletter",
             icon: Mail,
@@ -114,7 +136,7 @@ export const AdminSidebar = ({ isOpen, setIsOpen }: AdminSidebarProps) => {
             {isOpen && (
                 <div
                     onClick={() => setIsOpen(false)}
-                    className="fixed inset-0 z-20 bg-black/50 lg:hidden"
+                    className="fixed inset-0 z-40 bg-black/50 lg:hidden"
                     aria-hidden="true"
                 ></div>
             )}
@@ -126,7 +148,7 @@ export const AdminSidebar = ({ isOpen, setIsOpen }: AdminSidebarProps) => {
             >
 
                 {/* Logo Section */}
-                <div className="flex items-center h-20 px-2 mb-4 pb-2 border-b border-brand-gray justify-between">
+                <div className="flex items-center h-20 px-2 mb-4 pb-2 border-b border-brand-gray justify-between cursor-pointer" onClick={() => router.push("/admin")}>
                     <div className="flex items-center gap-1">
                         <img src="/svg/logo.svg" alt="Logo" />
                     </div>
@@ -171,7 +193,7 @@ export const AdminSidebar = ({ isOpen, setIsOpen }: AdminSidebarProps) => {
                         />
                         <div className="flex flex-col">
                             <span className="text-sm font-semibold text-white">Admin User</span>
-                            <span className="text-xs text-gray-400">admin@dailyblock.io</span>
+                            <span className="text-xs text-gray-400">{user?.email || ""}</span>
                         </div>
                     </div>
                     {/* ✅ Dropdown Menu */}
@@ -180,32 +202,33 @@ export const AdminSidebar = ({ isOpen, setIsOpen }: AdminSidebarProps) => {
                         createPortal(
                             <UniversalContainer
                                 size="sm"
-                                className="absolute bottom-[74px] left-[20px] w-[230px] p-2
-                                            bg-gradient-to-br from-[#121212] to-[#141B1F]
-                                            border border-[#303036] rounded-[12px]
-                                            shadow-lg backdrop-blur-[4px] z-[9999]"
+                                className="fixed bottom-[74px] left-[20px] w-[230px] p-2
+                                           z-50 pointer-events-auto universal-dropdown"
+                                onClick={(e) => e.stopPropagation()} // ✅ prevents dropdown from closing early
+
+
                             >
                                 <div className="flex flex-col py-2">
                                     <span
-                                        className={`text-[#F8FAFC] font-[600] text-[14px] leading-[20px] py-2 rounded-md hover:bg-white/5 font-segoe  px-6`}
+                                        className={`cursor-pointer text-[#F8FAFC] font-[600] text-[14px] leading-[20px] py-2 rounded-md hover:bg-white/5 font-segoe  px-6`}
                                     >
                                         My Account
                                     </span>
                                     <div className="border-t border-[#303036] my-1 w-full" />
                                     <button
-                                        className={`text-[#F8FAFC] font-[600] flex items-center gap-1.5 text-[14px] leading-[20px] py-2 rounded-md hover:bg-white/5 font-segoe text-left  px-6`}
+                                        className={`cursor-pointer text-[#F8FAFC] font-[600] flex items-center gap-1.5 text-[14px] leading-[20px] py-2 rounded-md hover:bg-white/5 font-segoe text-left  px-6`}
                                     >
                                         <User size={16} /> <span> Profile</span>
                                     </button>
                                     <div className="border-t border-[#303036] my-1 w-full" />
                                     <button
-                                        className={`text-[#F8FAFC] font-[600] flex items-center gap-1.5 text-[14px] leading-[20px] py-2 rounded-md hover:bg-white/5 font-segoe text-left  px-6`}
+                                        className={`cursor-pointer text-[#F8FAFC] font-[600] flex items-center gap-1.5 text-[14px] leading-[20px] py-2 rounded-md hover:bg-white/5 font-segoe text-left  px-6`}
                                     >
                                         <Settings size={16} /> <span> Settings</span>
                                     </button>
                                     <div className="border-t border-[#303036] my-1 w-full" />
                                     <button
-                                        className={`text-[#F8FAFC] font-[600] flex items-center gap-1.5 text-[14px] leading-[20px] py-2 rounded-md hover:bg-white/5 font-segoe text-left  px-6`}
+                                        className={`cursor-pointer text-[#F8FAFC] font-[600] flex items-center gap-1.5 text-[14px] leading-[20px] py-2 rounded-md hover:bg-white/5 font-segoe text-left  px-6`}
                                     >
                                         <Shield size={16} /> <span> Admin Panel</span>
                                     </button>
@@ -213,7 +236,8 @@ export const AdminSidebar = ({ isOpen, setIsOpen }: AdminSidebarProps) => {
 
 
                                     <button
-                                        className={`text-[#DC2828] font-[600] flex items-center gap-1.5   text-[14px] leading-[20px] py-2 rounded-md hover:bg-white/5 font-segoe text-left  px-6`}
+                                        className={`cursor-pointer  text-[#DC2828] font-[600] flex items-center gap-1.5   text-[14px] leading-[20px] py-2 rounded-md hover:bg-white/5 font-segoe text-left  px-6`}
+                                        onClick={handleLogout}
                                     >
                                         <LogOut />   Log out
                                     </button>

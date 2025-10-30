@@ -3,13 +3,36 @@ import { connectDB } from "@/lib/mongodb";
 import IcoProject from "@/models/Icoproject";
 import fs from "fs";
 import path from "path";
+import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
+
+const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
+    // ✅ Extract and verify JWT token from cookies
+    const token = req.cookies.get("auth_token")?.value;
+    if (!token) {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized. No token provided." },
+        { status: 401 }
+      );
+    }
 
+    let decoded: any;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+    } catch (err) {
+      return NextResponse.json(
+        { success: false, message: "Invalid or expired token" },
+        { status: 401 }
+      );
+    }
+
+    const currentUserId = decoded.userId; // 👈 The logged-in user ID
     const formData = await req.formData();
     const data: Record<string, any> = {};
 
@@ -45,7 +68,12 @@ export async function POST(req: NextRequest) {
       const bytes = await icoIcon.arrayBuffer();
       const buffer = Buffer.from(bytes);
 
-      const folderPath = path.join(process.cwd(), "public", "ico", cryptoCoinName);
+      const folderPath = path.join(
+        process.cwd(),
+        "public",
+        "ico",
+        cryptoCoinName
+      );
       fs.mkdirSync(folderPath, { recursive: true });
 
       const fileName = icoIcon.name.replace(/\s+/g, "_");
@@ -66,24 +94,32 @@ export async function POST(req: NextRequest) {
       );
 
       if (!updated) {
-        return NextResponse.json({ success: false, message: "Not found" }, { status: 404 });
+        return NextResponse.json(
+          { success: false, message: "Not found" },
+          { status: 404 }
+        );
       }
 
       return NextResponse.json({ success: true, data: updated });
     }
-
-    const project = new IcoProject({
+    const payload = {
       ...data,
+      userId: new mongoose.mongo.ObjectId(currentUserId as string),
       icoIcon: icoIconPath,
       stepCompleted: 1,
       status: data.status || "pending",
-    });
+    };
+    console.log("Payload:", payload);
+    const project = new IcoProject(payload);
 
     await project.save();
 
     return NextResponse.json({ success: true, data: project });
   } catch (err: any) {
     console.error("ICO add error:", err);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: err.message },
+      { status: 500 }
+    );
   }
 }

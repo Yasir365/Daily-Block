@@ -42,8 +42,13 @@ export const LoginForm = () => {
     },
     onSuccess: (result) => {
       login(result.user);
-      toast.success(result.message || "Logged in successfully!");
-      router.push("/auth/dashboard");
+      console.log("Login Success:", result.user);
+      if (result.user.type === "admin") {
+        router.push("/admin");
+      } else {
+
+        router.push("/user/dashboard");
+      }
     },
     onError: (error: any) => {
       toast.error(error.message || "An unexpected error occurred during login.");
@@ -62,9 +67,8 @@ export const LoginForm = () => {
           id="email"
           placeholder="Email"
           {...register("email")}
-          className={`w-full p-3 mt-2 bg-brand-glass border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-yellow ${
-            errors.email ? "border-red-500" : "border-gray-600"
-          }`}
+          className={`w-full p-3 mt-2 bg-brand-glass border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-yellow ${errors.email ? "border-red-500" : "border-gray-600"
+            }`}
           disabled={loginMutation.isPending}
         />
         {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>}
@@ -77,9 +81,8 @@ export const LoginForm = () => {
           id="password"
           placeholder="Password"
           {...register("password")}
-          className={`w-full p-3 mt-2 bg-brand-glass border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-yellow ${
-            errors.password ? "border-red-500" : "border-gray-600"
-          }`}
+          className={`w-full p-3 mt-2 bg-brand-glass border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-yellow ${errors.password ? "border-red-500" : "border-gray-600"
+            }`}
           disabled={loginMutation.isPending}
         />
         <button
@@ -108,10 +111,9 @@ export const LoginForm = () => {
 
       <button
         type="submit"
-        className={`w-full py-3 font-bold text-black rounded-md transition-colors bg-brand-yellow ${
-          loginMutation.isPending || !isValid ? "cursor-not-allowed opacity-75" : ""
-        }`}
-        disabled={loginMutation.isPending || !isValid}
+        className={`w-full py-3 font-bold text-black rounded-md transition-colors bg-brand-yellow ${loginMutation.isPending ? "cursor-not-allowed opacity-75" : "cursor-pointer hover:bg-yellow-400"
+          }`}
+        disabled={loginMutation.isPending}
       >
         {loginMutation.isPending ? "Signing In..." : "Sign In"}
       </button>

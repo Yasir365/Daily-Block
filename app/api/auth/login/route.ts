@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
-import User from "@/models/User";
+import User from "@/models/UserModel";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
-const TOKEN_EXPIRY = "7d"; 
+const TOKEN_EXPIRY = "7d";
 
 export async function POST(req: NextRequest) {
   try {
@@ -37,20 +37,36 @@ export async function POST(req: NextRequest) {
     }
 
     const token = jwt.sign(
-      { userId: existingUser._id, email: existingUser.email },
+      {
+        userId: existingUser._id,
+        email: existingUser.email,
+        role: existingUser.userType,
+      },
       JWT_SECRET,
       { expiresIn: TOKEN_EXPIRY }
     );
 
+    const lastLogin = existingUser.lastLogin;
+    // Or using findByIdAndUpdate
+    await User.findByIdAndUpdate(existingUser._id, { lastLogin: new Date() });
+
     const userResponse = {
       _id: existingUser._id,
-      name: existingUser.name,
+      name: existingUser.firstName + " " + existingUser.lastName,
       email: existingUser.email,
+      type: existingUser.userType,
+      status: existingUser.status,
       createdAt: existingUser.createdAt,
+      lastLogin: lastLogin, // ✅ send to frontend if needed
     };
 
     const response = NextResponse.json(
-      { success: true, message: "Successfully logged in", user: userResponse, token },
+      {
+        success: true,
+        message: "Successfully logged in",
+        user: userResponse,
+        token,
+      },
       { status: 200 }
     );
 
@@ -65,7 +81,6 @@ export async function POST(req: NextRequest) {
     });
 
     return response;
-
   } catch (err: any) {
     console.error("Login error:", err);
     return NextResponse.json(

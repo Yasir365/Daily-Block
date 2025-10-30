@@ -1,14 +1,13 @@
-import { Facebook, Linkedin, Twitter, Github, Youtube, Send } from "lucide-react";
+"use client";
+
+import { Controller, useFormContext } from "react-hook-form";
 import InputField from "../ui/Input";
 
-interface Props {
-  data: any;
-  onChange: (name: string, value: any) => void;
-}
-
-const StepSocialMedia: React.FC<Props> = ({ data, onChange }) => {
-  const handleInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-    onChange(e.target.name, e.target.value);
+const StepSocialMedia = () => {
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext();
 
   return (
     <div>
@@ -18,63 +17,126 @@ const StepSocialMedia: React.FC<Props> = ({ data, onChange }) => {
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-        <InputField
-          label="Facebook Link"
+        {/* Facebook Link */}
+        <Controller
           name="facebookLink"
-          placeholder="Set Facebook link URL"
-          value={data.facebookLink || ""}
-          onChange={handleInput}
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <InputField
+              {...field}
+              label="Facebook Link"
+              placeholder="Set Facebook link URL"
+              error={errors.facebookLink?.message as string}
+            />
+          )}
         />
-        <InputField
-          label="LinkedIn Link"
+
+        {/* LinkedIn Link */}
+        <Controller
           name="linkedinLink"
-          placeholder="Set LinkedIn link URL"
-          value={data.linkedinLink || ""}
-          onChange={handleInput}
-          required
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <InputField
+              {...field}
+              label="LinkedIn Link"
+              placeholder="Set LinkedIn link URL"
+              required
+              error={errors.linkedinLink?.message as string}
+            />
+          )}
         />
-        <InputField
-          label="Twitter Link"
+
+        {/* Twitter Link */}
+        <Controller
           name="twitterLink"
-          placeholder="Set Twitter link URL"
-          value={data.twitterLink || ""}
-          onChange={handleInput}
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <InputField
+              {...field}
+              label="Twitter Link"
+              placeholder="Set Twitter link URL"
+              error={errors.twitterLink?.message as string}
+            />
+          )}
         />
-        <InputField
-          label="Github Link"
+
+        {/* Github Link */}
+        <Controller
           name="githubLink"
-          placeholder="Set Github link URL"
-          value={data.githubLink || ""}
-          onChange={handleInput}
-          required
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <InputField
+              {...field}
+              label="Github Link"
+              placeholder="Set Github link URL"
+              required
+              error={errors.githubLink?.message as string}
+            />
+          )}
         />
-        <InputField
-          label="Telegram Link"
+
+        {/* Telegram Link */}
+        <Controller
           name="telegramLink"
-          placeholder="Set Telegram link URL"
-          value={data.telegramLink || ""}
-          onChange={handleInput}
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <InputField
+              {...field}
+              label="Telegram Link"
+              placeholder="Set Telegram link URL"
+              error={errors.telegramLink?.message as string}
+            />
+          )}
         />
-        <InputField
-          label="Medium Link"
+
+        {/* Medium Link */}
+        <Controller
           name="mediumLink"
-          placeholder="Set Medium link URL"
-          value={data.mediumLink || ""}
-          onChange={handleInput}
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <InputField
+              {...field}
+              label="Medium Link"
+              placeholder="Set Medium link URL"
+              error={errors.mediumLink?.message as string}
+            />
+          )}
         />
-        <InputField
-          label="Discord Link"
+
+        {/* Discord Link */}
+        <Controller
           name="discordLink"
-          placeholder="Set Discord link URL"
-          value={data.discordLink || ""}
-          onChange={handleInput}
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <InputField
+              {...field}
+              label="Discord Link"
+              placeholder="Set Discord link URL"
+              error={errors.discordLink?.message as string}
+            />
+          )}
         />
-        <InputField
-          label="YouTube Link"
+
+        {/* YouTube Link */}
+        <Controller
           name="youtubeLink"
-          placeholder="Set YouTube link URL"
-          value={data.youtubeLink || ""}
-          onChange={handleInput}
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <InputField
+              {...field}
+              label="YouTube Link"
+              placeholder="Set YouTube link URL"
+              error={errors.youtubeLink?.message as string}
+            />
+          )}
         />
       </div>
     </div>

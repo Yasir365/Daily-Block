@@ -20,7 +20,7 @@ const columns = [
 
 interface Props {
   title: string;
-  status: "verified" | "pending" | "rejected";
+  status: "verified" | "pending" | "rejected" | "";
 }
 const UserDataTableDiv = ({ title, status }: Props) => {
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
@@ -69,16 +69,15 @@ const UserDataTableDiv = ({ title, status }: Props) => {
         {/* --- Table Header --- */}
         <div className="grid grid-cols-12 gap-x-4 items-center p-4 border-b-2 border-gray-700 text-gray-300 font-semibold text-xs uppercase select-none">
           {columns.map((col) => (
-        <div
-          key={col.key}
-          className={`flex items-center gap-1 cursor-pointer group text-left ${
-            col.span === 1 ? "col-span-1" :
-            col.span === 2 ? "col-span-2" :
-            col.span === 3 ? "col-span-3" :
-            "col-span-1"
-          }`}
-          onClick={() => handleSort(col.key)}
-        >
+            <div
+              key={col.key}
+              className={`flex items-center gap-1 cursor-pointer group text-left ${col.span === 1 ? "col-span-1" :
+                  col.span === 2 ? "col-span-2" :
+                    col.span === 3 ? "col-span-3" :
+                      "col-span-1"
+                }`}
+              onClick={() => handleSort(col.key)}
+            >
 
               <span className="group-hover:text-white transition">{col.label}</span>
               <ArrowUpDown

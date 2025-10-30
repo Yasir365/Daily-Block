@@ -2,18 +2,84 @@
 import { DashboardCard } from '@/components/admin/DashboardCard';
 import DataTable from '@/components/admin/table/DataTable';
 import { TopHeader } from '@/components/admin/TopHeader'
-import StatusBadge from '@/components/ui/Badge';
 import ChatSideBar from '@/components/ui/ChatSideBar';
+import CustomConfirm from '@/components/ui/CustomAlert';
 import InputField from '@/components/ui/Input';
-import { CustomToast } from '@/components/ui/ReactToast';
 import SelectField from '@/components/ui/Select';
+import StatusBadge from '@/components/ui/StatusBadge';
 import { UniversalContainer } from '@/components/ui/UniversalContainer';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Check, Eye, Funnel, MessageSquare, X } from 'lucide-react';
 import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react'
-import toast from 'react-hot-toast';
+
+// 🔥 Fetch Projects Service
+// 🔥 Fetch Projects Service
+const fetchIcos = async (filters: {
+    status?: string;
+    launchpad?: string;
+    raiseMin?: string;
+    raiseMax?: string;
+}) => {
+    const queryParams = new URLSearchParams();
+
+    if (filters.status) queryParams.append("status", filters.status);
+    if (filters.launchpad) queryParams.append("launchpad", filters.launchpad);
+    if (filters.raiseMin) queryParams.append("raiseMin", filters.raiseMin);
+    if (filters.raiseMax) queryParams.append("raiseMax", filters.raiseMax);
+
+    const res = await fetch(`/api/ico/list?${queryParams.toString()}`, {
+        cache: "no-store",
+    });
+
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message || "Failed to fetch ICOs");
+    return data.data;
+};
+
+// 🔥 Delete Project Service
+const deleteIco = async (id: string) => {
+    const res = await fetch(`/api/ico/list?id=${id}`, {
+        method: "DELETE",
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message || "Failed to delete ICO");
+    return data;
+};
+// ✅ Update approveIco to send JSON body
+const approveIco = async ({
+    id,
+    action = "approved",
+}: {
+    id: string;
+    action?: "approved" | "rejected";
+}) => {
+    const res = await fetch(`/api/ico/approve`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, action }), // ✅ send as JSON
+        cache: "no-store",
+    });
+
+    let data;
+    try {
+        data = await res.json();
+    } catch (err) {
+        throw new Error("Invalid response from server");
+    }
+
+    if (!res.ok || !data.success) {
+        throw new Error(data.message || "Failed to update ICO status");
+    }
+
+    return data;
+};
+
 
 const page = () => {
+
     const cards = [
         {
             title: "Total Listed ICOs",
@@ -38,32 +104,53 @@ const page = () => {
     ];
     const columns = [
         {
-            key: "project", label: "project",
+            key: "cryptoCoinName", label: "project",
             className: "text-brand-text-secondary font-inter font-semibold text-[16px] leading-[20px]", // white bold
         },
-        { key: "owner", label: "owner" },
+        {
+            key: "owner",
+            label: "Owner",
+            render: (_: any, row: any) => {
+                // ✅ Handle cases where userId might be null or not populated
+                const user = row.userId;
+                if (!user) return "N/A";
+
+                const fullName =
+                    [user.firstName, user.lastName].filter(Boolean).join(" ") || user.email;
+
+                return (
+                    <span className="font-inter text-sm text-white">
+                        {fullName}
+                    </span>
+                );
+            },
+        },
         { key: "launchpad", label: "launchpad" },
 
         {
             key: "status",
             label: "Status",
             render: (value: string) => {
-                console.log({ value })
-                return <StatusBadge value={value === "suspended" ? "suspended" : value} text={value} />
+                return <StatusBadge status={value} />
             },
         },
         {
             key: "discussion",
             label: "discussion",
-            render: (value: string) => {
-                console.log({ value })
+            render: (value: string, row: any) => {
                 return (
                     <span
-                        onClick={() => setChatOpen(true)}
-                        className='inline-flex relative font-lato text-[#F1F4F4] font-semibold text-sm bg-[#484C4F] rounded-xl py-2 px-4 items-center gap-4' >
-                        <span className='absolute top-[-8px] -right-2 flex items-center justify-center size-6 text-black bg-brand-yellow rounded-full'>2</span>
-                        <MessageSquare /> Discuss
-                    </span >
+                        onClick={() => { setChatOpenId(row); setChatOpen(true) }}
+                        className="group relative inline-flex items-center gap-4 rounded-xl bg-[#484C4F] py-2 px-4 font-lato text-sm font-semibold text-[#F1F4F4] cursor-pointer transition hover:bg-[#5A5F62]"
+                        style={{ zIndex: 10 }}
+                    >
+                        <span className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-brand-yellow text-black text-xs font-bold pointer-events-none">
+                            2
+                        </span>
+                        <MessageSquare className="transition-transform group-hover:scale-110" />
+                        Discuss
+                    </span>
+
                 )
             },
         },
@@ -71,118 +158,194 @@ const page = () => {
         {
             key: "actions",
             label: "Actions",
-            render: () => (
-                <div className="flex gap-4">
-                    <button className="text-gray-300 hover:text-white">
+            render: (_: any, row: any) => (
+                <div className="flex gap-4 ">
+                    {/* View */}
+                    <button className="text-gray-300 hover:text-white cursor-pointer"
+
+                    >
                         <Eye size={16} />
                     </button>
-                    <button className="text-gray-300 hover:text-white">
-                        <Check size={16} className='text-brand-green' />
-                    </button>
-                    <button className="text-red-500 hover:text-red-400">
+
+                    {/* Approve (you can handle separately later) */}
+                    <button
+                        className="text-gray-300 hover:text-white cursor-pointer"
+                        onClick={() => {
+                            setSelectedApproveId(row._id);
+                            setShowApproveConfirm({ open: true, action: "approved" });
+                        }}
+                    >
+                        <Check size={16} className="text-brand-green" />
+                    </button >
+
+                    {/* Delete */}
+                    <button
+                        onClick={() => {
+                            setSelectedApproveId(row._id);
+                            setShowApproveConfirm({ open: true, action: "rejected" });
+                        }}
+                        className="text-red-500 hover:text-red-400 cursor-pointer"
+                    >
                         <X size={16} />
                     </button>
-                </div>
+                </div >
             ),
         },
     ];
 
-    const users = [
-        {
-            project: "John Doe",
-            owner: "john@example.com",
-            launchpad: "User",
-            joined: "21 Sep 2024",
-            status: "active",
-            discussion: "3",
+    // const users = [
+    //     {
+    //         project: "John Doe",
+    //         owner: "john@example.com",
+    //         launchpad: "User",
+    //         joined: "21 Sep 2024",
+    //         status: "active",
+    //         discussion: "3",
 
-        },
-        {
-            name: "Alice Smith",
-            email: "alice@example.com",
-            role: "Moderator",
-            joined: "15 Aug 2024",
-            status: "active",
-        },
-        {
-            name: "Bob Johnson",
-            email: "bob@example.com",
-            role: "User",
-            joined: "03 Oct 2024",
-            status: "suspended",
-        },
-        {
-            name: "Carol Williams",
-            email: "carol@example.com",
-            role: "Admin",
-            joined: "10 Jul 2024",
-            status: "suspended",
-        },
-        {
-            project: "John Doe",
-            owner: "john@example.com",
-            launchpad: "User",
-            joined: "21 Sep 2024",
-            status: "active",
-            discussion: "3",
+    //     },
+    //     {
+    //         name: "Alice Smith",
+    //         email: "alice@example.com",
+    //         role: "Moderator",
+    //         joined: "15 Aug 2024",
+    //         status: "active",
+    //     },
+    //     {
+    //         name: "Bob Johnson",
+    //         email: "bob@example.com",
+    //         role: "User",
+    //         joined: "03 Oct 2024",
+    //         status: "suspended",
+    //     },
+    //     {
+    //         name: "Carol Williams",
+    //         email: "carol@example.com",
+    //         role: "Admin",
+    //         joined: "10 Jul 2024",
+    //         status: "suspended",
+    //     },
+    //     {
+    //         project: "John Doe",
+    //         owner: "john@example.com",
+    //         launchpad: "User",
+    //         joined: "21 Sep 2024",
+    //         status: "active",
+    //         discussion: "3",
 
-        },
-        {
-            name: "Alice Smith",
-            email: "alice@example.com",
-            role: "Moderator",
-            joined: "15 Aug 2024",
-            status: "active",
-        },
-        {
-            name: "Bob Johnson",
-            email: "bob@example.com",
-            role: "User",
-            joined: "03 Oct 2024",
-            status: "suspended",
-        },
-        {
-            name: "Carol Williams",
-            email: "carol@example.com",
-            role: "Admin",
-            joined: "10 Jul 2024",
-            status: "suspended",
-        },
-        {
-            project: "John Doe",
-            owner: "john@example.com",
-            launchpad: "User",
-            joined: "21 Sep 2024",
-            status: "active",
-            discussion: "3",
+    //     },
+    //     {
+    //         name: "Alice Smith",
+    //         email: "alice@example.com",
+    //         role: "Moderator",
+    //         joined: "15 Aug 2024",
+    //         status: "active",
+    //     },
+    //     {
+    //         name: "Bob Johnson",
+    //         email: "bob@example.com",
+    //         role: "User",
+    //         joined: "03 Oct 2024",
+    //         status: "suspended",
+    //     },
+    //     {
+    //         name: "Carol Williams",
+    //         email: "carol@example.com",
+    //         role: "Admin",
+    //         joined: "10 Jul 2024",
+    //         status: "suspended",
+    //     },
+    //     {
+    //         project: "John Doe",
+    //         owner: "john@example.com",
+    //         launchpad: "User",
+    //         joined: "21 Sep 2024",
+    //         status: "active",
+    //         discussion: "3",
 
-        },
-        {
-            name: "Alice Smith",
-            email: "alice@example.com",
-            role: "Moderator",
-            joined: "15 Aug 2024",
-            status: "active",
-        },
-        {
-            name: "Bob Johnson",
-            email: "bob@example.com",
-            role: "User",
-            joined: "03 Oct 2024",
-            status: "suspended",
-        },
-        {
-            name: "Carol Williams",
-            email: "carol@example.com",
-            role: "Admin",
-            joined: "10 Jul 2024",
-            status: "suspended",
-        },
-    ];
+    //     },
+    //     {
+    //         name: "Alice Smith",
+    //         email: "alice@example.com",
+    //         role: "Moderator",
+    //         joined: "15 Aug 2024",
+    //         status: "active",
+    //     },
+    //     {
+    //         name: "Bob Johnson",
+    //         email: "bob@example.com",
+    //         role: "User",
+    //         joined: "03 Oct 2024",
+    //         status: "suspended",
+    //     },
+    //     {
+    //         name: "Carol Williams",
+    //         email: "carol@example.com",
+    //         role: "Admin",
+    //         joined: "10 Jul 2024",
+    //         status: "suspended",
+    //     },
+    // ];
     const [showFilter, setShowFilter] = useState(false);
-    const [data, setData] = useState({ status: "Neutral", launchpad: "All", raiseMin: "0", raiseMax: "0" });
+    const [data, setData] = useState({ status: "all", launchpad: "all", raiseMin: "0", raiseMax: "0" });
+    const [filters, setFilters] = useState({
+        status: "all",
+        launchpad: "all",
+        raiseMin: "0",
+        raiseMax: "0",
+    });
+
     const filterRef = useRef<HTMLDivElement>(null);
+    const queryClient = useQueryClient();
+
+    const [status, setStatus] = useState("");
     const [chatOpen, setChatOpen] = useState(false);
+    const [chatOpenId, setChatOpenId] = useState("");
+    const [selectedId, setSelectedId] = useState<string | null>(null); // ✅ Track which ICO to delete
+    const [showConfirm, setShowConfirm] = useState(false);
+    const [showApproveConfirm, setShowApproveConfirm] = useState<{ open: boolean; action: "approved" | "rejected" | null }>({
+        open: false,
+        action: null,
+    });
+    const [selectedApproveId, setSelectedApproveId] = useState<string | null>(null);
+
+
+
+    // ✅ Fetch all ICOs
+    const {
+        data: projects = [],
+        isLoading,
+        isError,
+        refetch, // ✅ add this
+    } = useQuery({
+        queryKey: ["icoList", filters], // depends on full filter data
+        queryFn: () => fetchIcos(data),
+    });
+
+    // ✅ UseMutation typed properly
+    const { mutate: handleApprove } = useMutation({
+        mutationFn: approveIco,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["icoList", data] }); // use the same `data` object as filters
+            setShowApproveConfirm({ open: false, action: null });
+        },
+        onError: (error: any) => {
+            console.error("Approve Error:", error.message);
+            setShowApproveConfirm({ open: false, action: null });
+        },
+    });
+
+    // ✅ Delete Mutation
+    const { mutate: handleDelete } = useMutation({
+        mutationFn: deleteIco,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["icoList"] }); // ✅ invalidates all
+            setShowConfirm(false);
+
+        },
+        onError: (error: any) => {
+            // toast.error(error.message || "Failed to delete ICO");
+        },
+    });
     const handleSelect = (value: string, name: string) => {
         setData((prev) => ({ ...prev, [name]: value }));
     };
@@ -196,10 +359,22 @@ const page = () => {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+
     const tokenOptions = [
+        { value: "all", label: "All" },
         { value: "Neutral", label: "Neutral" },
         { value: "High", label: "High" },
         { value: "Low", label: "Low" },
+    ];
+    //   status: "draft" | "pending" | "approved" | "rejected";
+
+    const statusOptions = [
+        { value: "all", label: "All" },
+        { value: "draft", label: "Draft" },
+        { value: "pending", label: "Pending" },
+        { value: "approved", label: "Approved" },
+        { value: "rejected", label: "Rejected" },
     ];
 
     return (
@@ -240,7 +415,7 @@ const page = () => {
                                 <SelectField
                                     label="Status"
                                     name="status"
-                                    options={tokenOptions}
+                                    options={statusOptions}
                                     placeholder="Select status Level"
                                     value={data.status}
                                     lblClass='text-[14px] font-semibold leading-[14px] font-inter'
@@ -358,7 +533,12 @@ const page = () => {
                                 </button>
                                 <button
                                     className="w-full md:w-[118px] h-[40px] rounded-[10px] bg-[#FACC15] cursor-pointer text-black text-[14px] font-semibold"
-                                    onClick={() => setShowFilter(false)}
+                                    onClick={() => {
+                                        setFilters(data); // ✅ apply selected filters
+
+                                        refetch(); // trigger API with new filters
+                                        setShowFilter(false);
+                                    }}
                                 >
                                     Filter
                                 </button>
@@ -383,11 +563,29 @@ const page = () => {
             <div className="grid grid-cols-1 gap-4">
                 <div className="overflow-x-auto rounded-[12px] border border-[#90909066] bg-[#3B3B3B80] shadow-[0_1px_2px_0_#0000000D] backdrop-blur-[4px]">
                     <div className="min-w-full">
-                        <DataTable title="Submissions" columns={columns} data={users} />
+                        <DataTable title="Submissions" columns={columns} data={projects} />
                     </div>
                 </div>
             </div>
-            <ChatSideBar open={chatOpen} setOpen={setChatOpen} />
+            <ChatSideBar open={chatOpen} setOpen={setChatOpen} chatId={chatOpenId} setChatId={setChatOpenId} />
+            {/* ✅ Confirm Delete Modal */}
+
+            <CustomConfirm
+                open={showApproveConfirm.open}
+                title={showApproveConfirm.action === "approved" ? "Approve Confirmation" : "Reject Confirmation"}
+                message={
+                    showApproveConfirm.action === "approved"
+                        ? "Are you sure you want to approve this ICO project?"
+                        : "Are you sure you want to reject this ICO project?"
+                }
+                onConfirm={() => {
+                    if (selectedApproveId && showApproveConfirm.action) {
+                        handleApprove({ id: selectedApproveId, action: showApproveConfirm.action });
+                    }
+                    setShowApproveConfirm({ open: false, action: null });
+                }}
+                onCancel={() => setShowApproveConfirm({ open: false, action: null })}
+            />
         </div>
     )
 }

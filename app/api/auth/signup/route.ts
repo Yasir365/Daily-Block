@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/mongodb";
-import User from "@/models/User";
+import User from "@/models/UserModel";
 
 export async function POST(req: NextRequest) {
   try {
@@ -32,12 +32,16 @@ export async function POST(req: NextRequest) {
       lastName,
       email,
       password: hashedPassword,
-      userType,
+      userType: userType || "user", // optional override
+      status: "inactive", // 👈 enforce if you always want inactive by default
     });
 
     return NextResponse.json({ success: true, user: newUser });
   } catch (err: any) {
     console.error("Signup error:", err);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: err.message },
+      { status: 500 }
+    );
   }
 }

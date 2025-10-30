@@ -36,7 +36,9 @@ body {
   background-size: cover; /* ✅ Ensures it fills the screen */
   background-color: #121212; /* Fallback color */
 }
-
+button{
+  cursor: pointer;
+}
 .ticker-tape-animation {
   animation: marquee 60s linear infinite;
   white-space: nowrap;
@@ -135,3 +137,4 @@ body {
 .hide-scrollbar::-webkit-scrollbar {
   display: none;               /* Chrome, Safari */
 }
+

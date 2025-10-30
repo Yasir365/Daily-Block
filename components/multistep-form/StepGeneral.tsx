@@ -1,12 +1,10 @@
+"use client"
+import { Controller, useFormContext } from "react-hook-form";
 import InputField from "../ui/Input";
 import SelectField from "../ui/Select";
 import Teextarea from "../ui/Textarea";
 
 
-interface Props {
-    data: any;
-    onChange: (name: string, value: any) => void;
-}
 
 const tokenOptions: any[] = [
     { value: "ETH", label: "Ethereum (ETH)" },
@@ -15,20 +13,19 @@ const tokenOptions: any[] = [
     { value: "BNB", label: "Binance Coin (BNB)" },
 ];
 
-const StepGeneral: React.FC<Props> = ({ data, onChange }) => {
-    const handleInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-        onChange(e.target.name, e.target.value);
+const StepGeneral = () => {
 
-    // const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) =>
-    //     onChange(e.target.name, e.target.value);
-    const handleSelect = (value: string, name: string) => {
-        onChange(name, value);
-    };
-    const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0] || null;
-        onChange("icoIcon", file);
-    };
+    const {
+        control,
+        setValue,
+        formState: { errors },
+    } = useFormContext();
 
+    // ✅ Handle file uploads via Controller
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) setValue("icoIcon", file);
+    };
     return (
         <div className="flex flex-col gap-6">
             <div className="border-b border-[#FFFFFF26]/85 pb-2">
@@ -39,22 +36,50 @@ const StepGeneral: React.FC<Props> = ({ data, onChange }) => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                <InputField
-                    label="Crypto Coin Name"
+                <Controller
                     name="cryptoCoinName"
-                    placeholder='E.g: "Bitcoin"'
-                    value={data.cryptoCoinName || ""}
-                    onChange={handleInput}
-                    required
+                    control={control}
+                    defaultValue=""
+                    rules={{
+                        required: "Crypto Coin Name is required",
+                        minLength: {
+                            value: 3,
+                            message: "Name must be at least 3 characters long",
+                        },
+                    }}
+                    render={({ field }) => (
+                        <InputField
+                            {...field} // 👈 keep this BEFORE custom props
+                            label="Crypto Coin Name"
+                            placeholder='E.g: "Bitcoin"'
+                            required
+                            error={errors.cryptoCoinName?.message as string} // 👈 AFTER spreading field
+                        />
+                    )}
                 />
-                <InputField
-                    label="Coin Abbreviation"
+                <Controller
                     name="coinAbbreviation"
-                    placeholder='E.g: "BTC"'
-                    value={data.coinAbbreviation || ""}
-                    onChange={handleInput}
-                    required
+                    control={control}
+                    defaultValue=""
+                    rules={{
+                        required: "Crypto Coin Abbreviation is required",
+                        minLength: {
+                            value: 3,
+                            message: "Name must be at least 3 characters long",
+                        },
+                    }}
+                    render={({ field }) => (
+                        <InputField
+                            {...field} // 👈 keep this BEFORE custom props
+                            label="Coin Abbreviation"
+                            placeholder='E.g: "Bitcoin"'
+                            required
+                            error={errors.coinAbbreviation?.message as string} // 👈 AFTER spreading field
+                        />
+                    )}
                 />
+
+
 
                 {/* File Upload */}
                 <div className="flex flex-col gap-2">
@@ -65,7 +90,7 @@ const StepGeneral: React.FC<Props> = ({ data, onChange }) => {
                             id="icoIcon"
                             placeholder="Select ico icon"
                             accept="image/*"
-                            onChange={handleFile}
+                            onChange={handleFileChange}
                             className="hidden"
                         />
                         <label
@@ -74,155 +99,242 @@ const StepGeneral: React.FC<Props> = ({ data, onChange }) => {
                         >
                             Add or Upload File
                         </label>
-                        {data.icoIcon && (
+                        {/* {data.icoIcon && (
                             <span className="text-sm text-gray-300">{data.icoIcon.name}</span>
-                        )}
+                        )} */}
                     </div>
                 </div>
 
-                <InputField
-                    label="ICO Token Price"
+                <Controller
                     name="icoTokenPrice"
-                    placeholder="Enter Token Price (Eg: 4000 BTC)"
-                    value={data.icoTokenPrice || ""}
-                    onChange={handleInput}
+                    control={control}
+                    render={({ field }) => (
+                        <InputField
+                            label="ICO Token Price"
+                            placeholder="Enter Token Price (Eg: 4000 BTC)"
+                            {...field}
+                        />
+                    )}
                 />
             </div>
 
-            <Teextarea
-                label="Additional ICO Details"
+            <Controller
                 name="additionalDetails"
-                placeholder="Enter detailed ICO description..."
-                value={data.additionalDetails || ""}
-                onChange={handleInput}
-                rows={4}
+                control={control}
+                render={({ field }) => (
+                    <Teextarea
+                        label="Additional ICO Details"
+                        placeholder="Enter detailed ICO description..."
+                        rows={4}
+                        {...field}
+                    />
+                )}
             />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                <SelectField
-                    btnClass="bg-brand-glass text-gray-800"
-                    dropBg="bg-[#545454] "
-                    label="Know Your Customer (KYC)"
+                <Controller
                     name="kyc"
-                    options={tokenOptions}
-                    value={data.kyc || "Yes"}
-                    // onChange={handleSelect}
-                    onChange={(value) => handleSelect(value, "kyc")}  // ✅ Correct: `value` is a string
-
+                    control={control}
+                    render={({ field }) => (
+                        <SelectField
+                            btnClass="bg-brand-glass text-gray-800"
+                            dropBg="bg-[#545454]"
+                            label="Know Your Customer (KYC)"
+                            options={[
+                                { value: "Yes", label: "Yes" },
+                                { value: "No", label: "No" },
+                            ]}
+                            {...field}
+                        />
+                    )}
                 />
-                <InputField
-                    label="Know Your Customer (KYC)? Details"
+
+                <Controller
                     name="kycDetails"
-                    placeholder="Enter KYC details..."
-                    value={data.kycDetails || ""}
-                    onChange={handleInput}
+                    control={control}
+                    render={({ field }) => (
+                        <InputField
+                            label="Know Your Customer (KYC)? Details"
+                            placeholder="Enter KYC details..."
+                            {...field}
+                        />
+                    )}
                 />
-                <InputField
-                    label="Can't participate"
+
+                <Controller
                     name="cantParticipate"
-                    placeholder="E.g: 'LTC, XRT ...'"
-                    value={data.cantParticipate || ""}
-                    onChange={handleInput}
+                    control={control}
+                    render={({ field }) => (
+                        <InputField
+                            label="Can't participate"
+                            placeholder="E.g: 'LTC, XRT ...'"
+                            {...field}
+                        />
+                    )}
                 />
-                <InputField
-                    label="Participation with:"
+
+                <Controller
                     name="participationWith"
-                    placeholder="Following Cryptos: E.g: 'BTC, LTC, ETH'"
-                    value={data.participationWith || ""}
-                    onChange={handleInput}
+                    control={control}
+                    render={({ field }) => (
+                        <InputField
+                            label="Participation with:"
+                            placeholder="Following Cryptos: E.g: 'BTC, LTC, ETH'"
+                            {...field}
+                        />
+                    )}
                 />
 
-                <InputField
-                    label="Competition Coins"
+                <Controller
                     name="competitionCoins"
-                    placeholder="List of Competition Coins. E.g: 'BTC, LTC ...'"
-                    value={data.competitionCoins || ""}
-                    onChange={handleInput}
+                    control={control}
+                    render={({ field }) => (
+                        <InputField
+                            label="Competition Coins"
+                            placeholder="List of Competition Coins. E.g: 'BTC, LTC ...'"
+                            {...field}
+                        />
+                    )}
                 />
-                <InputField
-                    label="Token Role"
+
+                <Controller
                     name="tokenRole1"
-                    placeholder="Set Token Role E.g: 'UTILITY'"
-                    value={data.tokenRole1 || ""}
-                    onChange={handleInput}
+                    control={control}
+                    render={({ field }) => (
+                        <InputField
+                            label="Token Role"
+                            placeholder="Set Token Role E.g: 'UTILITY'"
+                            {...field}
+                        />
+                    )}
                 />
-                <InputField
-                    label="Token Type"
+
+                <Controller
                     name="tokenType"
-                    placeholder="Set Token Type: E.g: 'ERC20'"
-                    value={data.tokenType || ""}
-                    onChange={handleInput}
+                    control={control}
+                    render={({ field }) => (
+                        <InputField
+                            label="Token Type"
+                            placeholder="Set Token Type: E.g: 'ERC20'"
+                            {...field}
+                        />
+                    )}
                 />
-                <SelectField
-                    btnClass="bg-brand-glass text-gray-800"
-                    dropBg="bg-[#545454] "
-                    label="Interest"
+
+                <Controller
                     name="interest"
-                    options={tokenOptions}
-                    placeholder="Select Interest Level"
-                    value={data.interest || "Neutral"}
-                    // onChange={handleSelect}
-                    onChange={(value) => handleSelect(value, "interest")}  // ✅ Correct: `value` is a string
-
+                    control={control}
+                    render={({ field }) => (
+                        <SelectField
+                            btnClass="bg-brand-glass text-gray-800"
+                            dropBg="bg-[#545454]"
+                            label="Interest"
+                            options={[
+                                { value: "High", label: "High" },
+                                { value: "Neutral", label: "Neutral" },
+                                { value: "Low", label: "Low" },
+                            ]}
+                            {...field}
+                        />
+                    )}
                 />
-                <InputField
-                    label="Token Role"
+
+                <Controller
                     name="tokenRole2"
-                    placeholder="Set Token Role E.g: 'UTILITY'"
-                    value={data.tokenRole2 || ""}
-                    onChange={handleInput}
-                />
-                <InputField
-                    label="Received"
-                    name="received"
-                    placeholder="Set the money received (Eg: 40000000 BTC)"
-                    value={data.received || ""}
-                    onChange={handleInput}
-                />
-                <InputField
-                    label="ICO Start Date"
-                    name="icoStartDate"
-                    placeholder="Set the Start Date"
-                    type="date"
-                    value={data.icoStartDate || ""}
-                    onChange={handleInput}
-                />
-                <InputField
-                    label="ICO End Date"
-                    name="icoEndDate"
-                    placeholder="Set the End Date"
-                    type="date"
-                    value={data.icoEndDate || ""}
-                    onChange={handleInput}
+                    control={control}
+                    render={({ field }) => (
+                        <InputField
+                            label="Token Role"
+                            placeholder="Set Token Role E.g: 'UTILITY'"
+                            {...field}
+                        />
+                    )}
                 />
 
-                <InputField
-                    label="Website link"
+                <Controller
+                    name="received"
+                    control={control}
+                    render={({ field }) => (
+                        <InputField
+                            label="Received"
+                            placeholder="Set the money received (Eg: 40000000 BTC)"
+                            {...field}
+                        />
+                    )}
+                />
+
+                <Controller
+                    name="icoStartDate"
+                    control={control}
+                    render={({ field }) => (
+                        <InputField
+                            type="date"
+                            label="ICO Start Date"
+                            placeholder="Set the Start Date"
+                            {...field}
+                        />
+                    )}
+                />
+
+                <Controller
+                    name="icoEndDate"
+                    control={control}
+                    render={({ field }) => (
+                        <InputField
+                            type="date"
+                            label="ICO End Date"
+                            placeholder="Set the End Date"
+                            {...field}
+                        />
+                    )}
+                />
+
+                <Controller
                     name="websiteLink"
-                    placeholder="Your Coin Websit url. E.g: 'http://example.com'"
-                    value={data.websiteLink || ""}
-                    onChange={handleInput}
+                    control={control}
+                    render={({ field }) => (
+                        <InputField
+                            label="Website link"
+                            placeholder="Your Coin Website URL. E.g: 'http://example.com'"
+                            {...field}
+                        />
+                    )}
                 />
-                <InputField
-                    label="Whitepapper link"
+
+                <Controller
                     name="whitepaperLink"
-                    placeholder="WhitePaper url. E.g: 'http://example.com/whitepaper.pdf'"
-                    value={data.whitepaperLink || ""}
-                    onChange={handleInput}
+                    control={control}
+                    render={({ field }) => (
+                        <InputField
+                            label="Whitepaper link"
+                            placeholder="WhitePaper URL. E.g: 'http://example.com/whitepaper.pdf'"
+                            {...field}
+                        />
+                    )}
                 />
-                <InputField
-                    label="Prototype link"
+
+                <Controller
                     name="prototypeLink"
-                    placeholder="Your Prototype url. E.g: 'http://example.com/'"
-                    value={data.prototypeLink || ""}
-                    onChange={handleInput}
+                    control={control}
+                    render={({ field }) => (
+                        <InputField
+                            label="Prototype link"
+                            placeholder="Your Prototype URL. E.g: 'http://example.com/'"
+                            {...field}
+                        />
+                    )}
                 />
-                <InputField
-                    label="Coin Purchase link"
+
+                <Controller
                     name="coinPurchaseLink"
-                    placeholder="Your Coin Purchase Url. E.g: 'http://example.com/'"
-                    value={data.coinPurchaseLink || ""}
-                    onChange={handleInput}
+                    control={control}
+                    render={({ field }) => (
+                        <InputField
+                            label="Coin Purchase link"
+                            placeholder="Your Coin Purchase URL. E.g: 'http://example.com/'"
+                            {...field}
+                        />
+                    )}
                 />
             </div>
         </div >

@@ -2,51 +2,121 @@
 import DataTable from '@/components/admin/table/DataTable';
 import { TopHeader } from '@/components/admin/TopHeader'
 import StatusBadge from '@/components/ui/Badge';
+import CustomConfirm from '@/components/ui/CustomAlert';
 import InputField from '@/components/ui/Input';
 import SelectField from '@/components/ui/Select';
 import { UniversalContainer } from '@/components/ui/UniversalContainer';
-import { Ban, Edit, Funnel, Shield, X } from 'lucide-react';
+import { useUsers } from '@/hooks/useUsers';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Ban, Check, Edit, Funnel, Shield, X } from 'lucide-react';
 import Image from 'next/image'
 import React, { useEffect, useRef, useState } from 'react'
 
+// ✅ Update user status (activate/deactivate)
+const updateUserStatus = async ({
+    id,
+    action,
+}: {
+    id: string;
+    action: "active" | "inactive";
+}) => {
+    const res = await fetch(`/api/users/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, action }),
+    });
+
+    const data = await res.json();
+    if (!res.ok || !data.success)
+        throw new Error(data.message || "Failed to update user status");
+    return data;
+};
+
 const page = () => {
     const [showFilter, setShowFilter] = useState(false);
-    const [data, setData] = useState({ status: "Neutral", launchpad: "All", raiseMin: "0", raiseMax: "0" });
-    const filterRef = useRef<HTMLDivElement>(null);
+    const [data, setData] = useState({ status: "" });
+    const [filters, setFilters] = useState({ status: "" });
 
+    const filterRef = useRef<HTMLDivElement>(null);
+    const queryClient = useQueryClient();
+
+
+    const { data: users = [], refetch, isFetching } = useUsers(filters, true);
+
+
+    const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+    const [showConfirm, setShowConfirm] = useState<{
+        open: boolean;
+        action: "active" | "inactive" | null;
+    }>({ open: false, action: null });
+
+
+    // ✅ React Query mutation for status update
+    // ✅ React Query mutation for status update
+    const { mutate: handleStatusChange } = useMutation({
+        mutationFn: updateUserStatus,
+        onMutate: async ({ id, action }) => {
+            await queryClient.cancelQueries({ queryKey: ["users"] });
+
+            const previousUsers = queryClient.getQueryData(["users"]);
+
+            // 🟡 Optimistic UI Update
+            queryClient.setQueryData(["users"], (oldUsers: any) => {
+                if (!oldUsers) return [];
+                return oldUsers.map((u: any) =>
+                    u._id === id ? { ...u, status: action } : u
+                );
+            });
+
+            return { previousUsers };
+        },
+
+        onError: (err: any, _variables, context: any) => {
+            console.error("Status update error:", err.message);
+            // 🔙 Rollback if failed
+            if (context?.previousUsers) {
+                queryClient.setQueryData(["users"], context.previousUsers);
+            }
+            setShowConfirm({ open: false, action: null });
+        },
+
+        onSettled: () => {
+            // ✅ Ensure fresh data after mutation (optional if optimistic update is used)
+            queryClient.invalidateQueries({ queryKey: ["users"] });
+            setShowConfirm({ open: false, action: null });
+        },
+    });
+
+    console.log({ users })
     const cards = [
-        {
-            title: "Total Listed ICOs",
-            value: 347,
-            valueCls: "text-brand-red",
-            // change: "+12% from last month",
-            // icon: "/svg/coins/combo.svg",
-        },
-        {
-            title: "Active Users",
-            value: 1289,
-            // change: "+8% from last month",
-            // icon: "/svg/usercombo.svg",
-        },
-        {
-            title: "Approved Projects",
-            value: 74,
-            // change: "+5% from last month",
-            // icon: "/svg/checkcircle.svg",
-            // textColor: "brand-yellow",
-        },
+        { title: "Total Users", value: users.length },
+        { title: "Active Users", value: users.filter((u: any) => u.status === "active").length },
+        { title: "Suspended Users", value: users.filter((u: any) => u.status === "suspended").length },
     ];
     const columns = [
         {
             key: "name", label: "Name",
             className: "text-brand-text-secondary font-inter font-semibold text-[16px] leading-[20px]", // white bold
+            render: (_: any, row: any) => {
+                // ✅ Handle cases where userId might be null or not populated
+
+
+                const fullName =
+                    [row.firstName, row.lastName].filter(Boolean).join(" ") || row.email;
+
+                return (
+                    <span className="font-inter text-sm text-white capitalize">
+                        {fullName}
+                    </span>
+                );
+            },
         },
         { key: "email", label: "Email" },
         {
-            key: "role", label: "Role",
+            key: "userType", label: "Role",
             render: (value: string) => (
                 <span
-                    className={`px-3 py-1 inline-flex items-center gap-2 rounded-full text-sm font-semibold  border border-black
+                    className={`px-3 py-1 inline-flex items-center gap-2 rounded-full text-sm font-semibold  border border-black capitalize
                         text-white 
                        
                         }`}
@@ -56,63 +126,72 @@ const page = () => {
             ),
 
         },
-        { key: "joined", label: "Joined" },
+        {
+            key: "createdAt", label: "Joined",
+            render: (value: string) => {
+                const date = new Date(value);
+
+                const formattedDate = date.toLocaleString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "2-digit",
+
+                });
+                return (
+                    <span
+                        className={`
+                        text-white 
+                       
+                        }`}
+                    >
+                        {formattedDate}
+                    </span>
+                )
+            }
+        },
         {
             key: "status",
             label: "Status",
             render: (value: string) => {
                 console.log({ value })
-                return <StatusBadge value={value === "suspended" ? "suspended" : value} text={value} />
+                return <StatusBadge value={value === "active" ? "active_success" : value} text={value} />
             },
         },
 
         {
             key: "actions",
             label: "Actions",
-            render: () => (
-                <div className="flex gap-3">
-                    <button className="text-gray-300 hover:text-white">
+            render: (_: any, row: any) => (
+                <div className="flex gap-3 items-center">
+                    <button className="text-gray-300 hover:text-white cursor-pointer">
                         <Edit size={16} />
                     </button>
-                    <button className="text-red-500 hover:text-red-400">
-                        <Ban size={16} />
-                    </button>
+                    {row.status === "inactive" ? (
+                        <button
+                            onClick={() => {
+                                setSelectedUserId(row._id);
+                                setShowConfirm({ open: true, action: "active" });
+                            }}
+                            className="text-green-400 hover:text-green-300 cursor-pointer"
+                        >
+                            <Check size={16} />
+                        </button>
+                    ) : (
+                        <button
+                            onClick={() => {
+                                setSelectedUserId(row._id);
+                                setShowConfirm({ open: true, action: "inactive" });
+                            }}
+                            className="text-red-500 hover:text-red-400 cursor-pointer"
+                        >
+                            <Ban size={16} />
+                        </button>
+                    )}
                 </div>
             ),
         },
     ];
 
-    const users = [
-        {
-            name: "John Doe",
-            email: "john@example.com",
-            role: "User",
-            joined: "21 Sep 2024",
-            status: "active",
-
-        },
-        {
-            name: "Alice Smith",
-            email: "alice@example.com",
-            role: "Moderator",
-            joined: "15 Aug 2024",
-            status: "active",
-        },
-        {
-            name: "Bob Johnson",
-            email: "bob@example.com",
-            role: "User",
-            joined: "03 Oct 2024",
-            status: "suspended",
-        },
-        {
-            name: "Carol Williams",
-            email: "carol@example.com",
-            role: "Admin",
-            joined: "10 Jul 2024",
-            status: "suspended",
-        },
-    ];
 
     const tokenOptions = [
         { value: "", label: "All Users" },
@@ -172,10 +251,9 @@ const page = () => {
                                     label="Status"
                                     name="status"
                                     options={tokenOptions}
-                                    placeholder="Select status Level"
+                                    placeholder="Select Status"
                                     value={data.status}
-                                    lblClass='text-[14px] font-semibold leading-[14px] font-inter'
-                                    onChange={(e) => handleSelect(e, "status")} // ✅ fixed type error
+                                    onChange={(val) => handleSelect(val, "status")}
                                 />
 
 
@@ -185,15 +263,20 @@ const page = () => {
                             <div className="flex md:justify-end justify-between gap-3 mt-8">
                                 <button
                                     className="md:w-[72px] w-full h-[40px] rounded-[10px] border border-[#3B3B3B] cursor-pointer bg-[#3B3B3B] text-[#F8FAFC] text-[14px] font-semibold"
-                                    onClick={() => setData({ status: "Neutral", launchpad: "All", raiseMin: "0", raiseMax: "0" })}
+                                    onClick={() => setData({ status: "all" })}
                                 >
                                     Reset
                                 </button>
                                 <button
                                     className="md:w-[118px] w-full h-[40px] rounded-[10px] bg-[#FACC15] cursor-pointer text-black text-[14px] font-semibold"
-                                    onClick={() => setShowFilter(false)}
+                                    onClick={() => {
+                                        setFilters(data);
+                                        refetch();
+                                        setShowFilter(false);
+                                    }}
                                 >
-                                    Filter
+                                    {isFetching ? "Filtering..." : "Filter"}
+
                                 </button>
                             </div>
                         </UniversalContainer>
@@ -218,6 +301,26 @@ const page = () => {
                     </div>
                 </div>
             </div>
+            {/* ✅ Confirm Modal */}
+            <CustomConfirm
+                open={showConfirm.open}
+                title={
+                    showConfirm.action === "active"
+                        ? "Activate User"
+                        : "Deactivate User"
+                }
+                message={
+                    showConfirm.action === "active"
+                        ? "Are you sure you want to activate this user?"
+                        : "Are you sure you want to suspend this user?"
+                }
+                onConfirm={() => {
+                    if (selectedUserId && showConfirm.action) {
+                        handleStatusChange({ id: selectedUserId, action: showConfirm.action });
+                    }
+                }}
+                onCancel={() => setShowConfirm({ open: false, action: null })}
+            />
         </div>
     )
 }

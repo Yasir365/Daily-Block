@@ -4,6 +4,9 @@ interface UniversalContainerProps {
     className?: string;
     onClickOutside?: () => void;
     as?: "div" | "dialog" | "section";
+    onClick?: React.MouseEventHandler<HTMLElement>; // ✅ works for all tags
+
+
 }
 
 export const UniversalContainer = ({
@@ -11,6 +14,8 @@ export const UniversalContainer = ({
     size = "md",
     className = "gap-6",
     as: Tag = "div",
+    onClick, // ✅ allow click handlers inside
+
 }: UniversalContainerProps) => {
     const sizeClasses = {
         sm: "w-[180px]",
@@ -31,6 +36,8 @@ export const UniversalContainer = ({
                 max-w-[95vw] sm:max-w-[90vw] md:max-w-none
                 p-4 sm:p-5 md:p-6
             `}
+            onClick={onClick} // ✅ enables stopPropagation()
+
         >
             {children}
         </Tag>

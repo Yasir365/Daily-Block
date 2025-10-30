@@ -6,7 +6,7 @@ export interface IFaq {
 }
 
 export interface IIcoProject extends Document {
-  userId?: string;
+  userId?: mongoose.Types.ObjectId;
   cryptoCoinName: string;
   coinAbbreviation: string;
   icoIcon?: string;
@@ -66,7 +66,16 @@ const FaqSchema = new Schema<IFaq>({
 
 const IcoProjectSchema = new Schema<IIcoProject>(
   {
-    userId: { type: String },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      autopopulate: false, // you can set true if you want auto populate
+      set: (v: any) =>
+        mongoose.Types.ObjectId.isValid(v)
+          ? new mongoose.Types.ObjectId(v)
+          : undefined,
+    },
     cryptoCoinName: { type: String, required: true },
     coinAbbreviation: { type: String, required: true },
     icoIcon: { type: String },
