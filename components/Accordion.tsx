@@ -44,7 +44,7 @@ const faqData = [
     },
 ];
 
-export const Accordion = () => {
+export const    Accordion = () => {
     const items: CollapseProps["items"] = faqData.map((item, index) => ({
         key: String(index),
         label: <span className="text-white font-titilliumWeb font-semibold text-[24px] leading-[28px]">

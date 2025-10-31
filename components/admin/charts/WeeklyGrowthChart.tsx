@@ -1,5 +1,7 @@
 "use client";
 
+import { fetchGraphStats } from "@/services/dashboardService";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import {
     LineChart,
@@ -11,35 +13,37 @@ import {
     ResponsiveContainer,
 } from "recharts";
 
-const data = [
-    { day: "Mon", users: 280, sessions: 20 },
-    { day: "Tue", users: 360, sessions: 45 },
-    { day: "Wed", users: 300, sessions: 35 },
-    { day: "Thu", users: 420, sessions: 60 },
-    { day: "Fri", users: 480, sessions: 70 },
-    { day: "Sat", users: 390, sessions: 30 },
-    { day: "Sun", users: 440, sessions: 40 },
-];
 
 export default function WeeklyGrowthChart() {
     // ✅ Detect screen width to adjust styling
     const [isMobile, setIsMobile] = useState(false);
-
+    const {
+        data: stats,
+        isLoading,
+        isError,
+    } = useQuery({
+        queryKey: ["dashboardStats"],
+        queryFn: () => fetchGraphStats("weekly"), // or "monthly"
+    });
     useEffect(() => {
         const checkScreen = () => setIsMobile(window.innerWidth < 768);
         checkScreen();
         window.addEventListener("resize", checkScreen);
         return () => window.removeEventListener("resize", checkScreen);
     }, []);
+
+    if (isLoading) return <p className="text-white">Loading chart...</p>;
+    if (isError) return <p className="text-red-400">Error loading data</p>;
+
     return (
         <div className="h-[300px] sm:h-[380px] md:h-[456px] p-4 sm:p-6 md:p-8 rounded-[12px] border border-[#90909066] bg-[#3B3B3B80] shadow-[0_1px_2px_0_#0000000D] backdrop-blur-[4px]">
             <h2 className="text-white text-base sm:text-lg font-semibold mb-4 sm:mb-6">
-                Weekly Growth
+                Weekly Growth <span className="text-gray-400 text-sm">(Users & Projects)</span>
             </h2>
 
             <ResponsiveContainer width="100%" height="85%">
                 <LineChart
-                    data={data}
+                    data={stats?.growth || []}
                     margin={{
                         top: isMobile ? 5 : 10,
                         right: isMobile ? 10 : 20,
@@ -94,6 +98,16 @@ export default function WeeklyGrowthChart() {
                             fontFamily: "Inter, sans-serif",
                             fontSize: isMobile ? 12 : 14,
                         }}
+                        formatter={(value, name) => {
+                            // Capitalize tooltip labels
+                            const label =
+                                name === "users"
+                                    ? "Users"
+                                    : name === "projects"
+                                        ? "Projects"
+                                        : name;
+                            return [value, label];
+                        }}
                     />
 
                     {/* 🟢 Green Line */}
@@ -108,7 +122,7 @@ export default function WeeklyGrowthChart() {
                     {/* 🟡 Yellow Line */}
                     <Line
                         type="monotone"
-                        dataKey="sessions"
+                        dataKey="projects"
                         stroke="#FACC15"
                         strokeWidth={2}
                         dot={false}

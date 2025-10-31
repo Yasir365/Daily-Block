@@ -1,5 +1,5 @@
 "use client"
-import { Controller, useFormContext } from "react-hook-form";
+import { Controller, useFormContext, useWatch } from "react-hook-form";
 import InputField from "../ui/Input";
 import SelectField from "../ui/Select";
 import Teextarea from "../ui/Textarea";
@@ -26,6 +26,11 @@ const StepGeneral = () => {
         const file = e.target.files?.[0];
         if (file) setValue("icoIcon", file);
     };
+    // watch the file field
+    const icoIconFile = useWatch({
+        control,
+        name: "icoIcon",
+    });
     return (
         <div className="flex flex-col gap-6">
             <div className="border-b border-[#FFFFFF26]/85 pb-2">
@@ -93,15 +98,15 @@ const StepGeneral = () => {
                             onChange={handleFileChange}
                             className="hidden"
                         />
+                        {icoIconFile && <span className="text-sm text-gray-300">{icoIconFile.name}</span>}
                         <label
                             htmlFor="icoIcon"
                             className="bg-brand-yellow text-black font-semibold px-4 py-2 rounded-md cursor-pointer "
                         >
                             Add or Upload File
                         </label>
-                        {/* {data.icoIcon && (
-                            <span className="text-sm text-gray-300">{data.icoIcon.name}</span>
-                        )} */}
+
+
                     </div>
                 </div>
 
@@ -297,6 +302,8 @@ const StepGeneral = () => {
                             label="Website link"
                             placeholder="Your Coin Website URL. E.g: 'http://example.com'"
                             {...field}
+                            error={errors.websiteLink?.message as string}
+
                         />
                     )}
                 />
@@ -309,6 +316,8 @@ const StepGeneral = () => {
                             label="Whitepaper link"
                             placeholder="WhitePaper URL. E.g: 'http://example.com/whitepaper.pdf'"
                             {...field}
+                            error={errors.whitepaperLink?.message as string}
+
                         />
                     )}
                 />
@@ -321,6 +330,8 @@ const StepGeneral = () => {
                             label="Prototype link"
                             placeholder="Your Prototype URL. E.g: 'http://example.com/'"
                             {...field}
+                            error={errors.prototypeLink?.message as string}
+
                         />
                     )}
                 />
@@ -333,9 +344,14 @@ const StepGeneral = () => {
                             label="Coin Purchase link"
                             placeholder="Your Coin Purchase URL. E.g: 'http://example.com/'"
                             {...field}
+
+                            error={errors.coinPurchaseLink?.message as string}
+
                         />
                     )}
                 />
+
+
             </div>
         </div >
     );

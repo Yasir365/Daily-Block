@@ -1,76 +1,94 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import BlogModel from "@/models/BlogModel";
+import Notification from "@/models/NotificationModel";
 import { verifyToken } from "@/lib/verifyToken";
+
+import fs from "fs";
+import path from "path";
+import { promises as fsPromises } from "fs";
+import { createNotification } from "@/lib/notify";
+import mongoose from "mongoose";
+
+type IBlogStatus = "draft" | "published" | "archived" | "blocked" | "live";
+
+// --- Utility function to save image ---
+async function saveImage(file: File) {
+  const uploadDir = path.join(process.cwd(), "public", "uploads", "blogs");
+
+  // Ensure directory exists
+  await fsPromises.mkdir(uploadDir, { recursive: true });
+
+  const fileName = `${Date.now()}-${file.name}`;
+  const filePath = path.join(uploadDir, fileName);
+
+  // Convert Blob to Buffer and save
+  const buffer = Buffer.from(await file.arrayBuffer());
+  await fsPromises.writeFile(filePath, buffer);
+
+  return `/uploads/blogs/${fileName}`;
+}
 
 export async function GET(req: NextRequest) {
   try {
     await connectDB();
 
     const { searchParams } = new URL(req.url);
-    const status = searchParams.get("status") || "all";
-    const userId = searchParams.get("userId");
+    const page = parseInt(searchParams.get("page") || "1");
+    const limitParam = searchParams.get("limit");
+    const limit = limitParam ? parseInt(limitParam) : 10;
+    const type = searchParams.get("type");
+    const date = searchParams.get("date"); // format: YYYY-MM-DD
+    const onlyUnread = searchParams.get("unread") === "true";
+    const all = searchParams.get("all") === "true";
 
-    const query: any = {};
-    if (status !== "all") query.status = status;
-    if (userId) query.userId = userId;
+    // ✅ Verify user
+    const { user, error } = await verifyToken(req);
+    if (error || !user) {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized" },
+        { status: 401 }
+      );
+    }
 
-    const blogs = await BlogModel.find(query)
-      .sort({ createdAt: -1 })
-      .populate("userId", "firstName lastName email");
+    // ✅ Base filter
+    const filter: any = { userId: user._id };
 
-    // ✅ Calculate stats
-    const now = new Date();
-    const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+    if (type) filter.type = type;
+    if (onlyUnread) filter.isRead = false;
+    if (date) {
+      const dayStart = new Date(date);
+      const dayEnd = new Date(date);
+      dayEnd.setHours(23, 59, 59, 999);
+      filter.createdAt = { $gte: dayStart, $lte: dayEnd };
+    }
 
-    const totalBlogs = blogs.length;
-    const totalViews = blogs.reduce((acc, b) => acc + (b.views || 0), 0);
-    const avgReadTime =
-      totalBlogs > 0
-        ? Math.round(
-            blogs.reduce((acc, b) => acc + (b.readTime || 0), 0) / totalBlogs
-          )
-        : 0;
-
-    // ✅ Fetch last month’s blogs for comparison
-    const lastMonthBlogs = await BlogModel.find({
-      createdAt: { $gte: startOfLastMonth, $lt: endOfLastMonth },
+    // ✅ Get total count for pagination
+    const total = await Notification.countDocuments(filter);
+    const unreadCount = await Notification.countDocuments({
+      ...filter,
+      isRead: false,
     });
 
-    const lastMonthViews = lastMonthBlogs.reduce(
-      (acc, b) => acc + (b.views || 0),
-      0
-    );
-    const lastMonthAvgRead =
-      lastMonthBlogs.length > 0
-        ? Math.round(
-            lastMonthBlogs.reduce((acc, b) => acc + (b.readTime || 0), 0) /
-              lastMonthBlogs.length
-          )
-        : 0;
+    let query = Notification.find(filter).sort({ createdAt: -1 }).lean();
 
-    // ✅ Calculate percentage change
-    const calcPercentChange = (curr: number, prev: number) => {
-      if (prev === 0) return curr > 0 ? 100 : 0;
-      return Math.round(((curr - prev) / prev) * 100);
-    };
+    // ✅ Handle different modes
+    if (!all) {
+      query = query.skip((page - 1) * limit).limit(limit);
+    }
 
-    const stats = {
-      totalBlogs,
-      totalViews,
-      avgReadTime,
-      change: {
-        blogs: calcPercentChange(totalBlogs, lastMonthBlogs.length),
-        views: calcPercentChange(totalViews, lastMonthViews),
-        readTime: calcPercentChange(avgReadTime, lastMonthAvgRead),
-      },
-    };
+    const notifications = await query.exec();
 
-    return NextResponse.json({ success: true, blogs, stats });
+    return NextResponse.json({
+      success: true,
+      total,
+      unreadCount,
+      currentPage: page,
+      totalPages: all ? 1 : Math.ceil(total / limit),
+      data: notifications,
+    });
   } catch (err: any) {
-    console.error("❌ Error fetching blogs:", err);
+    console.error("❌ Notification fetch error:", err);
     return NextResponse.json(
       { success: false, message: err.message },
       { status: 500 }
@@ -81,29 +99,31 @@ export async function GET(req: NextRequest) {
 // POST: create a new blog (admin only)
 // In app/api/blogs/route.ts
 
+// --- POST: Create a new blog ---
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
 
-    // ✅ Check authentication
+    // ✅ Verify user
     const { user, error } = await verifyToken(req);
-    if (error || !user) {
+    if (error || !user)
       return NextResponse.json(
         { success: false, message: "Unauthorized. Please log in again." },
         { status: 401 }
       );
-    }
 
-    // ✅ Only admin or authorized roles can create blogs
-    if (user.role !== "admin") {
+    if (user.role !== "admin")
       return NextResponse.json(
         { success: false, message: "Access denied. Admins only." },
         { status: 403 }
       );
-    }
 
-    const body = await req.json();
-    const { title, excerpt, content, status } = body;
+    const formData = await req.formData();
+    const title = formData.get("title") as string;
+    const excerpt = formData.get("excerpt") as string;
+    const content = formData.get("content") as string;
+    const status = (formData.get("status") as string) || "draft";
+    const imageFile = formData.get("image") as File | null;
 
     if (!title || !excerpt || !content) {
       return NextResponse.json(
@@ -115,15 +135,33 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    let imageUrl = "";
+    if (imageFile && imageFile.size > 0) {
+      imageUrl = await saveImage(imageFile);
+    }
+
     const blog = await BlogModel.create({
       title,
       excerpt,
       content,
-      status: status || "draft",
+      image: imageUrl || null,
+      status,
       userId: user._id,
-      publishedDate:
-        status === "published" || status === "live" ? new Date() : null,
+      publishedDate: ["published", "live"].includes(status) ? new Date() : null,
     });
+
+    // after `const blog = await BlogModel.create({...})`
+    if (!blog) throw new Error("Failed to create blog.");
+    if (blog._id) {
+      await createNotification({
+        title: "New Blog Published",
+        message: `A new blog titled "${blog.title}" has been created.`,
+        type: "blog",
+        related: blog,
+        userId: user._id,
+        status: "success",
+      });
+    }
 
     return NextResponse.json({
       success: true,
@@ -139,58 +177,66 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// PATCH: update blog status, soft-delete, restore
+// --- PATCH: Update blog ---
 export async function PATCH(req: NextRequest) {
   try {
     await connectDB();
 
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
-    const action = searchParams.get("action"); // "delete" | "restore" | "status"
-
-    if (!id) {
+    if (!id)
       return NextResponse.json(
         { success: false, message: "Blog ID is required." },
         { status: 400 }
       );
-    }
+
     const blog = await BlogModel.findById(id);
-    if (!blog) {
+    if (!blog)
       return NextResponse.json(
         { success: false, message: "Blog not found." },
         { status: 404 }
       );
-    }
-    const body = await req.json();
 
-    // 🧠 Handle status update
-    if (body.status) {
-      const validStatuses = [
-        "draft",
-        "published",
-        "archived",
-        "blocked",
-        "live",
-      ];
-      if (!validStatuses.includes(body.status)) {
-        return NextResponse.json(
-          { success: false, message: "Invalid status value." },
-          { status: 400 }
-        );
-      }
-      blog.status = body.status;
-      if (["published", "live"].includes(body.status)) {
+    const formData = await req.formData();
+    const title = formData.get("title") as string;
+    const excerpt = formData.get("excerpt") as string;
+    const content = formData.get("content") as string;
+    const status = formData.get("status") as IBlogStatus;
+    const imageFile = formData.get("image") as File | null;
+
+    if (title) blog.title = title;
+    if (excerpt) blog.excerpt = excerpt;
+    if (content) blog.content = content;
+    if (status) {
+      blog.status = status;
+      if (["published", "live"].includes(status))
         blog.publishedDate = new Date();
-      }
     }
 
-    // 🧠 Handle other editable fields
-    if (body.title) blog.title = body.title;
-    if (body.excerpt) blog.excerpt = body.excerpt;
-    if (body.content) blog.content = body.content;
+    // 🧠 Handle image update
+    if (imageFile && imageFile.size > 0) {
+      // delete old image if exists
+      if (
+        blog.image &&
+        fs.existsSync(path.join(process.cwd(), "public", blog.image))
+      ) {
+        await fsPromises.unlink(path.join(process.cwd(), "public", blog.image));
+      }
+      const newImageUrl = await saveImage(imageFile);
+      blog.image = newImageUrl;
+    }
 
-    // 🧠 Save all updates
     await blog.save();
+
+    if (["published", "live"].includes(status)) {
+      // await createNotification({
+      //   title: "Blog Published",
+      //   message: `The blog "${blog.title}" is now live.`,
+      //   type: "blog",
+      //   relatedId: new mongoose.Types.ObjectId(blog._id as string),
+      //   userId: blog.userId,
+      // });
+    }
 
     return NextResponse.json({
       success: true,

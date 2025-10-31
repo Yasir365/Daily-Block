@@ -2,6 +2,8 @@ import { NextResponse, NextRequest } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import IcoProject from "@/models/Icoproject";
 import jwt from "jsonwebtoken";
+import { createNotification } from "@/lib/notify";
+import mongoose from "mongoose";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 
@@ -63,6 +65,16 @@ export async function PATCH(req: NextRequest) {
     project.status = action;
     await project.save();
 
+    // await createNotification({
+    //   title: "ICO Updated",
+    //   message:
+    //     action === "approved"
+    //       ? `Your ICO "${project.cryptoCoinName}" has been approved.`
+    //       : `Your ICO "${project.cryptoCoinName}" has been rejected.`,
+    //   type: "ico",
+    //   relatedId: new mongoose.Types.ObjectId(project._id),
+    //   userId: new mongoose.Types.ObjectId(project.userId),
+    // });
     return NextResponse.json(
       {
         success: true,

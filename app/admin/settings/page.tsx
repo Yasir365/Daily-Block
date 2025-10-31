@@ -22,6 +22,9 @@ import {
 import Wrapper from "@/components/admin/layoutCard/Wrapper";
 import { TopHeader } from "@/components/admin/TopHeader";
 import InputField from "@/components/ui/Input";
+import toast from "react-hot-toast";
+import { CustomToast } from "@/components/ui/ReactToast";
+
 
 // ✅ Validation schema (Zod)
 const ProfileSchema = z.object({
@@ -185,10 +188,22 @@ const Page = () => {
             return res.json();
         },
         onSuccess: () => {
-            alert("Profile updated successfully!");
+            toast.custom((t) => (
+                <CustomToast
+                    t={t}
+                    status="success"
+                    message="Profile updated successfully"
+                />
+            ))
         },
         onError: (err: any) => {
-            alert(err?.message || "Something went wrong");
+            toast.custom((t) => (
+                <CustomToast
+                    t={t}
+                    status="error"
+                    message={err.message || "Something went wrong"}
+                />
+            ))
         },
     });
 
@@ -196,7 +211,13 @@ const Page = () => {
     // ✅ Form submit
     const onSubmit = (data: ProfileFormData) => {
         if (data.newPassword && data.newPassword !== data.confirmNewPassword) {
-            alert("Passwords do not match!");
+            toast.custom((t) => (
+                <CustomToast
+                    t={t}
+                    status="error"
+                    message="New passwords do not match"
+                />
+            ))
             return;
         }
         updateProfileMutation.mutate(data);
@@ -217,16 +238,34 @@ const Page = () => {
     const handlePasswordUpdate = () => {
         const vals = getValues();
         if (!vals.newPassword) {
-            alert("Please enter new password.");
+            toast.custom((t) => (
+                <CustomToast
+                    t={t}
+                    status="error"
+                    message="New password is required"
+                />
+            ))
             return;
         }
         if (vals.newPassword !== vals.confirmNewPassword) {
-            alert("New passwords do not match.");
+            toast.custom((t) => (
+                <CustomToast
+                    t={t}
+                    status="error"
+                    message="New passwords do not match"
+                />
+            ))
             return;
         }
         // you can either call a dedicated password mutation here,
         // or reuse the main mutation (below we just show alert as before)
-        alert("Password will be updated when you save changes.");
+        toast.custom((t) => (
+            <CustomToast
+                t={t}
+                status="success"
+                message="Password will be updated as soon as you update your profile"
+            />
+        ))
     };
 
     useEffect(() => {
@@ -317,13 +356,39 @@ const Page = () => {
                                                 </div>
                                             )}
                                         />
+
                                         <Controller
                                             name="phone"
                                             control={control}
-                                            render={({ field }) => (
-                                                <InputField {...field} label="Phone Number" placeholder="+1 (555)-4567" inputClass={inputClass} lblCls="text-white text-sm" />
-                                            )}
+                                            render={({ field }) => {
+                                                const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+                                                    let value = e.target.value.replace(/\D/g, "");
+                                                    if (value.length > 0) value = "+" + value;
+                                                    if (value.length > 2)
+                                                        value = value.replace(/^(\+\d{1,3})(\d{0,3})(\d{0,3})(\d{0,4}).*/, "$1 ($2) $3-$4");
+                                                    field.onChange(value.trim());
+                                                };
+
+                                                return (
+                                                    <div>
+                                                        <InputField
+                                                            {...field}
+                                                            value={field.value || ""}
+                                                            onChange={handlePhoneChange}
+                                                            label="Phone Number"
+                                                            placeholder="+1 (555) 123-4567"
+                                                            inputClass={inputClass}
+                                                            lblCls="text-white text-sm"
+                                                        />
+                                                        {errors.phone && (
+                                                            <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
+                                                        )}
+                                                    </div>
+                                                );
+                                            }}
                                         />
+
+
                                     </div>
                                 </div>
                             </Wrapper>

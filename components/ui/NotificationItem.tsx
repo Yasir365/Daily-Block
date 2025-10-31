@@ -8,16 +8,20 @@ export const NotificationItem = ({
     time,
     isNew,
     onDelete,
+    onClick,
 }: {
     title: string;
     desc: string;
     time: string;
     isNew?: boolean;
     onDelete?: () => void;
+    onClick?: () => void;
 }) => (
     <div
         className={`h-[124px] p-4 rounded-[12px] border border-[#2B2B31] flex flex-col justify-between ${isNew ? "bg-[#FACC150D]" : "bg-transparent"
             }`}
+
+        onClick={onClick}
     >
         {/* Title Row */}
         <div className="flex items-center justify-between">

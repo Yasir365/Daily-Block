@@ -4,8 +4,33 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { NotificationItem } from "./NotificationItem";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { fetchNotifications, markAllNotificationsRead, markNotificationRead } from "@/services/notificationService";
 
 export default function NotificationSidebar({ open, setOpen }: { open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>> }) {
+    const queryClient = useQueryClient();
+
+    const { data: latestNotifications } = useQuery({
+        queryKey: ["notifications", "latest"],
+        queryFn: () => fetchNotifications({ mode: "all" }),
+    });
+    const notifications = latestNotifications || [];
+
+    // ✅ Mutation: mark single notification as read
+    const markOneMutation = useMutation({
+        mutationFn: (id: string) => markNotificationRead(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["notifications", "latest"] });
+        },
+    });
+
+    // ✅ Mutation: mark all notifications as read
+    const markAllMutation = useMutation({
+        mutationFn: () => markAllNotificationsRead(),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["notifications", "latest"] });
+        },
+    });
 
     return (
         <>
@@ -53,22 +78,26 @@ export default function NotificationSidebar({ open, setOpen }: { open: boolean, 
 
                                 {/* Mark all read */}
                                 <button
+                                    onClick={() => markAllMutation.mutate()}
+                                    disabled={markAllMutation.isPending}
+
                                     className="font-inter font-semibold text-[14px] leading-[20px] text-[#F8FAFC] hover:text-[#E2E8F0] transition"
                                 >
-                                    Mark all read
+                                    {markAllMutation.isPending ? "Marking..." : "Mark all read"}
                                 </button>
 
                             </div>
 
                             {/* Example Content */}
                             <div className="flex flex-col gap-4 overflow-y-auto hide-scrollbar ">
-                                {[...Array(20)].map((_, i) => (
+                                {latestNotifications.data.map((_: { _id: string, title: string, message: string, isRead: boolean }, i: number) => (
                                     <NotificationItem
                                         key={i}
-                                        title={`Message ${i + 1}`}
-                                        desc="Your weekly growth increased by 24% 📈"
+                                        title={_.title}
+                                        desc={_.message}
                                         time={`${i + 1}h`}
-                                        isNew={i < 2} // mark first 2 as new
+                                        isNew={!_.isRead} // mark first 2 as new
+                                        onClick={() => markOneMutation.mutate(_._id)} // ✅ Mark single read
                                         onDelete={() => console.log(`Delete notification ${i + 1}`)}
                                     />
                                 ))}

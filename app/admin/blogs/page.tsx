@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import { Search } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { CustomToast } from "@/components/ui/ReactToast";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Page = () => {
     const [showModal, setShowModal] = useState(false);
@@ -16,10 +17,12 @@ const Page = () => {
     const [mode, setMode] = useState<"create" | "edit">("create");
     const [selectedBlog, setSelectedBlog] = useState<any>(null);
     const filterRef = useRef<HTMLDivElement>(null);
+    const queryClient = useQueryClient();
 
     const { data = [], isLoading, refetch } = useFetchBlogs();
     const { mutate: deleteBlog } = useDeleteBlog();
-    const blogs = data.blogs || [];
+    console.log({ data })
+    const blogs = data.data || [];
     // ✅ Filter blogs live as user types
     const filteredBlogs = blogs.filter((b: any) => {
         const title = b.title?.toLowerCase() || "";
@@ -37,6 +40,8 @@ const Page = () => {
                         message="Blog deleted successfully"
                     />
                 ))
+                queryClient.invalidateQueries({ queryKey: ["notifications", "latest"] });
+
                 refetch();
             },
             onError: (err: any) => toast.custom((t) => (
@@ -74,6 +79,8 @@ const Page = () => {
                             onClose={handleCloseModal}
                             onSuccess={() => {
                                 refetch();
+                                queryClient.invalidateQueries({ queryKey: ["notifications", "latest"] });
+
                                 setShowModal(false);
                             }}
                             mode={mode}

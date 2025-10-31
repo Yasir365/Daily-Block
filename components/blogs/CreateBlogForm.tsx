@@ -1,16 +1,17 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import InputField from "@/components/ui/Input";
 import Teextarea from "@/components/ui/Textarea";
 import SelectField from "@/components/ui/Select";
-import { X } from "lucide-react";
+import { Upload, X } from "lucide-react";
 import z from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { CustomToast } from "../ui/ReactToast";
 import toast from "react-hot-toast";
+import Image from "next/image";
 
 type Props = {
     onClose: () => void;
@@ -25,6 +26,8 @@ const BlogSchema = z.object({
     excerpt: z.string().min(10, "Excerpt must be at least 10 characters long"),
     content: z.string().min(20, "Content must be at least 20 characters long"),
     status: z.enum(["draft", "published", "live", "archived", "blocked"]),
+    image: z.any().optional(), // ✅ Allow file upload
+
 });
 
 type BlogFormData = z.infer<typeof BlogSchema>;
@@ -39,9 +42,13 @@ const statusOptions = [
 ];
 
 const CreateBlogForm: React.FC<Props> = ({ onClose, onSuccess, mode = "create", initialData }) => {
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const [preview, setPreview] = useState<string | null>(
+        initialData?.image || null
+    );
     const {
         handleSubmit, control,
-
+        setValue,
         formState: { errors, isValid },
         reset,
     } = useForm<BlogFormData>({
@@ -52,24 +59,38 @@ const CreateBlogForm: React.FC<Props> = ({ onClose, onSuccess, mode = "create", 
             excerpt: "",
             content: "",
             status: "draft",
+            image: undefined,
+
         },
     });
 
     useEffect(() => {
-        if (initialData) reset(initialData);
-        else reset({
-            title: "",
-            excerpt: "",
-            content: "",
-            status: "draft",
-        });
+        if (initialData) { reset(initialData); }
+        else {
+            reset({
+                title: "",
+                excerpt: "",
+                content: "",
+                status: "draft",
+            });
+            setPreview(null);
+
+        }
     }, [initialData, reset]);
     // ✅ Mutation for API call
     const createBlogMutation = useMutation({
         mutationFn: async (data: BlogFormData) => {
+            const formData = new FormData();
+            formData.append("title", data.title);
+            formData.append("excerpt", data.excerpt);
+            formData.append("content", data.content);
+            formData.append("status", data.status);
+            if (data.image instanceof File) {
+                formData.append("image", data.image);
+            }
+
             let url = "/api/blogs";
             let method = "POST";
-
             if (mode === "edit" && initialData?._id) {
                 url = `/api/blogs?id=${initialData._id}`;
                 method = "PATCH";
@@ -77,8 +98,7 @@ const CreateBlogForm: React.FC<Props> = ({ onClose, onSuccess, mode = "create", 
 
             const res = await fetch(url, {
                 method,
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
+                body: formData,
             });
 
             const result = await res.json();
@@ -115,7 +135,14 @@ const CreateBlogForm: React.FC<Props> = ({ onClose, onSuccess, mode = "create", 
     const onSubmit = (data: BlogFormData) => {
         createBlogMutation.mutate(data);
     };
-
+    // ✅ Handle image select or reselect
+    const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setPreview(URL.createObjectURL(file));
+            setValue("image", file);
+        }
+    };
 
     return (
         <div className="absolute right-0 mt-2 w-[896px] max-w-[896px] p-6 bg-gradient-to-br from-[#121212] to-[#141B1F]
@@ -131,7 +158,38 @@ const CreateBlogForm: React.FC<Props> = ({ onClose, onSuccess, mode = "create", 
                 {mode === "create" ? "Create a new blog post" : "Edit"} blog post for your audience
             </p>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div
+                className="w-full h-[200px] border border-dashed border-[#364349] rounded-lg flex items-center justify-center relative cursor-pointer overflow-hidden"
+                onClick={() => fileInputRef.current?.click()}
+            >
+                {preview ? (
+                    <div className="relative w-full h-full">
+                        <Image
+                            src={preview}
+                            alt="Preview"
+                            fill
+                            className="object-cover rounded-lg"
+                        />
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-sm font-semibold opacity-0 hover:opacity-100 transition-opacity">
+                            Click to Reselect Image
+                        </div>
+                    </div>
+                ) : (
+                    <div className="flex flex-col items-center text-gray-400">
+                        <Upload className="w-8 h-8 mb-2" />
+                        <p>Click to select a cover image (max 5MB)</p>
+                    </div>
+                )}
+                <input
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    onChange={handleImageSelect}
+                    className="hidden"
+                />
+            </div>
+
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-2">
                 <Controller
                     name="title"
                     control={control}

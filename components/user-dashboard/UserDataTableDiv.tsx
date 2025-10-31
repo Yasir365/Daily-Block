@@ -4,7 +4,6 @@ import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import { ProjectRow } from '../ProjectCard/ProjectRow';
 import Link from 'next/link';
-import { NewTableRow } from '../ProjectCard/NewTableRow';
 
 const columns = [
   { key: "symbol", label: "Symbol", span: 1 },
@@ -72,9 +71,9 @@ const UserDataTableDiv = ({ title, status }: Props) => {
             <div
               key={col.key}
               className={`flex items-center gap-1 cursor-pointer group text-left ${col.span === 1 ? "col-span-1" :
-                  col.span === 2 ? "col-span-2" :
-                    col.span === 3 ? "col-span-3" :
-                      "col-span-1"
+                col.span === 2 ? "col-span-2" :
+                  col.span === 3 ? "col-span-3" :
+                    "col-span-1"
                 }`}
               onClick={() => handleSort(col.key)}
             >

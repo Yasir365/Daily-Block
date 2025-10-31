@@ -100,12 +100,13 @@ const MultiStepForm = () => {
     const handleNext = async (data: CombinedFormType) => {
         // 1) Validate only current step's schema
         const ok = validateCurrentStep(data);
-        if (!ok) {
-            // do not proceed if validation fails
-            // react-hook-form will show the error messages we set above
+        if (!ok) return;
+
+        // 2️⃣ If NOT last step → just move forward (don’t call API)
+        if (currentStep < steps.length) {
+            setCurrentStep((prev) => prev + 1);
             return;
         }
-
         // 2) Build FormData and POST (same logic you already used)
         const formDataToSend = new FormData();
         Object.entries(data).forEach(([key, value]) => {

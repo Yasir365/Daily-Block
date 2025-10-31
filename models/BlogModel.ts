@@ -7,6 +7,8 @@ export interface IBlog extends Document {
   status: "draft" | "published" | "archived" | "blocked" | "live";
   publishedDate?: Date;
   views: number;
+  image?: string; // ✅ New field for uploaded image path
+
   likes: number;
   comments: Array<{
     userId: mongoose.Types.ObjectId;
@@ -33,6 +35,8 @@ const BlogSchema = new Schema<IBlog>(
     excerpt: { type: String, required: true },
     content: { type: String, required: true },
     readTime: { type: Number, default: 0 }, // ✅ new field (in minutes)
+    image: { type: String, default: null }, // ✅ image path (e.g. "/uploads/blogs/xyz.jpg")
+
     status: {
       type: String,
       enum: ["draft", "published", "archived", "blocked", "live"],

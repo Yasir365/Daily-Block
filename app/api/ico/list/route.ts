@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import IcoProject from "@/models/Icoproject";
 import { connectDB } from "@/lib/mongodb";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 
@@ -38,29 +39,79 @@ export async function GET(req: NextRequest) {
 
     let query: {
       status?: string;
-      userId?: string;
+      userId?: mongoose.Types.ObjectId;
       launchpad?: string;
       raiseAmount?: any;
     } = {};
+    if (status && status !== "all") query.status = status;
 
-    if (currentUserRole !== "user") {
-      // Admin can see all, or filter by status
-      if (status && status !== "all") query.status = status;
-    } else {
-      // Normal user can only see their own projects
-      query.userId = currentUserId;
-      if (status && status !== "all") query.status = status;
+    if (currentUserRole === "user") {
+      query.userId = new mongoose.Types.ObjectId(currentUserId);
     }
 
-    if (status && status !== "all") query.status = status;
     if (launchpad && launchpad !== "all") query.launchpad = launchpad;
     if (raiseMax > 0) query.raiseAmount = { $gte: raiseMin, $lte: raiseMax };
 
-    console.log({ query });
-    const response = await IcoProject.find(query)
-      .sort({ createdAt: -1 })
-      .populate("userId", "name firstName lastName email userType createdAt");
+    const response = await IcoProject.aggregate([
+      { $match: query },
 
+      // 🔹 Lookup for user info (similar to populate)
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userInfo",
+        },
+      },
+      { $unwind: { path: "$userInfo", preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          cryptoCoinName: 1,
+          coinAbbreviation: 1,
+          status: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          stepCompleted: 1,
+          // ✅ Include user fields
+          userInfo: {
+            _id: 1,
+            name: 1,
+            firstName: 1,
+            lastName: 1,
+            email: 1,
+            userType: 1,
+            createdAt: 1,
+          },
+        },
+      },
+
+      // 🔹 Lookup for unread message count
+      {
+        $lookup: {
+          from: "messages",
+          let: { icoId: "$_id" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$icoId", "$$icoId"] } } },
+            { $match: { isRead: false } },
+            { $count: "unreadCount" },
+          ],
+          as: "unreadMessages",
+        },
+      },
+
+      // 🔹 Add unreadMessageCount field
+      {
+        $addFields: {
+          unreadMessageCount: {
+            $ifNull: [{ $arrayElemAt: ["$unreadMessages.unreadCount", 0] }, 0],
+          },
+        },
+      },
+
+      { $sort: { createdAt: -1 } },
+    ]);
+    
     return NextResponse.json(
       { success: true, message: "Successfully fetched", data: response },
       { status: 200 }

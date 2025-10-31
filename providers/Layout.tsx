@@ -77,11 +77,13 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
     }
     return (
         <>
-            <Navbar />
-            <main className="flex-grow">
-                <Providers>{children}</Providers>
-            </main>
-            <Footer />
+            <Providers>
+                <Navbar />
+                <main className="flex-grow">
+                    {children}
+                </main>
+                <Footer />
+            </Providers>
         </>
     );
 }

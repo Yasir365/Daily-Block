@@ -17,6 +17,7 @@ type Props = {
     activities: Activity[];
 };
 
+
 export const RecentActivity: React.FC<Props> = ({ activities }) => {
     return (
         <div className="h-[300px] sm:h-[350px] md:h-[456px] p-6 sm:p-6 md:p-8 flex flex-col gap-10 rounded-[12px] border border-[#90909066] bg-[#3B3B3B80] shadow-[0_1px_2px_0_#0000000D] backdrop-blur-[4px]">
@@ -24,11 +25,11 @@ export const RecentActivity: React.FC<Props> = ({ activities }) => {
                 Recent Activity
             </h2>
 
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-6 overflow-y-auto custom-scrollbar min-h-100">
                 {activities.map((activity) => (
                     <div
                         key={activity.id}
-                        className="flex justify-between items-start"
+                        className="flex justify-between items-start cursor-pointer"
                     >
                         {/* Left side (dot + text) */}
                         <div className="flex gap-6 items-start">

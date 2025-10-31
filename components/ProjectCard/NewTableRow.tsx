@@ -114,7 +114,7 @@ export const NewTableRow = ({ project, date, launchpad, fundRaised }: ProjectRow
                 </span>
             </div>
 
-            <ChatSideBar open={chatOpen} setOpen={setChatOpen} />
+            <ChatSideBar open={chatOpen} setOpen={setChatOpen} chatOpenUnReadCount={0} />
         </div>
     );
 };

@@ -8,6 +8,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   userType: string;
+  phone?: string;
   status: "active" | "inactive" | "banned";
   isDeleted: boolean;
   deletedAt?: Date | null;
@@ -39,6 +40,7 @@ const UserSchema = new Schema<IUser>(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     userType: { type: String, default: "user" },
+    phone: { type: String, default: "" },
     status: {
       type: String,
       enum: ["active", "inactive", "banned"],

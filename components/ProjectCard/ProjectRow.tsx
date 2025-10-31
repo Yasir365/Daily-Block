@@ -51,7 +51,7 @@ export const ProjectRow = ({
 
       <div className="col-span-1">
         <Link
-          href={launchpad || "#"}
+          href={"#"}
           className={`${statusClasses} py-2 px-3 rounded-md text-sm font-bold transition`}
         >
           {status}

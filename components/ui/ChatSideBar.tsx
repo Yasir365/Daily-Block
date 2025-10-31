@@ -3,7 +3,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { NotificationItem } from "./NotificationItem";
 import Image from "next/image";
 import { ChatItem } from "./ChatItem";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -18,7 +17,7 @@ interface Message {
     isOptimistic?: boolean; // 💡 for temporary messages
 }
 
-export default function ChatSideBar({ open, setOpen, chatId, setChatId }: { open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>>, chatId?: any, setChatId?: React.Dispatch<React.SetStateAction<string>> }) {
+export default function ChatSideBar({ open, setOpen, chatId, setChatId, chatOpenUnReadCount = 0 }: { open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>>, chatId?: any, setChatId?: React.Dispatch<React.SetStateAction<string>>, chatOpenUnReadCount: number }) {
     // const [messages, setMessages] = useState<
     //     { id: number; title: string; desc: string; time: string; isAdmin?: boolean }[]
     // >([]);
@@ -169,7 +168,7 @@ export default function ChatSideBar({ open, setOpen, chatId, setChatId }: { open
                                     </div>
                                     <span className="flex flex-col gap-3 pt-1 capitalize">
                                         <label className="font-lato font-semibold text-[14.75px] leading-[18.43px] align-middle text-white">
-                                            {chatId?.userId?.firstName + " " + chatId?.userId?.lastName || "Crypto Coin Owner Name"}
+                                            {chatId?.userInfo?.firstName + " " + chatId?.userInfo?.lastName || "Crypto Coin Owner Name"}
                                         </label>
                                         <span className="inline-block py-0.5 px-4 rounded-lg bg-[#4C4C4C] opacity-100">
                                             {chatId?.cryptoCoinName || "Crypto Coin Name"}
@@ -178,11 +177,11 @@ export default function ChatSideBar({ open, setOpen, chatId, setChatId }: { open
                                     </span>
                                 </span>
                                 <span className="flex items-center gap-2">
-                                    <span className="inline-block   border border-white/50 rounded-full py-1 px-3 opacity-100">
+                                    <span className="inline-block  cursor-pointer hover:bg-brand-yellow/20 border border-white/50 rounded-full py-1 px-3 opacity-100">
                                         Active discussion
                                     </span>
-                                    <span className="inline-block bg-brand-yellow/20   border border-brand-yellow text-brand-yellow rounded-full py-1 px-3 opacity-100">
-                                        5 New Messages
+                                    <span className={`inline-block cursor-pointer hover:bg-brand-yellow/20  border ${chatOpenUnReadCount > 0 ? "border-brand-yellow text-brand-yellow bg-brand-yellow/20" : "   border border-white/50"}   rounded-full py-1 px-3 opacity-100`}>
+                                        {chatOpenUnReadCount > 0 && chatOpenUnReadCount} New Messages
                                     </span>
                                 </span>
                             </div>

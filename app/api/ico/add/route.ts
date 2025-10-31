@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
+import { createNotification } from "@/lib/notify";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 
@@ -113,6 +114,22 @@ export async function POST(req: NextRequest) {
     const project = new IcoProject(payload);
 
     await project.save();
+    await createNotification({
+      title: "New ICO Listed",
+      message: `A new ico titled "${project.cryptoCoinName}" has been created.`,
+      type: "ico",
+      related: project,
+      userId: currentUserId,
+      status: "success",
+    });
+    // ✅ Send "new ICO" notification
+    // await createNotification({
+    //   title: "New ICO Listed",
+    //   message: `A new ICO "${project.cryptoCoinName}" has been listed.`,
+    //   type: "ico",
+    //   relatedId: new mongoose.Types.ObjectId(project._id),
+    //   userId: new mongoose.Types.ObjectId(currentUserId),
+    // });
 
     return NextResponse.json({ success: true, data: project });
   } catch (err: any) {

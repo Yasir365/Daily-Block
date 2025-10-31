@@ -47,13 +47,13 @@ const UserDashboardMain = () => {
             {/* Profile Card */}
             <div className="bg-brand-glass p-4 sm:p-5 rounded-md flex flex-col sm:flex-row gap-4 sm:gap-6 w-full sm:w-3/4 lg:w-1/2">
                 <div className="flex justify-center sm:justify-start">
-                    <Image
+                    {/* <Image
                         src="/svg/user/userImg.svg"
                         alt="user"
                         width={100}
                         height={100}
                         className="rounded-full sm:rounded-none"
-                    />
+                    /> */}
                 </div>
 
                 <div className="flex flex-col gap-3 py-2">

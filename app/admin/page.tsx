@@ -1,67 +1,71 @@
+"use client";
 import WeeklyGrowthChart from '@/components/admin/charts/WeeklyGrowthChart';
 import { DashboardCard } from '@/components/admin/DashboardCard';
 import { RecentActivity } from '@/components/admin/RecentActivity';
 import { TopHeader } from '@/components/admin/TopHeader'
+import { fetchDashboardStats } from '@/services/dashboardService';
+import { fetchNotifications } from '@/services/notificationService';
+import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image'
 import React from 'react'
 
 const page = () => {
+    const {
+        data: stats,
+        isLoading,
+        isError,
+        refetch,
+    } = useQuery({
+        queryKey: ["dashboardStats"],
+        queryFn: fetchDashboardStats,
+    });
+    const { data: latestNotifications } = useQuery({
+        queryKey: ["notifications", "latest"],
+        queryFn: () => fetchNotifications({ mode: "limited", limit: 3 }),
+    });
+
+    console.log({ stats })
     const cards = [
         {
             title: "Total Listed ICOs",
-            value: 347,
-            change: "+12% from last month",
+            value: stats?.summary?.icoProjects?.total ?? 0,
+            change: `Pending: ${stats?.summary?.icoProjects?.pending ?? 0}, Draft: ${stats?.summary?.icoProjects?.draft ?? 0}`,
             icon: "/svg/coins/combo.svg",
         },
         {
             title: "Active Users",
-            value: 1289,
-            change: "+8% from last month",
+            value: stats?.summary?.users?.active ?? 0,
+            change: `Inactive: ${stats?.summary?.users?.inactive ?? 0}`,
             icon: "/svg/usercombo.svg",
         },
         {
             title: "Approved Projects",
-            value: 74,
-            change: "+5% from last month",
+            value: stats?.summary?.icoProjects?.approved ?? 0,
+            change: `Rejected: ${stats?.summary?.icoProjects?.rejected ?? 0}`,
             icon: "/svg/checkcircle.svg",
             textColor: "brand-yellow",
         },
     ];
-    const activities = [
-        {
-            id: 1,
-            title: "New ICO submission",
-            project: "MetaVerse Pro",
-            status: "Success",
-            time: "5 minutes ago",
-            dotColor: "bg-brand-yellow",
-            bgColor: "bg-brand-yellow",
-            borderColor: "border-brand-yellow",
-            textColor: "text-black",
-        },
-        {
-            id: 2,
-            title: "Project Approved",
-            project: "CryptoWorld DAO",
-            status: "Warning",
-            time: "12 minutes ago",
-            dotColor: "bg-brand-green",
-            bgColor: "bg-brand-green",
-            borderColor: "border-brand-green",
-            textColor: "text-white",
-        },
-        {
-            id: 3,
-            title: "Project Approved",
-            project: "CryptoWorld DAO",
-            status: "Warning",
-            time: "12 minutes ago",
-            dotColor: "bg-brand-green",
-            bgColor: "bg-brand-green",
-            borderColor: "border-brand-green",
-            textColor: "text-white",
-        },
-    ];
+    console.log({ latestNotifications })
+    const activities =
+        latestNotifications?.data?.map((item: any) => {
+            const isBlog = item.type === "blog";
+            const related = item.relatedId || item.relatedData || {};
+
+            return {
+                id: item._id,
+                title: item.title || (isBlog ? "New Blog Published" : "New Notification"),
+                project: related?.title || item.message,
+                status: item.isRead ? "Read" : "Unread",
+                time: new Date(item.createdAt).toLocaleString(),
+                dotColor: item.isRead ? "bg-gray-400" : "bg-brand-yellow",
+                bgColor: item.isRead ? "bg-gray-200" : "bg-brand-yellow",
+                borderColor: item.isRead ? "border-gray-300" : "border-brand-yellow",
+                textColor: item.isRead ? "text-gray-600" : "text-black",
+                image: related?.image || "/svg/coins/combo.svg", // optional image
+            };
+        }) || [];
+
     return (
         <div className="p-3 sm:p-4 lg:p-6 flex flex-col gap-8">
             <TopHeader

@@ -8,6 +8,7 @@ import InputField from '@/components/ui/Input';
 import SelectField from '@/components/ui/Select';
 import StatusBadge from '@/components/ui/StatusBadge';
 import { UniversalContainer } from '@/components/ui/UniversalContainer';
+import { fetchDashboardStats } from '@/services/dashboardService';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Check, Eye, Funnel, MessageSquare, X } from 'lucide-react';
 import Image from 'next/image';
@@ -80,23 +81,29 @@ const approveIco = async ({
 
 const page = () => {
 
+    const {
+        data: stats,
+    } = useQuery({
+        queryKey: ["dashboardStats"],
+        queryFn: fetchDashboardStats,
+    });
     const cards = [
         {
             title: "Total Listed ICOs",
-            value: 347,
+            value: stats?.totalListedIcos?.count ?? 0,
             valueCls: "text-brand-red",
             // change: "+12% from last month",
             // icon: "/svg/coins/combo.svg",
         },
         {
             title: "Active Users",
-            value: 1289,
+            value: stats?.activeUsers?.count ?? 0,
             // change: "+8% from last month",
             // icon: "/svg/usercombo.svg",
         },
         {
             title: "Approved Projects",
-            value: 74,
+            value: stats?.approvedProjects?.count ?? 0,
             // change: "+5% from last month",
             // icon: "/svg/checkcircle.svg",
             // textColor: "brand-yellow",
@@ -105,27 +112,38 @@ const page = () => {
     const columns = [
         {
             key: "cryptoCoinName", label: "project",
-            className: "text-brand-text-secondary font-inter font-semibold text-[16px] leading-[20px]", // white bold
+            className: "text-brand-text-secondary font-inter font-semibold text-[16px] leading-[20px]  capitalize", // white bold
         },
         {
             key: "owner",
             label: "Owner",
             render: (_: any, row: any) => {
                 // ✅ Handle cases where userId might be null or not populated
-                const user = row.userId;
+                const user = row.userInfo;
                 if (!user) return "N/A";
 
                 const fullName =
                     [user.firstName, user.lastName].filter(Boolean).join(" ") || user.email;
 
                 return (
-                    <span className="font-inter text-sm text-white">
+                    <span className="font-inter text-sm text-white capitalize">
                         {fullName}
                     </span>
                 );
             },
         },
-        { key: "launchpad", label: "launchpad" },
+        {
+            key: "launchpad", label: "launchpad", render: (_: any, row: any) => {
+                // ✅ Handle cases where userId might be null or not populated
+                console.log({ row })
+                const userRole = row.userInfo.userType;
+                return (
+                    <span className="font-inter text-sm text-white capitalize">
+                        {userRole}
+                    </span>
+                );
+            },
+        },
 
         {
             key: "status",
@@ -135,18 +153,21 @@ const page = () => {
             },
         },
         {
-            key: "discussion",
+            key: "unreadMessageCount",
             label: "discussion",
-            render: (value: string, row: any) => {
+            render: (value: number, row: any) => {
                 return (
                     <span
-                        onClick={() => { setChatOpenId(row); setChatOpen(true) }}
+                        onClick={() => { setChatOpenId(row); setChatOpen(true); setChatOpenUnReadCount(value) }}
                         className="group relative inline-flex items-center gap-4 rounded-xl bg-[#484C4F] py-2 px-4 font-lato text-sm font-semibold text-[#F1F4F4] cursor-pointer transition hover:bg-[#5A5F62]"
                         style={{ zIndex: 10 }}
                     >
-                        <span className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-brand-yellow text-black text-xs font-bold pointer-events-none">
-                            2
-                        </span>
+                        {value !== 0 && (
+
+                            <span className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-brand-yellow text-black text-xs font-bold pointer-events-none">
+                                {value}
+                            </span>
+                        )}
                         <MessageSquare className="transition-transform group-hover:scale-110" />
                         Discuss
                     </span>
@@ -300,6 +321,7 @@ const page = () => {
     const [status, setStatus] = useState("");
     const [chatOpen, setChatOpen] = useState(false);
     const [chatOpenId, setChatOpenId] = useState("");
+    const [chatOpenUnReadCount, setChatOpenUnReadCount] = useState(0);
     const [selectedId, setSelectedId] = useState<string | null>(null); // ✅ Track which ICO to delete
     const [showConfirm, setShowConfirm] = useState(false);
     const [showApproveConfirm, setShowApproveConfirm] = useState<{ open: boolean; action: "approved" | "rejected" | null }>({
@@ -567,7 +589,7 @@ const page = () => {
                     </div>
                 </div>
             </div>
-            <ChatSideBar open={chatOpen} setOpen={setChatOpen} chatId={chatOpenId} setChatId={setChatOpenId} />
+            <ChatSideBar open={chatOpen} setOpen={setChatOpen} chatId={chatOpenId} setChatId={setChatOpenId} chatOpenUnReadCount={chatOpenUnReadCount} />
             {/* ✅ Confirm Delete Modal */}
 
             <CustomConfirm

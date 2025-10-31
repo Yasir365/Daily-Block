@@ -209,7 +209,7 @@ export const AdminSidebar = ({ isOpen, setIsOpen }: AdminSidebarProps) => {
 
                             >
                                 <div className="flex flex-col py-2">
-                                    <span
+                                    {/* <span
                                         className={`cursor-pointer text-[#F8FAFC] font-[600] text-[14px] leading-[20px] py-2 rounded-md hover:bg-white/5 font-segoe  px-6`}
                                     >
                                         My Account
@@ -232,7 +232,7 @@ export const AdminSidebar = ({ isOpen, setIsOpen }: AdminSidebarProps) => {
                                     >
                                         <Shield size={16} /> <span> Admin Panel</span>
                                     </button>
-                                    <div className="border-t border-[#303036] my-1" />
+                                    <div className="border-t border-[#303036] my-1" /> */}
 
 
                                     <button

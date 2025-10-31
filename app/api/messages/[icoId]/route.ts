@@ -5,21 +5,36 @@ import { verifyToken } from "@/lib/verifyToken";
 
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ icoId: string }> } // 👈 must be Promise now
+  context: { params: Promise<{ icoId: string }> }
 ) {
   try {
     await connectDB();
-
-    // 👇 Await the promise
     const { icoId } = await context.params;
 
-    const messages = await Message.find({ icoId })
+    // ✅ 1️⃣ Pehle unread messages fetch karo (oldest first)
+    const unreadMessages = await Message.find({ icoId, isRead: false })
       .populate("senderId", "firstName lastName email")
-      .sort({ createdAt: 1 }); // oldest → newest
+      .sort({ createdAt: 1 });
+
+    // ✅ 2️⃣ Phir read messages fetch karo (oldest first)
+    const readMessages = await Message.find({ icoId, isRead: true })
+      .populate("senderId", "firstName lastName email")
+      .sort({ createdAt: 1 });
+
+    // ✅ 3️⃣ Dono ko merge karo (unread pehle, phir read)
+    const allMessages = [...unreadMessages, ...readMessages];
+
+    // ✅ 4️⃣ Unread messages ko DB me read mark karo (background update)
+    if (unreadMessages.length > 0) {
+      await Message.updateMany(
+        { icoId, isRead: false },
+        { $set: { isRead: true } }
+      );
+    }
 
     return NextResponse.json({
       success: true,
-      messages,
+      messages: allMessages,
     });
   } catch (err: any) {
     console.error("❌ Fetch messages error:", err);
@@ -52,13 +67,15 @@ export async function POST(
     // ✅ Optional: get logged-in user (if using NextAuth)
     const session = await verifyToken(req);
     const senderId = session?.user?._id; // or user.id depending on your session shape
+    const senderRole = session?.user?.role;
     const messageObj = {
       icoId,
       senderId: senderId || null, // handle guest/admin
       message: message,
-      senderRole: session?.user?.role,
+      senderRole,
+      isRead: senderRole === "admin", // admin messages are auto-read
+      readAt: senderRole === "admin" ? new Date() : null,
     };
-    console.log({ messageObj });
     const newMessage = await Message.create(messageObj);
 
     // populate sender info for instant UI updates

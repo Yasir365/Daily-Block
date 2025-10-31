@@ -163,9 +163,9 @@ const page = () => {
             label: "Actions",
             render: (_: any, row: any) => (
                 <div className="flex gap-3 items-center">
-                    <button className="text-gray-300 hover:text-white cursor-pointer">
+                    {/* <button className="text-gray-300 hover:text-white cursor-pointer">
                         <Edit size={16} />
-                    </button>
+                    </button> */}
                     {row.status === "inactive" ? (
                         <button
                             onClick={() => {

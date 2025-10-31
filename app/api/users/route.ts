@@ -43,12 +43,15 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
+    let message = "";
     if (action === "delete") {
       user.isDeleted = true;
       user.deletedAt = new Date();
+      message = `User ${user.firstName || user.email} has been soft deleted.`;
     } else if (action === "restore") {
       user.isDeleted = false;
       user.deletedAt = null;
+      message = `User ${user.firstName || user.email} has been restored.`;
     } else {
       return NextResponse.json(
         {
@@ -60,6 +63,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     await user.save();
+
     return NextResponse.json({
       success: true,
       message: `User ${
