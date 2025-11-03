@@ -182,11 +182,11 @@ const page = () => {
             render: (_: any, row: any) => (
                 <div className="flex gap-4 ">
                     {/* View */}
-                    <button className="text-gray-300 hover:text-white cursor-pointer"
+                    {/* <button className="text-gray-300 hover:text-white cursor-pointer"
 
                     >
                         <Eye size={16} />
-                    </button>
+                    </button> */}
 
                     {/* Approve (you can handle separately later) */}
                     <button

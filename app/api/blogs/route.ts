@@ -193,7 +193,7 @@ export async function PATCH(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
-    if (!id)
+  if (!id)
       return NextResponse.json(
         { success: false, message: "Blog ID is required." },
         { status: 400 }
