@@ -4,6 +4,8 @@ import Image from 'next/image';
 import React from 'react';
 import UserDataTableDiv from './UserDataTableDiv';
 import { useAuthContext } from '@/context/AuthContext';
+import toast from 'react-hot-toast';
+import { CustomToast } from '../ui/ReactToast';
 
 const UserDashboardMain = () => {
     const { user, logout } = useAuthContext();
@@ -15,7 +17,6 @@ const UserDashboardMain = () => {
             console.error("Logout failed:", err);
         }
     };
-    console.log({ user })
     return (
         <div className="flex flex-col gap-6 w-full">
             {/* Header Section */}
@@ -38,10 +39,10 @@ const UserDashboardMain = () => {
                     </p>
                 </div>
 
-                <button className="bg-[#F9A51A] text-[#3B3B3B] py-2 px-4 flex items-center justify-center gap-2 rounded-md hover:brightness-110 transition w-full sm:w-auto">
+                {/* <button className="bg-[#F9A51A] text-[#3B3B3B] py-2 px-4 flex items-center justify-center gap-2 rounded-md hover:brightness-110 transition w-full sm:w-auto">
                     <Image src="/svg/coins/coin.svg" alt="coin" width={20} height={20} className="rounded-full" />
                     <span className="font-bold text-sm sm:text-base">List My Coin Now</span>
-                </button>
+                </button> */}
             </div>
 
             {/* Profile Card */}
@@ -80,8 +81,28 @@ const UserDashboardMain = () => {
 
                     <span className="flex items-center gap-2 bg-[#EFF2F529]/16 text-[#DFDFDF] px-3 py-2 text-[12px] rounded-md w-fit">
                         <span className="font-medium">UID:</span>
-                        <span>35403204</span>
-                        <Files className="w-4 h-4" />
+                        <span className='flex gap-2 cursor-pointer'
+                            onClick={(e) => {
+                                const text = (e.currentTarget as HTMLSpanElement).innerText.replace(/\s+/g, '').trim();
+                                navigator.clipboard.writeText(text)
+                                    .then(() => {
+                                        console.log("Copied to clipboard:", text);
+                                        toast.custom((t) => (
+                                            <CustomToast
+                                                t={t}
+                                                status="Success"
+                                                message={`Copied to clipboard : ${text}`}
+                                            />
+                                        ));
+
+                                        // Optionally, you can show a toast instead of console.log
+                                    })
+                                    .catch((err) => {
+                                        console.error("Failed to copy:", err);
+                                    });
+                            }}
+                        >35403204  <Files className="w-4 h-4" /></span>
+
                     </span>
                 </div>
             </div>

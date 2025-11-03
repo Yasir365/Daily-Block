@@ -52,15 +52,19 @@ const UserDataTableDiv = ({ title, status }: Props) => {
     <div className="flex flex-col gap-3">
       <div className="flex justify-between items-center">
         <h5 className="text-[22px] font-bold">{title}</h5>
-        <span className="flex items-center gap-1 text-[#F9A51A]">
-          <Image
-            src="/svg/coins/coin.svg"
-            alt="coin"
-            width={20}
-            height={20}
-            className="rounded-full invert-[74%] sepia-[78%] saturate-[1918%] hue-rotate-[357deg] brightness-[101%] contrast-[104%]"
-          />
-          <Link href="/user/add-coin" className="font-bold">Add New Coin</Link>
+        <span className="flex items-center gap-1 text-[#F9A51A] cursor-pointer hover:text-[#F9A51A]/80">
+          <Link href="/user/add-coin" className="font-bold flex items-center gap-1.5">
+            <Image
+              src="/svg/coins/coin.svg"
+              alt="coin"
+              width={20}
+              height={20}
+              className="rounded-full invert-[74%] sepia-[78%] saturate-[1918%] hue-rotate-[357deg] brightness-[101%] contrast-[104%]"
+            />
+
+
+            Add New Coin
+          </Link>
         </span>
       </div>
 

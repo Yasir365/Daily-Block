@@ -5,6 +5,7 @@ import { CustomToast } from "@/components/ui/ReactToast";
 import toast from "react-hot-toast";
 
 export default function PrivacyPolicyPage() {
+
     const { data, isLoading } = useFetchPolicy("privacy");
     const { mutate, isPending } = useSavePolicy("privacy");
 

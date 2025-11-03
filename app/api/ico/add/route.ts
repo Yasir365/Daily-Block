@@ -6,6 +6,7 @@ import path from "path";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import NotificationModel from "@/models/NotificationModel";
+import { notifyUsersByType } from "@/lib/notify";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 
@@ -121,14 +122,22 @@ export async function POST(req: NextRequest) {
     await project.save();
 
     // ✅ Create admin notification
-    await NotificationModel.create({
+    // await NotificationModel.create({
+    //   title: "New ICO Project Submitted",
+    //   message: `A new coin "${cryptoCoinName}" has been added and is waiting for approval.`,
+    //   type: "ico",
+    //   relatedId: project._id,
+    //   forAdmin: true, // optional: mark it as admin-only
+    //   status: "pending",
+    //   createdAt: new Date(),
+    // });
+    // ✅ Notify admin about new ICO
+    await notifyUsersByType("admin", {
       title: "New ICO Project Submitted",
       message: `A new coin "${cryptoCoinName}" has been added and is waiting for approval.`,
       type: "ico",
       relatedId: project._id,
-      forAdmin: true, // optional: mark it as admin-only
       status: "pending",
-      createdAt: new Date(),
     });
 
     return NextResponse.json({ success: true, data: project });

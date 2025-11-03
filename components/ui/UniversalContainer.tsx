@@ -1,6 +1,6 @@
 interface UniversalContainerProps {
     children: React.ReactNode;
-    size?: "sm" | "md" | "lg";
+    size?: "sm" | "md" | "lg" | "full";
     className?: string;
     onClickOutside?: () => void;
     as?: "div" | "dialog" | "section";
@@ -21,6 +21,7 @@ export const UniversalContainer = ({
         sm: "w-[180px]",
         md: "w-[224px]",
         lg: "w-[335px]",
+        full: "calc(100% - 32px)",
     };
 
     return (

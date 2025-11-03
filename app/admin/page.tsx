@@ -24,7 +24,6 @@ const page = () => {
         queryFn: () => fetchNotifications({ mode: "limited", limit: 3 }),
     });
 
-    console.log({ stats })
     const cards = [
         {
             title: "Total Listed ICOs",
@@ -46,7 +45,6 @@ const page = () => {
             textColor: "brand-yellow",
         },
     ];
-    console.log({ latestNotifications })
     const activities =
         latestNotifications?.data?.map((item: any) => {
             const isBlog = item.type === "blog";

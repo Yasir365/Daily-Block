@@ -3,25 +3,32 @@
 import { useForm, Controller } from "react-hook-form";
 import { Plus } from "lucide-react";
 import InputField from "@/components/ui/Input";
+import RichTextEditor from "../Editior";
 
 export interface FaqItem {
     question: string;
     answer: string; _id?: string;
 
 }
-
-const FaqSectionSingle = ({ onSave }: { onSave?: (faq: FaqItem) => void }) => {
+interface Props {
+    onSave?: (faq: FaqItem) => void;
+    useEditor?: boolean; // ✅ Optional prop to use rich text editor for answer
+    initialData?: FaqItem; // optional initial data for editing
+}
+const FaqSectionSingle: React.FC<Props> = ({ onSave, useEditor = false, initialData }) => {
     const {
         control,
-        handleSubmit,
-        reset,
+        handleSubmit, setValue,
+        reset, watch,
         formState: { errors },
     } = useForm<FaqItem>({
         defaultValues: {
-            question: "",
-            answer: "",
+            question: initialData?.question || "",
+            answer: initialData?.answer || "",
         },
     });
+    const answerValue = watch("answer"); // track value for editor
+
 
     const onSubmit = (data: FaqItem) => {
         if (onSave) onSave(data);
@@ -64,37 +71,58 @@ const FaqSectionSingle = ({ onSave }: { onSave?: (faq: FaqItem) => void }) => {
             />
 
             {/* ✅ Answer Field */}
-            <Controller
-                name="answer"
-                control={control}
-                defaultValue=""
-                rules={{
-                    required: "Answer is required",
-                    minLength: {
-                        value: 10,
-                        message: "Answer must be at least 10 characters long",
-                    },
-                }}
-                render={({ field }) => (
-                    <InputField
-                        {...field}
-                        label="Answer"
-                        placeholder="Enter FAQ answer"
-                        required
-                        error={errors.answer?.message as string}
+            {/* ✅ Answer Field */}
+            {useEditor ? (
+                <Controller
+                    name="answer"
+                    control={control}
+                    rules={{
+                        required: "Answer is required",
+                        minLength: { value: 10, message: "Answer must be at least 10 characters long" },
+                    }}
+                    render={({ field }) => (
+                        <RichTextEditor
+                            initialValue={field.value || ""}
+                            title="Answer"
+                            description="Write the FAQ answer in detail"
+                            saveButtonText="Save FAQ"
+                            onSave={(value) => setValue("answer", value)}
+                            className="h-[300px]"
+                        />
+                    )}
+                />
+            ) : (
+                <>
+                    <Controller
+                        name="answer"
+                        control={control}
+                        rules={{
+                            required: "Answer is required",
+                            minLength: { value: 10, message: "Answer must be at least 10 characters long" },
+                        }}
+                        render={({ field }) => (
+                            <InputField
+                                {...field}
+                                label="Answer"
+                                placeholder="Enter FAQ answer"
+                                required
+                                error={errors.answer?.message as string}
+                            />
+                        )}
                     />
-                )}
-            />
 
-            {/* ✅ Submit Button */}
-            <button
-                type="submit"
-                className="flex items-center justify-center gap-3 px-4 py-2 rounded-lg bg-brand-yellow text-[#3B3B3B]
-          text-[14px] font-inter font-semibold leading-[20px] tracking-[0%] cursor-pointer hover:bg-yellow-400 transition"
-            >
-                <Plus />
-                <span>Save FAQ</span>
-            </button>
+                    <button
+                        type="submit"
+                        className="flex items-center justify-center gap-3 px-4 py-2 rounded-lg bg-brand-yellow text-[#3B3B3B]
+                text-[14px] font-inter font-semibold leading-[20px] tracking-[0%] cursor-pointer hover:bg-yellow-400 transition"
+                    >
+                        <Plus />
+                        <span>Save FAQ</span>
+                    </button>
+                </>
+            )}
+
+
         </form>
     );
 };

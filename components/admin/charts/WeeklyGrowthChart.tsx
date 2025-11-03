@@ -25,6 +25,8 @@ export default function WeeklyGrowthChart() {
         queryKey: ["dashboardStats"],
         queryFn: () => fetchGraphStats("weekly"), // or "monthly"
     });
+
+    console.log({ stats })
     useEffect(() => {
         const checkScreen = () => setIsMobile(window.innerWidth < 768);
         checkScreen();

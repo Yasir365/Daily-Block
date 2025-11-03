@@ -1,9 +1,9 @@
 
-export default function BlogsNav({ blog, stats }: { blog?: any; stats?: any }) {
+export default function BlogsNav({ blog, stats, onClick }: { blog?: any; stats?: any, onClick: (_id: string) => void }) {
     const { image, title, createdAt, excerpt } = blog
     return (
         <>
-            <section className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 mb-20 p-8 rounded-lg cursor-pointer">
+            <section className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 mb-20 p-8 rounded-lg cursor-pointer" onClick={() => onClick(blog._id)}>
 
                 <div className="h-96 bg-gray-700 rounded-lg overflow-hidden flex items-center justify-center">
                     <div className="text-6xl text-gray-500">

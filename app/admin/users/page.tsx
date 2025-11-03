@@ -1,12 +1,14 @@
 "use client"; import { DashboardCard } from '@/components/admin/DashboardCard';
 import DataTable from '@/components/admin/table/DataTable';
 import { TopHeader } from '@/components/admin/TopHeader'
+import UserUpdateModal from '@/components/modals/UserUpdateModal';
 import StatusBadge from '@/components/ui/Badge';
 import CustomConfirm from '@/components/ui/CustomAlert';
 import InputField from '@/components/ui/Input';
 import SelectField from '@/components/ui/Select';
 import { UniversalContainer } from '@/components/ui/UniversalContainer';
 import { useUsers } from '@/hooks/useUsers';
+import { updateUser } from '@/services/userService';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Ban, Check, Edit, Funnel, Shield, X } from 'lucide-react';
 import Image from 'next/image'
@@ -36,13 +38,47 @@ const page = () => {
     const [showFilter, setShowFilter] = useState(false);
     const [data, setData] = useState({ status: "" });
     const [filters, setFilters] = useState({ status: "" });
-
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<any>(null);
     const filterRef = useRef<HTMLDivElement>(null);
     const queryClient = useQueryClient();
 
 
     const { data: users = [], refetch, isFetching } = useUsers(filters, true);
 
+    // ✅ Mutation: Update user info
+    const { mutate: handleUserUpdate, isPending: isUpdating } = useMutation({
+        mutationFn: updateUser,
+        onMutate: async (updatedUser) => {
+            await queryClient.cancelQueries({ queryKey: ["users"] });
+
+            const previousUsers = queryClient.getQueryData(["users"]);
+
+            // 🟡 Optimistic UI Update
+            queryClient.setQueryData(["users"], (oldUsers: any) =>
+                oldUsers?.map((u: any) =>
+                    u._id === updatedUser._id ? { ...u, ...updatedUser } : u
+                )
+            );
+
+            return { previousUsers };
+        },
+        onError: (error: any, _variables, context: any) => {
+            console.error("Update failed:", error.message);
+            // 🔙 Rollback UI if mutation fails
+            if (context?.previousUsers) {
+                queryClient.setQueryData(["users"], context.previousUsers);
+            }
+        },
+        onSuccess: (data) => {
+            console.log("User updated successfully:", data);
+        },
+        onSettled: () => {
+            // ✅ Always refetch fresh data after mutation
+            queryClient.invalidateQueries({ queryKey: ["users"] });
+            setShowEditModal(false);
+        },
+    });
 
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
     const [showConfirm, setShowConfirm] = useState<{
@@ -87,11 +123,10 @@ const page = () => {
         },
     });
 
-    console.log({ users })
     const cards = [
         { title: "Total Users", value: users.length },
         { title: "Active Users", value: users.filter((u: any) => u.status === "active").length },
-        { title: "Suspended Users", value: users.filter((u: any) => u.status === "suspended").length },
+        { title: "Suspended Users", value: users.filter((u: any) => u.status !== "active").length },
     ];
     const columns = [
         {
@@ -153,8 +188,7 @@ const page = () => {
             key: "status",
             label: "Status",
             render: (value: string) => {
-                console.log({ value })
-                return <StatusBadge value={value === "active" ? "active_success" : value} text={value} />
+                return <StatusBadge value={value === "active" ? "active_success" : value} text={value === "active" ? "active" : "suspended"} />
             },
         },
 
@@ -163,9 +197,12 @@ const page = () => {
             label: "Actions",
             render: (_: any, row: any) => (
                 <div className="flex gap-3 items-center">
-                    {/* <button className="text-gray-300 hover:text-white cursor-pointer">
+                    <button className="text-gray-300 hover:text-white cursor-pointer" onClick={() => {
+                        setSelectedUser(row);
+                        setShowEditModal(true);
+                    }}>
                         <Edit size={16} />
-                    </button> */}
+                    </button>
                     {row.status === "inactive" ? (
                         <button
                             onClick={() => {
@@ -320,6 +357,15 @@ const page = () => {
                     }
                 }}
                 onCancel={() => setShowConfirm({ open: false, action: null })}
+            />
+            <UserUpdateModal
+                open={showEditModal}
+                onClose={() => setShowEditModal(false)}
+                user={selectedUser}
+                onSave={(updatedData) => {
+                    // ✅ Use TanStack mutation
+                    handleUserUpdate(updatedData);
+                }}
             />
         </div>
     )

@@ -17,13 +17,11 @@ export const UserNavbar = () => {
     const router = useRouter();
 
     const [open, setOpen] = useState(false);
-
     const ref = useRef<HTMLDivElement>(null);
 
     const navLinkStyle = "text-sm font-medium hover:text-brand-yellow transition-colors block py-2 px-4";
     const handleLogout = async () => {
         try {
-            console.log("Logout clicked");
             await logout(); // wait for context to clear
             // setIsOpen(false);
             setOpen(false);
@@ -32,6 +30,13 @@ export const UserNavbar = () => {
             console.error("Logout failed:", err);
         }
     };
+    const handleUser = () => {
+        if (user && user.type === "user") {
+            router.push("/user/dashboard");
+        } else {
+            router.push("/admin");
+        }
+    }
     return (
         <nav className="py-2 px-4 md:px-12 flex justify-between items-center text-brand-muted relative z-50">
 
@@ -110,11 +115,12 @@ export const UserNavbar = () => {
 
                         >
                             <div className="flex flex-col py-2 items-center gap-1">
-                                <span
+                                {isAuthenticated && <span
                                     className={`cursor-pointer text-[#F8FAFC] font-[600] text-[14px] leading-[20px] py-2 rounded-md   font-segoe   `}
+                                    onClick={handleUser}
                                 >
                                     My Account
-                                </span>
+                                </span>}
                                 {/* <div className="border-t border-[#303036] my-1 w-full" />
                                 <button
                                     className={`cursor-pointer text-[#F8FAFC] font-[600] flex items-center gap-1.5 text-[14px] leading-[20px] py-2 rounded-md hover:bg-white/5 font-segoe text-left  px-6`}

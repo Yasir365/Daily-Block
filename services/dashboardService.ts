@@ -1,8 +1,6 @@
 // src/services/dashboardService.ts
 
 export const fetchDashboardStats = async () => {
-  console.log("fetchDashboardStats called"); // ✅ check this
-
   const res = await fetch("/api/dashboard/stats", {
     cache: "no-store", // ✅ prevents Next.js static caching
   });

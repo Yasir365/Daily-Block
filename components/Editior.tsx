@@ -26,6 +26,8 @@ interface EditorProps {
     saveButtonText: string;
     onSave?: (content: string) => void;
     isSaving?: boolean;
+    className?: string; // add the className property
+
 }
 
 export default function RichTextEditor({

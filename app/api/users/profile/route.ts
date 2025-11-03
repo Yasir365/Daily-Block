@@ -106,8 +106,6 @@ export async function PATCH(req: NextRequest) {
       updates.password = hashedPassword;
     }
 
-    console.log("🔄 Updating user with:", updates);
-
     // 🧠 Perform update
     const updatedUser = await User.findByIdAndUpdate(userId, updates, {
       new: true,

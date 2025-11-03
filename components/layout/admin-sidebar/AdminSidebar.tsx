@@ -46,7 +46,6 @@ export const AdminSidebar = ({ isOpen, setIsOpen }: AdminSidebarProps) => {
 
     const handleLogout = async () => {
         try {
-            console.log("Logout clicked");
             await logout(); // wait for context to clear
             setIsOpen(false);
             setOpen(false);

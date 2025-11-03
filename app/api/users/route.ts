@@ -8,8 +8,9 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const status = searchParams.get("status") || "all";
-
-    const query: any = {};
+    const query: any = {
+      userType: { $ne: "admin" }, // ✅ exclude admins
+    };
     if (status !== "all") query.status = status;
 
     const users = await User.find(query).sort({ createdAt: -1 });

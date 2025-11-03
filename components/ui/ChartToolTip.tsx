@@ -6,7 +6,6 @@ interface ChartTooltipProps {
 }
 
 const ChartTooltip: React.FC<ChartTooltipProps> = ({ date, value }) => {
-    console.log(date, value);
     return (
         <div
             className="

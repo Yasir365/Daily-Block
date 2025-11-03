@@ -1,7 +1,9 @@
 "use client";
 
+import { useFetchFaqs } from "@/hooks/useFaq";
 import { Collapse } from "antd";
 import type { CollapseProps } from "antd";
+import parse from "html-react-parser"; // ✅ parse HTML strings safely
 
 const faqData = [
     {
@@ -44,19 +46,25 @@ const faqData = [
     },
 ];
 
-export const    Accordion = () => {
-    const items: CollapseProps["items"] = faqData.map((item, index) => ({
-        key: String(index),
-        label: <span className="text-white font-titilliumWeb font-semibold text-[24px] leading-[28px]">
-            {item.title}
-        </span>,
+export const Accordion = () => {
+
+    const { data = [], isLoading, refetch } = useFetchFaqs();
+    // Map API data to AntD Collapse items
+    const items: CollapseProps["items"] = data?.map((faq: { question: string, answer: string; _id: string }, index: number) => ({
+        key: faq._id,
+        label: (
+            <span className="text-white font-titilliumWeb font-semibold text-[20px] sm:text-[24px] leading-[28px]">
+                {faq.question}
+            </span>
+        ),
         children: (
-            <div className="text-gray-300 font-inter font-normal text-[15.27px] leading-relaxed px-6 pb-4">
-                {item.content}
+            <div className="text-gray-300 font-inter font-normal text-[15.27px] leading-relaxed px-6 pb-4 space-y-2">
+                {parse(faq.answer || "<p>No answer available</p>")}
             </div>
         ),
     }));
 
+    if (isLoading) return <p className="text-white">Loading FAQs...</p>;
     return (
         <div className="w-full order-1 lg:order-none">
             <Collapse

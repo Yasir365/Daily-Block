@@ -10,6 +10,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { CustomToast } from "@/components/ui/ReactToast";
 
 const LoginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -42,7 +43,6 @@ export const LoginForm = () => {
     },
     onSuccess: (result) => {
       login(result.user);
-      console.log("Login Success:", result.user);
       if (result.user.type === "admin") {
         router.push("/admin");
       } else {
@@ -51,7 +51,13 @@ export const LoginForm = () => {
       }
     },
     onError: (error: any) => {
-      toast.error(error.message || "An unexpected error occurred during login.");
+      toast.custom((t) => (
+        <CustomToast
+          t={t}
+          status="error"
+          message={error.message || "An unexpected error occurred during login."}
+        />
+      ))
       console.error("Login Error:", error);
     },
   });

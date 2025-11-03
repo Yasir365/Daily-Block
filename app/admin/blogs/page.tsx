@@ -21,7 +21,6 @@ const Page = () => {
 
     const { data = [], isLoading, refetch } = useFetchBlogs();
     const { mutate: deleteBlog } = useDeleteBlog();
-    console.log({ data })
     const blogs = data.data || [];
     // ✅ Filter blogs live as user types
     const filteredBlogs = blogs.filter((b: any) => {

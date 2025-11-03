@@ -152,7 +152,6 @@ const MultiStepForm = () => {
     const handleClose = () => {
         reset();
         setCurrentStep(1);
-        console.log("Form closed");
     };
 
     // render step
@@ -172,7 +171,6 @@ const MultiStepForm = () => {
                 return null;
         }
     };
-    console.log({ errors })
     return (
         <FormProvider {...methods}>
             <form

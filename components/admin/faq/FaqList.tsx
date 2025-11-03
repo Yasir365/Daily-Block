@@ -26,7 +26,7 @@ export default function FaqList({
     return (
 
         <Wrapper title={title} desc={desc} children2={children}>
-            <div className="overflow-y-auto flex flex-col mt-4 gap-3 min-h-[400px] max-h-[600px]">
+            <div className="overflow-y-auto flex flex-col mt-4 gap-3 min-h-[400px] max-h-[600px]  custom-scrollbar">
                 {data.length > 0 ? (
                     data.map((faq, i) => (
                         <FaqCard

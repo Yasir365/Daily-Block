@@ -32,7 +32,6 @@ export async function GET() {
       networks: coin.contractAddresses || [],
     }));
 
-    console.log("Response:", coins?.length || 0);
     return NextResponse.json({ status: "success", coins }, { status: 200 });
   } catch (err) {
     console.error("Failed to load top ranked coins", err);

@@ -27,7 +27,6 @@ export const CustomToast = ({ message, status, t }: { message: string, status?: 
         >
             <button
                 onClick={() => {
-                    console.log("Toast close clicked", t.id);
                     toast.dismiss(t.id);
                 }}
                 className="absolute top-5 right-5 text-white hover:text-[#F8FAFC] transition cursor-pointer"

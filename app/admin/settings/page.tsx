@@ -127,7 +127,6 @@ const Page = () => {
         staleTime: 5 * 60 * 1000, // cache for 5 min
     });
     useEffect(() => {
-        console.log({ profileData })
         if (profileData) {
             // Reset form values based on fetched data
             reset({

@@ -62,19 +62,19 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
             </Providers>
         );
     }
-    if (isUserRoute) {
-        return (
-            <>
-                <Providers>
-                    <UserNavbar />
-                    <main className="flex-grow">
-                        {children}
-                    </main>
-                    <Footer />
-                </Providers>
-            </>
-        );
-    }
+        // if (isUserRoute) {
+        //     return (
+        //         <>
+        //             <Providers>
+        //                 <UserNavbar />
+        //                 <main className="flex-grow">
+        //                     {children}
+        //                 </main>
+        //                 <Footer />
+        //             </Providers>
+        //         </>
+        //     );
+        // }
     return (
         <>
             <Providers>

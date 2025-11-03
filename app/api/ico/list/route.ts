@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
     const response = await IcoProject.aggregate([
       { $match: query },
 
-      // 🔹 Lookup for user info (similar to populate)
+      // 🔹 Include full user info
       {
         $lookup: {
           from: "users",
@@ -65,28 +65,8 @@ export async function GET(req: NextRequest) {
         },
       },
       { $unwind: { path: "$userInfo", preserveNullAndEmptyArrays: true } },
-      {
-        $project: {
-          cryptoCoinName: 1,
-          coinAbbreviation: 1,
-          status: 1,
-          createdAt: 1,
-          updatedAt: 1,
-          stepCompleted: 1,
-          // ✅ Include user fields
-          userInfo: {
-            _id: 1,
-            name: 1,
-            firstName: 1,
-            lastName: 1,
-            email: 1,
-            userType: 1,
-            createdAt: 1,
-          },
-        },
-      },
 
-      // 🔹 Lookup for unread message count
+      // 🔹 Lookup unread messages count
       {
         $lookup: {
           from: "messages",
@@ -109,9 +89,11 @@ export async function GET(req: NextRequest) {
         },
       },
 
+      // ✅ DO NOT LIMIT FIELDS — return everything
+      // (Remove $project entirely or only exclude heavy internal fields)
       { $sort: { createdAt: -1 } },
     ]);
-    
+
     return NextResponse.json(
       { success: true, message: "Successfully fetched", data: response },
       { status: 200 }

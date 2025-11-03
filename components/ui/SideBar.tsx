@@ -34,7 +34,6 @@ export default function NotificationSidebar({ open, setOpen }: { open: boolean, 
         },
     });
     const handleClick = (url: string, id: string, isAdmin?: boolean) => {
-        console.log({ url, isAdmin });
         markOneMutation.mutate(id)
         if (isAdmin) {
             // router.push("/admin");
@@ -51,7 +50,6 @@ export default function NotificationSidebar({ open, setOpen }: { open: boolean, 
             }
         }
     }
-    console.log({ latestNotifications })
     return (
         <>
 

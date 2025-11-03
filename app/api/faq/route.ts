@@ -31,7 +31,6 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    console.log({ question, answer });
     const faq = await FaqModal.create({ question, answer });
     return NextResponse.json({ success: true, data: faq });
   } catch (error) {

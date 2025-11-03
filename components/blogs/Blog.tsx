@@ -3,13 +3,14 @@ import React from 'react'
 import BlogsNav from './HeroArticle'
 import ArticleCard from './ArticleCard'
 import { useFetchBlogs } from '@/hooks/useblog'
+import { useRouter } from 'next/navigation'
 
 
 const Blog = () => {
     const { data = [], isLoading, refetch } = useFetchBlogs();
     const blogs: any[] = data?.data ?? [];          // <-- the blog list
     const stats = data?.stats;                     // optional stats
-    console.log({ blogs, stats })
+    const router = useRouter();
     // Split the first blog (hero) from the rest
     const heroBlog = blogs[0];                     // may be undefined
     const restBlogs = blogs.slice(1);              // everything after #0
@@ -23,7 +24,9 @@ const Blog = () => {
             </main>
         );
     }
-
+    const handleBlog = (_id: string) => {
+        router.push(`/blogs/${_id}`);
+    }
     if (!heroBlog && restBlogs.length === 0) {
         return (
             <main className="container mx-auto py-12 text-center">
@@ -37,15 +40,16 @@ const Blog = () => {
             </main>
         );
     }
-    console.log({ heroBlog })
     return (
         <main className="container mx-auto">
-            {heroBlog && <BlogsNav blog={heroBlog} stats={stats} />}
+            {heroBlog && <BlogsNav blog={heroBlog} stats={stats} onClick={handleBlog} />}
             <section className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
                 {restBlogs.length > 0 ? (
                     restBlogs.map((blog) => (
                         <ArticleCard
                             key={blog._id}
+                            id={blog._id}
+                            onClick={handleBlog}
                             title={blog.title}
                             description={blog.excerpt}
                         // you can pass any other props your ArticleCard expects

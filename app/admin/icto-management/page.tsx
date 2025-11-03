@@ -2,6 +2,7 @@
 import { DashboardCard } from '@/components/admin/DashboardCard';
 import DataTable from '@/components/admin/table/DataTable';
 import { TopHeader } from '@/components/admin/TopHeader'
+import IcoProjectViewModal from '@/components/modals/IcoProjectViewModal';
 import ChatSideBar from '@/components/ui/ChatSideBar';
 import CustomConfirm from '@/components/ui/CustomAlert';
 import InputField from '@/components/ui/Input';
@@ -80,7 +81,8 @@ const approveIco = async ({
 
 
 const page = () => {
-
+    const [viewModalOpen, setViewModalOpen] = useState(false);
+    const [selectedProject, setSelectedProject] = useState<any>(null);
     const {
         data: stats,
     } = useQuery({
@@ -135,7 +137,6 @@ const page = () => {
         {
             key: "launchpad", label: "launchpad", render: (_: any, row: any) => {
                 // ✅ Handle cases where userId might be null or not populated
-                console.log({ row })
                 const userRole = row.userInfo.userType;
                 return (
                     <span className="font-inter text-sm text-white capitalize">
@@ -182,11 +183,15 @@ const page = () => {
             render: (_: any, row: any) => (
                 <div className="flex gap-4 ">
                     {/* View */}
-                    {/* <button className="text-gray-300 hover:text-white cursor-pointer"
+                    <button className="text-gray-300 hover:text-white cursor-pointer"
+                        onClick={() => {
+                            setSelectedProject(row);
+                            setViewModalOpen(true);
+                        }}
 
                     >
                         <Eye size={16} />
-                    </button> */}
+                    </button>
 
                     {/* Approve (you can handle separately later) */}
                     <button
@@ -607,6 +612,11 @@ const page = () => {
                     setShowApproveConfirm({ open: false, action: null });
                 }}
                 onCancel={() => setShowApproveConfirm({ open: false, action: null })}
+            />
+            <IcoProjectViewModal
+                open={viewModalOpen}
+                onClose={() => setViewModalOpen(false)}
+                data={selectedProject}
             />
         </div>
     )

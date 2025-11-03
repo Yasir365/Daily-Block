@@ -3,11 +3,13 @@ import React from 'react';
 interface ArticleCardProps {
     title: string;
     description: string;
+    onClick: (id: string) => void;
+    id: string
 }
 
-export default function ArticleCard({ title, description }: ArticleCardProps) {
+export default function ArticleCard({ title, description, onClick, id }: ArticleCardProps) {
     return (
-        <article className="grid grid-cols-1 md:grid-cols-2 rounded-xl hover:bg-gray-800 transition-colors cursor-pointer overflow-hidden" >
+        <article className="grid grid-cols-1 md:grid-cols-2 rounded-xl hover:bg-gray-800 transition-colors cursor-pointer overflow-hidden" onClick={() => onClick(id)}>
             {/* Left (Image Section) */}
             <div className="flex items-center justify-center">
                 <img

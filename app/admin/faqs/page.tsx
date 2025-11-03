@@ -73,33 +73,38 @@ const Page = () => {
                                 <BtnComp title="Add New FAQ" onClick={() => setShowFaq(!showFaq)} />
 
                                 {/* ✅ FaqSection Dropdown */}
-                                {showFaq && (
-                                    <UniversalContainer
-                                        size="lg"
-                                        className="absolute right-0 mt-2 w-[95vw] max-w-[600px] p-6 
-                                        bg-gradient-to-br from-[#121212] to-[#141B1F]
-                                        border border-[#364349] rounded-[12px] 
-                                        shadow-[0_1px_2px_0_#0000000D] backdrop-blur-[4px] z-[9999]"
-                                    >
-                                        {/* Close Button */}
-                                        <div className="flex justify-end">
-                                            <button onClick={() => setShowFaq(false)}>
-                                                <X className="w-5 h-5 text-gray-400 hover:text-white" />
-                                            </button>
-                                        </div>
 
-                                        {/* ✅ Faq Form */}
-                                        <div className="mt-4">
-                                            <FaqSectionSingle onSave={handleSaveFaq} />
-                                        </div>
-                                    </UniversalContainer>
-                                )}
+
                             </div>
                         </FaqList>
 
 
                     </div>
                 </div>
+                {showFaq && (
+                    <div
+                        className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm"
+                        onClick={() => setShowFaq(false)}
+                    >
+                        {/* Stop propagation so clicking inside doesn't close */}
+                        <div
+                            className="relative w-[95vw] max-w-[900px] max-h-[95vh] bg-gradient-to-br from-[#121212] to-[#141B1F] border border-[#364349] rounded-[12px] p-6 overflow-y-auto shadow-lg"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {/* Close Button */}
+                            <div className="flex justify-end">
+                                <button onClick={() => setShowFaq(false)}>
+                                    <X className="w-5 h-5 text-gray-400 hover:text-white" />
+                                </button>
+                            </div>
+
+                            {/* Faq Form */}
+                            <div className="mt-4">
+                                <FaqSectionSingle onSave={handleSaveFaq} useEditor={true} />
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

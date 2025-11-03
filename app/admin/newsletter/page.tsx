@@ -26,7 +26,6 @@ const page = () => {
         queryKey: ["subscribers"],
         queryFn: fetchSubscribers,
     });
-    console.log("Stats:", stats);
     const cards = [
         {
             title: "Total Listed ICOs",

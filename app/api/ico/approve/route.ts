@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import IcoProject from "@/models/Icoproject";
 import jwt from "jsonwebtoken";
-import { createNotification } from "@/lib/notify";
+import { createNotification, notifyUsersByType } from "@/lib/notify";
 import mongoose from "mongoose";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
@@ -75,6 +75,24 @@ export async function PATCH(req: NextRequest) {
     //   relatedId: new mongoose.Types.ObjectId(project._id),
     //   userId: new mongoose.Types.ObjectId(project.userId),
     // });
+    await createNotification({
+      title: "ICO Status Updated",
+      message:
+        action === "approved"
+          ? `Your ICO "${project.cryptoCoinName}" has been approved.`
+          : `Your ICO "${project.cryptoCoinName}" has been rejected.`,
+      type: "ico",
+      relatedId: new mongoose.Types.ObjectId(project._id),
+      userId: new mongoose.Types.ObjectId(project.userId), // 👈 related user
+      status: action === "approved" ? "success" : "error",
+    });
+    await notifyUsersByType("user", {
+      title: "ICO Reviewed",
+      message: `ICO "${project.cryptoCoinName}" was ${action} by an admin.`,
+      type: "ico",
+      relatedId: new mongoose.Types.ObjectId(project._id),
+      status: "info",
+    });
     return NextResponse.json(
       {
         success: true,

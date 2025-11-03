@@ -35,7 +35,9 @@ export async function GET(req: NextRequest) {
     // 📊 Growth Data
     const days = mode === "weekly" ? 7 : 30;
     const sinceDate = new Date();
-    sinceDate.setDate(sinceDate.getDate() - days);
+    const today = new Date();
+
+    sinceDate.setDate(today.getDate() - (days - 1)); // include today as the last day
 
     // ✅ Aggregate new users and projects by day
     const userGrowth = await User.aggregate([

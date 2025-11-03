@@ -22,7 +22,6 @@ export default function ChatSideBar({ open, setOpen, chatId, setChatId, chatOpen
     //     { id: number; title: string; desc: string; time: string; isAdmin?: boolean }[]
     // >([]);
     const queryClient = useQueryClient();
-    console.log({ chatId })
     const [newMessage, setNewMessage] = useState("");
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -43,7 +42,6 @@ export default function ChatSideBar({ open, setOpen, chatId, setChatId, chatOpen
         enabled: !!chatId._id && open, // only fetch if sidebar is open and chatId is set
     });
 
-    console.log({ messages })
     // 🔹 Mutation for sending new message
     const sendMessage = useMutation({
         mutationFn: async (messageText: string) => {

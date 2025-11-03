@@ -80,8 +80,6 @@ export async function GET(req: NextRequest) {
       NotificationModel.countDocuments({ ...filter, isRead: false }),
     ]);
 
-    console.log("✅ Notifications fetched for:", userId, "Count:", total);
-
     // ✅ 5. Return response
     return NextResponse.json({
       success: true,

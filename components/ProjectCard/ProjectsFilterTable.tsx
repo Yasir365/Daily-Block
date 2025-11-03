@@ -92,7 +92,6 @@ const mockProjectData: ProjectRowProps[] = [
 
 
 const handleSwitchChange = (activeSwitches: string[]) => {
-    console.log("Active switches:", activeSwitches);
 };
 
 
@@ -119,7 +118,6 @@ export const ProjectsFilterTable = () => {
     };
     const onSort = (key: string, direction: string) => {
         // Implement sorting logic here
-        console.log(`Sorting by ${key} ${direction}`);
     };
     return (
         <section className="container mx-auto px-4 py-10">

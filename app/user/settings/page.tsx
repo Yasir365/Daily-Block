@@ -58,7 +58,6 @@ const page = () => {
     };
 
     const handleSubmit = () => {
-        console.log("Form Data:", formData);
         alert("Profile updated successfully!");
     };
 

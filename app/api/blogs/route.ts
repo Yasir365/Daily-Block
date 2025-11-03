@@ -70,8 +70,6 @@ export async function GET(req: NextRequest) {
       ];
     }
 
-    console.log("🧩 Blog Filter:", filter);
-
     // ✅ Count total documents
     const total = await BlogModel.countDocuments(filter);
 
@@ -193,7 +191,7 @@ export async function PATCH(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
-  if (!id)
+    if (!id)
       return NextResponse.json(
         { success: false, message: "Blog ID is required." },
         { status: 400 }
@@ -238,13 +236,20 @@ export async function PATCH(req: NextRequest) {
     await blog.save();
 
     if (["published", "live"].includes(status)) {
-      // await createNotification({
-      //   title: "Blog Published",
-      //   message: `The blog "${blog.title}" is now live.`,
-      //   type: "blog",
-      //   relatedId: new mongoose.Types.ObjectId(blog._id as string),
-      //   userId: blog.userId,
-      // });
+      await notifyUsersByType("user", {
+        title: "Blog Updated",
+        message: `The blog titled "${blog.title}" has been published/updated.`,
+        type: "blog",
+        typeRef: "Blog",
+        relatedId: new mongoose.Types.ObjectId(blog._id as string),
+        relatedData: {
+          title: blog.title,
+          excerpt: blog.excerpt,
+          image: blog.image,
+        },
+        userId: new mongoose.Types.ObjectId(blog.userId),
+        status: "success",
+      });
     }
 
     return NextResponse.json({
