@@ -1,6 +1,6 @@
 
 export default function BlogsNav({ blog, stats }: { blog?: any; stats?: any }) {
-    const { image, title, createdAt, content } = blog
+    const { image, title, createdAt, excerpt } = blog
     return (
         <>
             <section className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 mb-20 p-8 rounded-lg cursor-pointer">
@@ -17,7 +17,7 @@ export default function BlogsNav({ blog, stats }: { blog?: any; stats?: any }) {
                     </h1>
                     <p className="text-lg text-white mt-2 font-inter">{createdAt}</p>
                     <p className="mt-4 text-lg text-[#9CA3AF] leading-relaxed  ">
-                        {content}
+                        {excerpt}
                     </p>
                 </div>
             </section>

@@ -1,3 +1,4 @@
+import { notification } from "antd";
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import BlogModel from "@/models/BlogModel";
@@ -7,7 +8,7 @@ import { verifyToken } from "@/lib/verifyToken";
 import fs from "fs";
 import path from "path";
 import { promises as fsPromises } from "fs";
-import { createNotification } from "@/lib/notify";
+import { notifyUsersByType } from "@/lib/notify";
 import mongoose from "mongoose";
 
 type IBlogStatus = "draft" | "published" | "archived" | "blocked" | "live";
@@ -35,14 +36,12 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get("page") || "1");
-    const limitParam = searchParams.get("limit");
-    const limit = limitParam ? parseInt(limitParam) : 10;
-    const type = searchParams.get("type");
-    const date = searchParams.get("date"); // format: YYYY-MM-DD
-    const onlyUnread = searchParams.get("unread") === "true";
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const status = searchParams.get("status");
+    const search = searchParams.get("search")?.trim() || "";
     const all = searchParams.get("all") === "true";
 
-    // ✅ Verify user
+    // ✅ Verify user (JWT)
     const { user, error } = await verifyToken(req);
     if (error || !user) {
       return NextResponse.json(
@@ -52,50 +51,54 @@ export async function GET(req: NextRequest) {
     }
 
     // ✅ Base filter
-    const filter: any = { userId: user._id };
-
-    if (type) filter.type = type;
-    if (onlyUnread) filter.isRead = false;
-    if (date) {
-      const dayStart = new Date(date);
-      const dayEnd = new Date(date);
-      dayEnd.setHours(23, 59, 59, 999);
-      filter.createdAt = { $gte: dayStart, $lte: dayEnd };
+    const filter: Record<string, any> = { isDeleted: false };
+    // Non-admins can only see their own blogs
+    if (user.role !== "admin") {
+      filter.userId = user._id;
     }
 
-    // ✅ Get total count for pagination
-    const total = await Notification.countDocuments(filter);
-    const unreadCount = await Notification.countDocuments({
-      ...filter,
-      isRead: false,
-    });
+    // Filter by status if provided (draft/published)
+    if (status && status !== "all") {
+      filter.status = status;
+    }
 
-    let query = Notification.find(filter).sort({ createdAt: -1 }).lean();
+    // Optional text search in title or excerpt
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { excerpt: { $regex: search, $options: "i" } },
+      ];
+    }
 
-    // ✅ Handle different modes
+    console.log("🧩 Blog Filter:", filter);
+
+    // ✅ Count total documents
+    const total = await BlogModel.countDocuments(filter);
+
+    // ✅ Query for blogs
+    let query = BlogModel.find(filter).sort({ createdAt: -1 }).lean();
+
     if (!all) {
       query = query.skip((page - 1) * limit).limit(limit);
     }
 
-    const notifications = await query.exec();
+    const blogs = await query.exec();
 
     return NextResponse.json({
       success: true,
       total,
-      unreadCount,
       currentPage: page,
       totalPages: all ? 1 : Math.ceil(total / limit),
-      data: notifications,
+      data: blogs,
     });
   } catch (err: any) {
-    console.error("❌ Notification fetch error:", err);
+    console.error("❌ Blog GET Error:", err);
     return NextResponse.json(
       { success: false, message: err.message },
       { status: 500 }
     );
   }
 }
-
 // POST: create a new blog (admin only)
 // In app/api/blogs/route.ts
 
@@ -152,16 +155,22 @@ export async function POST(req: NextRequest) {
 
     // after `const blog = await BlogModel.create({...})`
     if (!blog) throw new Error("Failed to create blog.");
-    if (blog._id) {
-      await createNotification({
-        title: "New Blog Published",
-        message: `A new blog titled "${blog.title}" has been created.`,
-        type: "blog",
-        related: blog,
-        userId: user._id,
-        status: "success",
-      });
-    }
+    // ✅ Notify all users (non-admins)
+    // ✅ Notify all non-admin users
+    await notifyUsersByType("user", {
+      title: "New Blog Published",
+      message: `A new blog titled "${blog.title}" has been published.`,
+      type: "blog",
+      typeRef: "Blog",
+      relatedId: new mongoose.Types.ObjectId(blog._id as string),
+      relatedData: {
+        title: blog.title,
+        excerpt: blog.excerpt,
+        image: blog.image,
+      },
+      userId: new mongoose.Types.ObjectId(user._id),
+      status: "success",
+    });
 
     return NextResponse.json({
       success: true,

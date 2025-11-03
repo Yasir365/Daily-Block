@@ -1,98 +1,68 @@
+import NotificationModel from "@/models/NotificationModel";
+import User from "@/models/UserModel";
 import mongoose from "mongoose";
-import Notification from "@/models/NotificationModel";
+
+export interface CreateNotificationParams {
+  title: string;
+  message: string;
+  type: "blog" | "ico" | "comment" | "system" | "user";
+  relatedId?: mongoose.Types.ObjectId;
+  typeRef?: "Blog" | "IcoProject" | "User";
+  relatedData?: Record<string, any>;
+  userId?: mongoose.Types.ObjectId;
+  receiverIds?: mongoose.Types.ObjectId[];
+  status?: "pending" | "success" | "error" | "info";
+}
 
 /**
- * Universal function to create notifications for any type (Blog, ICO, User, etc.)
+ * Create one or multiple notifications
  */
 export async function createNotification({
   title,
   message,
   type,
-  related,
+  relatedId,
+  typeRef,
+  relatedData,
   userId,
-  receiverId,
+  receiverIds = [],
   status = "info",
-}: {
-  title: string;
-  message: string;
-  type: "blog" | "ico" | "user" | "system" | "comment";
-  related?: any; // full object (e.g., blog or ICO)
-  userId?: mongoose.Types.ObjectId | string;
-  receiverId?: mongoose.Types.ObjectId | string;
-  status?: "pending" | "success" | "error" | "info";
-}) {
+}: CreateNotificationParams) {
   try {
-    // Map `type` to model name for population
-    const modelMap: Record<string, string> = {
-      blog: "Blog",
-      ico: "IcoProject",
-      user: "User",
-      comment: "Comment",
-      system: "User", // or another model if you have System notifications
-    };
+    if (!receiverIds.length) return null;
 
-    const typeRef = modelMap[type];
-    if (!typeRef) throw new Error(`Unknown type "${type}"`);
-
-    // Determine the relatedId (if available)
-    const relatedId =
-      related?._id instanceof mongoose.Types.ObjectId
-        ? related._id
-        : related?._id
-        ? new mongoose.Types.ObjectId(related._id)
-        : undefined;
-    console.log({ related });
-    // Build related snapshot data (safe to keep lightweight)
-    const relatedData =
-      type === "blog"
-        ? {
-            title: related?.title,
-            excerpt: related?.excerpt,
-            image: related?.image,
-            status: related?.status,
-            readTime: related?.readTime,
-            publishedDate: related?.publishedDate,
-          }
-        : type === "ico"
-        ? {
-            name: related?.cryptoCoinName,
-            status: related?.status,
-            tokenSymbol: related?.tokenSymbol,
-            icoEndDate: related?.icoEndDate,
-            price: related?.price,
-          }
-        : related
-        ? { ...related }
-        : {};
-    console.log("🧩 Final Object Sent:", {
+    const notifications = receiverIds.map((receiverId) => ({
       title,
       message,
       type,
       typeRef,
       relatedId,
-      relatedData: JSON.parse(JSON.stringify(relatedData)),
-      status,
+      relatedData,
       userId,
       receiverId,
-    });
-
-    // ✅ Create the notification
-    const created = await Notification.create({
-      title,
-      message,
-      type,
-      typeRef,
-      relatedId,
-      relatedData: JSON.parse(JSON.stringify(relatedData)),
       status,
-      userId,
-      receiverId,
-    });
+    }));
 
-    console.log("✅ Saved Doc:", created);
-
-    console.log(`✅ Notification created for type: ${type}`);
+    await NotificationModel.insertMany(notifications);
+    return true;
   } catch (err) {
-    console.error("❌ Failed to create notification:", err);
+    console.error("❌ Notification creation failed:", err);
+    return false;
   }
+}
+
+/**
+ * Notify all users with a specific userType ("user", "admin")
+ */
+export async function notifyUsersByType(
+  userType: "user" | "admin",
+  payload: Omit<CreateNotificationParams, "receiverIds">
+) {
+  const users = await User.find({ userType }, "_id");
+  const receiverIds = users.map(
+    (u) => new mongoose.Types.ObjectId(u._id as string)
+  );
+  if (!receiverIds.length) return;
+
+  await createNotification({ ...payload, receiverIds });
 }

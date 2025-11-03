@@ -5,7 +5,7 @@ import fs from "fs";
 import path from "path";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-import { createNotification } from "@/lib/notify";
+import NotificationModel from "@/models/NotificationModel";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 
@@ -14,6 +14,7 @@ export const dynamic = "force-dynamic";
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
+
     // ✅ Extract and verify JWT token from cookies
     const token = req.cookies.get("auth_token")?.value;
     if (!token) {
@@ -33,7 +34,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const currentUserId = decoded.userId; // 👈 The logged-in user ID
+    const currentUserId = decoded.userId; // 👈 Logged-in user ID
     const formData = await req.formData();
     const data: Record<string, any> = {};
 
@@ -51,6 +52,7 @@ export async function POST(req: NextRequest) {
 
     const { _id, cryptoCoinName } = data;
 
+    // ✅ Handle FAQs
     if (typeof data.faqs === "string") {
       try {
         data.faqs = JSON.parse(data.faqs);
@@ -63,6 +65,7 @@ export async function POST(req: NextRequest) {
       data.faqs = [data.faqs];
     }
 
+    // ✅ Handle icon upload
     let icoIconPath: string | undefined;
     const icoIcon = data.icoIcon as File | undefined;
     if (icoIcon) {
@@ -84,6 +87,7 @@ export async function POST(req: NextRequest) {
       icoIconPath = `/ico/${cryptoCoinName}/${fileName}`;
     }
 
+    // ✅ Update existing ICO
     if (_id) {
       const updateFields: Record<string, any> = { ...data };
       if (icoIconPath) updateFields.icoIcon = icoIconPath;
@@ -103,6 +107,8 @@ export async function POST(req: NextRequest) {
 
       return NextResponse.json({ success: true, data: updated });
     }
+
+    // ✅ Create new ICO
     const payload = {
       ...data,
       userId: new mongoose.mongo.ObjectId(currentUserId as string),
@@ -110,26 +116,20 @@ export async function POST(req: NextRequest) {
       stepCompleted: 1,
       status: data.status || "pending",
     };
-    console.log("Payload:", payload);
-    const project = new IcoProject(payload);
 
+    const project = new IcoProject(payload);
     await project.save();
-    await createNotification({
-      title: "New ICO Listed",
-      message: `A new ico titled "${project.cryptoCoinName}" has been created.`,
+
+    // ✅ Create admin notification
+    await NotificationModel.create({
+      title: "New ICO Project Submitted",
+      message: `A new coin "${cryptoCoinName}" has been added and is waiting for approval.`,
       type: "ico",
-      related: project,
-      userId: currentUserId,
-      status: "success",
+      relatedId: project._id,
+      forAdmin: true, // optional: mark it as admin-only
+      status: "pending",
+      createdAt: new Date(),
     });
-    // ✅ Send "new ICO" notification
-    // await createNotification({
-    //   title: "New ICO Listed",
-    //   message: `A new ICO "${project.cryptoCoinName}" has been listed.`,
-    //   type: "ico",
-    //   relatedId: new mongoose.Types.ObjectId(project._id),
-    //   userId: new mongoose.Types.ObjectId(currentUserId),
-    // });
 
     return NextResponse.json({ success: true, data: project });
   } catch (err: any) {

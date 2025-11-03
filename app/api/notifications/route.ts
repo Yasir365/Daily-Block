@@ -8,12 +8,12 @@ const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 
 // ✅ Force dynamic execution
 export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
-    // ✅ 1. Connect to DB
     await connectDB();
 
-    // ✅ 2. Verify JWT
+    // ✅ 1. Verify token
     const token = req.cookies.get("auth_token")?.value;
     if (!token) {
       return NextResponse.json(
@@ -23,82 +23,68 @@ export async function GET(req: NextRequest) {
     }
 
     const decoded: any = jwt.verify(token, JWT_SECRET);
-    const userId = decoded._id || decoded.userId || "69036898dd4fa5a695fc73ad"; // 👈 fallback for testing
+    const userId = decoded._id || decoded.userId;
+    const userRole = decoded.role; // 👈 get user role from token
 
     if (!userId) {
       return NextResponse.json(
-        { success: false, message: "Invalid token payload" },
+        { success: false, message: "Invalid token" },
         { status: 401 }
       );
     }
 
     const userObjectId = new mongoose.Types.ObjectId(userId);
 
-    // ✅ 3. Extract query params
+    // ✅ 2. Pagination and filters
     const { searchParams } = new URL(req.url);
     const limit = parseInt(searchParams.get("limit") || "10");
     const page = parseInt(searchParams.get("page") || "1");
-    const mode = searchParams.get("mode") || "limited";
-    const type = searchParams.get("type");
-    const unread = searchParams.get("unread");
+    const unread = searchParams.get("unread") === "true";
+    const mode = searchParams.get("mode") || "user"; // 👈 detect admin mode
 
-    // ✅ 4. Build query filter
-    // const filter: any = {
-    //   $or: [{ userId: userObjectId }, { receiverId: userObjectId }],
-    // };
-    console.log({ userId });
-    // const filter: any = {
-    //   $or: [
-    //     { userId: new mongoose.Types.ObjectId("69036c54dd4fa5a695fc7454") },
-    //     { receiverId: new mongoose.Types.ObjectId("69036c54dd4fa5a695fc7454") },
-    //   ],
-    // };
+    const skip = (page - 1) * limit;
 
-    const filter: any = {};
-    if (type) filter.type = type;
-    if (unread === "true") filter.isRead = false;
-
-    // ✅ 5. Query setup
-    const baseQuery = NotificationModel.find(filter)
-      .sort({ createdAt: -1 })
-      .populate({
-        path: "relatedId",
-        select: "title name status icoEndDate price description slug icon",
-      });
-
-    // ✅ 6. Mode = all → fetch all notifications
-    if (mode === "all") {
-      const [allNotifications, unreadCount] = await Promise.all([
-        baseQuery.lean(),
-        NotificationModel.countDocuments({
-          $or: [{ userId: userObjectId }, { receiverId: userObjectId }],
-          isRead: false,
-        }),
-      ]);
-
-      return NextResponse.json({
-        success: true,
-        mode: "all",
-        total: allNotifications.length,
-        unreadCount,
-        data: allNotifications,
-      });
+    // ✅ 3. Build query (use ObjectId only)
+    let filter: any = {
+      isDeleted: { $ne: true },
+    };
+    if (userRole === "admin" && mode === "all") {
+      // ✅ Admin can see all forAdmin notifications
+      filter = {
+        ...filter,
+        $or: [
+          { forAdmin: true },
+          { receiverId: userObjectId }, // in case admin gets direct messages too
+        ],
+      };
+    } else {
+      // ✅ Regular user only sees their notifications
+      filter.receiverId = userObjectId;
+      filter.forAdmin = { $ne: true }; // 👈 exclude admin notifications
     }
 
-    // ✅ 7. Paginated (default)
-    const skip = (page - 1) * limit;
+    if (unread) filter.isRead = false;
+
+    // ✅ 4. Fetch notifications + counts
     const [notifications, total, unreadCount] = await Promise.all([
-      baseQuery.skip(skip).limit(limit).lean(),
+      NotificationModel.find(filter)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate(
+          "relatedId",
+          "title name status icoEndDate price description slug icon"
+        )
+        .lean(),
       NotificationModel.countDocuments(filter),
-      NotificationModel.countDocuments({
-        $or: [{ userId: userObjectId }, { receiverId: userObjectId }],
-        isRead: false,
-      }),
+      NotificationModel.countDocuments({ ...filter, isRead: false }),
     ]);
 
+    console.log("✅ Notifications fetched for:", userId, "Count:", total);
+
+    // ✅ 5. Return response
     return NextResponse.json({
       success: true,
-      mode,
       total,
       unreadCount,
       currentPage: page,
@@ -106,7 +92,7 @@ export async function GET(req: NextRequest) {
       data: notifications,
     });
   } catch (err: any) {
-    console.error("❌ Error fetching notifications:", err);
+    console.error("❌ Notification GET Error:", err);
     return NextResponse.json(
       { success: false, message: err.message },
       { status: 500 }
@@ -162,6 +148,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     // ✅ Mark single notification as read (admin/global)
+
     const notification = await NotificationModel.findOneAndUpdate(
       { _id: id },
       { $set: { isRead: true } },

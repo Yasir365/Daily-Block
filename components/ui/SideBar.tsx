@@ -6,6 +6,7 @@ import { useState } from "react";
 import { NotificationItem } from "./NotificationItem";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchNotifications, markAllNotificationsRead, markNotificationRead } from "@/services/notificationService";
+import { useRouter } from "next/navigation";
 
 export default function NotificationSidebar({ open, setOpen }: { open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>> }) {
     const queryClient = useQueryClient();
@@ -15,6 +16,7 @@ export default function NotificationSidebar({ open, setOpen }: { open: boolean, 
         queryFn: () => fetchNotifications({ mode: "all" }),
     });
     const notifications = latestNotifications || [];
+    const router = useRouter();
 
     // ✅ Mutation: mark single notification as read
     const markOneMutation = useMutation({
@@ -31,7 +33,25 @@ export default function NotificationSidebar({ open, setOpen }: { open: boolean, 
             queryClient.invalidateQueries({ queryKey: ["notifications", "latest"] });
         },
     });
-
+    const handleClick = (url: string, id: string, isAdmin?: boolean) => {
+        console.log({ url, isAdmin });
+        markOneMutation.mutate(id)
+        if (isAdmin) {
+            // router.push("/admin");
+            switch (url) {
+                case "ico":
+                    router.push("/admin/icto-management");
+                    break;
+            }
+        } else {
+            switch (url) {
+                case "blog":
+                    router.push("/blogs");
+                    break;
+            }
+        }
+    }
+    console.log({ latestNotifications })
     return (
         <>
 
@@ -90,15 +110,18 @@ export default function NotificationSidebar({ open, setOpen }: { open: boolean, 
 
                             {/* Example Content */}
                             <div className="flex flex-col gap-4 overflow-y-auto hide-scrollbar ">
-                                {latestNotifications.data.map((_: { _id: string, title: string, message: string, isRead: boolean }, i: number) => (
+                                {latestNotifications?.data?.map((_: { _id: string, title: string, message: string, isRead: boolean, type: string, forAdmin: boolean }, i: number) => (
                                     <NotificationItem
                                         key={i}
                                         title={_.title}
                                         desc={_.message}
                                         time={`${i + 1}h`}
                                         isNew={!_.isRead} // mark first 2 as new
-                                        onClick={() => markOneMutation.mutate(_._id)} // ✅ Mark single read
+                                        onClick={handleClick} // ✅ Mark single read
                                         onDelete={() => console.log(`Delete notification ${i + 1}`)}
+                                        type={_.type}
+                                        isAdmin={_.forAdmin}
+                                        _id={_._id}
                                     />
                                 ))}
                             </div>

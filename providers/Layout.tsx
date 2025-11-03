@@ -78,7 +78,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
     return (
         <>
             <Providers>
-                <Navbar />
+                <UserNavbar />
                 <main className="flex-grow">
                     {children}
                 </main>

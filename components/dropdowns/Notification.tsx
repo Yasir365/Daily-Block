@@ -3,6 +3,8 @@ import { Badge, Dropdown } from 'antd';
 import { Bell } from 'lucide-react';
 import React, { useState } from 'react';
 import NotificationSidebar from '../ui/SideBar';
+import { useQuery } from '@tanstack/react-query';
+import { fetchNotifications } from '@/services/notificationService';
 
 const notifications = [
     { id: 1, title: 'BTC price just hit $70,000!', date: '2 hours ago' },
@@ -12,11 +14,14 @@ const notifications = [
 
 export default function Notifications() {
     const [open, setOpen] = useState(false);
-
+    const { data: latestNotifications } = useQuery({
+        queryKey: ["notifications", "latest"],
+        queryFn: () => fetchNotifications({ mode: "all" }),
+    });
     return (
         <>
             <button className="p-2 flex items-center justify-between hover:bg-brand-yellow rounded-full transition-colors  cursor-pointer" onClick={() => setOpen(true)}>
-                <Badge count={notifications.length} size="small" offset={[-2, 2]}>
+                <Badge count={latestNotifications?.unreadCount} size="small" offset={[-2, 2]}>
                     <Bell className="w-5 h-5 text-white" />
                 </Badge>
             </button>

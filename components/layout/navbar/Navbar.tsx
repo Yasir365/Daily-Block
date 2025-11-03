@@ -61,7 +61,7 @@ export const Navbar = () => {
                 </div>
 
                 {/* Notification Icon with Dropdown and Badge */}
-                <Notifications />
+                {/* <Notifications /> */}
 
                 {/* Login Button */}
                 <Link
@@ -72,9 +72,9 @@ export const Navbar = () => {
                 </Link>
 
                 {/* Profile/User Icon */}
-                <button className="p-1.5 border-2 border-white rounded-full">
+                {/* <button className="p-1.5 border-2 border-white rounded-full">
                     <UserRoundPen className="w-6 h-6 bg-brand-glass rounded-full" />
-                </button>
+                </button> */}
 
                 {/* Mobile Menu Icon (Show on small screens) */}
                 <button

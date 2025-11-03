@@ -7,9 +7,9 @@ import { useFetchBlogs } from '@/hooks/useblog'
 
 const Blog = () => {
     const { data = [], isLoading, refetch } = useFetchBlogs();
-    const blogs: any[] = data?.blogs ?? [];          // <-- the blog list
+    const blogs: any[] = data?.data ?? [];          // <-- the blog list
     const stats = data?.stats;                     // optional stats
-
+    console.log({ blogs, stats })
     // Split the first blog (hero) from the rest
     const heroBlog = blogs[0];                     // may be undefined
     const restBlogs = blogs.slice(1);              // everything after #0
@@ -28,12 +28,12 @@ const Blog = () => {
         return (
             <main className="container mx-auto py-12 text-center">
                 <p className="text-lg text-gray-600">No blogs found.</p>
-                <button
+                {/* <button
                     onClick={() => refetch()}
                     className="mt-4 px-4 py-2 bg-brand-yellow text-black rounded-full"
                 >
                     Retry
-                </button>
+                </button> */}
             </main>
         );
     }

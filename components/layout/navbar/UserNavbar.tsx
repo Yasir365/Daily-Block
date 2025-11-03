@@ -81,7 +81,7 @@ export const UserNavbar = () => {
                 </div>
 
                 {/* Notification Icon with Dropdown and Badge */}
-                <Notifications />
+                {isAuthenticated && <Notifications />}
 
                 {/* Login Button */}
                 {isAuthenticated ? <span className="text-sm capitalize font-medium text-brand-yellow transition-colors hidden sm:block">{user?.name}</span> : (
@@ -95,21 +95,21 @@ export const UserNavbar = () => {
                 )}
 
                 {/* Profile/User Icon */}
-                <span className="p-1.5 border-2 border-white rounded-full relative cursor-pointer" ref={ref} onClick={() => setOpen(!open)}>
+                {isAuthenticated && <span className="p-1.5 border-2 border-white rounded-full relative cursor-pointer" ref={ref} onClick={() => setOpen(!open)}>
                     <UserRoundPen className="w-6 h-6 bg-brand-glass rounded-full" />
 
-                </span>
+                </span>}
                 {open &&
                     createPortal(
                         <UniversalContainer
                             size="sm"
                             className="absolute bottom-[74px]  py-2
-                                           z-50 pointer-events-auto w-fit!  top-15 right-14 h-fit"
+                                           z-50 pointer-events-auto w-fit! px-auto  top-15 right-14 h-fit"
                             onClick={(e) => e.stopPropagation()} // ✅ prevents dropdown from closing early
 
 
                         >
-                            <div className="flex flex-col py-2">
+                            <div className="flex flex-col py-2 items-center gap-1">
                                 <span
                                     className={`cursor-pointer text-[#F8FAFC] font-[600] text-[14px] leading-[20px] py-2 rounded-md   font-segoe   `}
                                 >
@@ -137,7 +137,7 @@ export const UserNavbar = () => {
 
 
                                 <button
-                                    className={`cursor-pointer  text-[#DC2828] font-[600] flex items-center gap-1.5   text-[14px] leading-[20px] py-2 rounded-md hover:bg-white/5 font-segoe text-left  `}
+                                    className={`cursor-pointer px-2 text-[#DC2828] font-[600] flex items-center gap-1.5   text-[14px] leading-[20px] py-2 rounded-md hover:bg-white/5 font-segoe text-left  `}
                                     onClick={handleLogout}
                                 >
                                     <LogOut />   Log out
