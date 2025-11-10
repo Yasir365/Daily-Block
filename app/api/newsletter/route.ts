@@ -32,10 +32,19 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     await connectDB();
-    const subscribers = await Newsletter.find().sort({ createdAt: -1 });
+    const { searchParams } = new URL(req.url);
+    const search = searchParams.get("search")?.trim();
+    // ✅ Initialize query as an object
+    const query: any = {};
+
+    if (search) {
+      const regex = new RegExp(search, "i"); // Case-insensitive partial match
+      query.email = regex;
+    }
+    const subscribers = await Newsletter.find(query).sort({ createdAt: -1 });
     return NextResponse.json({ success: true, data: subscribers });
   } catch (error: any) {
     return NextResponse.json(

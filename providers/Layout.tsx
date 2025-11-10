@@ -11,6 +11,8 @@ import { UserNavbar } from "@/components/layout/navbar/UserNavbar";
 
 const DESKTOP_BREAKPOINT = 1024;
 
+// Public routes (accessible without login)
+
 const getInitialSidebarState = () => {
     if (typeof window !== 'undefined') {
         return window.innerWidth >= DESKTOP_BREAKPOINT;
@@ -21,6 +23,7 @@ const getInitialSidebarState = () => {
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
+
     const isAdminRoute = pathname.startsWith("/admin");
     const isUserRoute = pathname.startsWith("/user");
 
@@ -47,34 +50,34 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
     if (isAdminRoute) {
         return (
             <Providers>
-                <div className="flex flex-1 min-h-screen">
+                <div className="flex flex-1 min-h-screen ">
                     <AdminSidebar
                         isOpen={isSidebarOpen}
                         setIsOpen={setIsSidebarOpen}
                     />
-                    <div className={`flex-1 flex flex-col transition-all duration-300 ${isSidebarOpen ? 'lg:ml-64' : 'lg:ml-0'}`}>
+                    <div className={`flex-1 flex flex-col transition-all  custom-scrollbar overflow-y-auto   duration-300 ${isSidebarOpen ? 'lg:ml-64' : 'lg:ml-0'}`}>
                         <AdminHeader
                             setIsSidebarOpen={setIsSidebarOpen}
                         />
-                        <main className="flex-1 overflow-y-auto p-6 ">{children}</main>
+                        <main className="flex-1   p-6 ">{children}</main>
                     </div>
                 </div>
             </Providers>
         );
     }
-        // if (isUserRoute) {
-        //     return (
-        //         <>
-        //             <Providers>
-        //                 <UserNavbar />
-        //                 <main className="flex-grow">
-        //                     {children}
-        //                 </main>
-        //                 <Footer />
-        //             </Providers>
-        //         </>
-        //     );
-        // }
+    // if (isUserRoute) {
+    //     return (
+    //         <>
+    //             <Providers>
+    //                 <UserNavbar />
+    //                 <main className="flex-grow">
+    //                     {children}
+    //                 </main>
+    //                 <Footer />
+    //             </Providers>
+    //         </>
+    //     );
+    // }
     return (
         <>
             <Providers>

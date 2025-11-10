@@ -58,7 +58,7 @@ export const Accordion = () => {
             </span>
         ),
         children: (
-            <div className="text-gray-300 font-inter font-normal text-[15.27px] leading-relaxed px-6 pb-4 space-y-2">
+            <div className="prose prose-invert max-w-none text-gray-300  font-inter font-normal text-[15.27px] leading-relaxed px-6 pb-4 space-y-2">
                 {parse(faq.answer || "<p>No answer available</p>")}
             </div>
         ),

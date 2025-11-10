@@ -3,6 +3,7 @@
 import { Edit, Ban, FileText, SquarePen, Trash2 } from "lucide-react";
 import Wrapper from "../layoutCard/Wrapper";
 import StatusBadge from "@/components/ui/Badge";
+import { useRouter } from "next/navigation";
 
 type DataListProps = {
     title?: string;
@@ -47,21 +48,24 @@ export default function DataList({
 }
 type propsList = {
     title: string,
+    _id: string,
     desc: string,
     date: string,
     views: string,
     status: string,
     onDelete?: () => void
-    onEdit?: () => void
+    onEdit?: () => void;
+    comments: string[]
 
 }
-const ListDiv = ({ title, desc, date, views, status, onDelete, onEdit }: propsList) => {
+const ListDiv = ({ title, desc, date, views, status, _id, comments, onDelete, onEdit }: propsList) => {
+    const router = useRouter()
     return <div className="flex flex-col p-4 sm:p-6 gap-3 border border-[#21222C] rounded-xl bg-[#2f2f2f20] backdrop-blur-[4px] hover:bg-[#3a3a3a40] transition-all">
         {/* Header Row */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
             <div className="flex items-center gap-3">
                 <FileText className="text-[#8347EB]" strokeWidth={2} />
-                <span className="font-inter font-semibold text-[16px] sm:text-[18px] leading-[24px] text-[#F8FAFC]">
+                <span className="capitalize font-inter font-semibold text-[16px] sm:text-[18px] leading-[24px] text-[#F8FAFC] cursor-pointer" onClick={() => { router.push(`/blogs/${_id}`) }}>
                     {title}
                 </span>
             </div>
@@ -80,7 +84,7 @@ const ListDiv = ({ title, desc, date, views, status, onDelete, onEdit }: propsLi
         </div>
 
         {/* Description */}
-        <p className="font-inter font-normal text-[14px] leading-[20px] text-[#94A3B8] break-words">
+        <p className="font-inter font-normal text-[14px] capitalize leading-[20px] text-[#94A3B8] break-words">
             {desc}
         </p>
 
@@ -90,6 +94,8 @@ const ListDiv = ({ title, desc, date, views, status, onDelete, onEdit }: propsLi
             <p className="whitespace-nowrap">Published on {date}</p>
             <div className="hidden sm:block w-1 h-1 rounded-full bg-[#94A3B8]" />
             <p className="whitespace-nowrap">{views} views</p>
+            <div className="hidden sm:block w-1 h-1 rounded-full bg-[#94A3B8]" />
+            <p className="whitespace-nowrap">{comments.length} comments</p>
         </div>
     </div>
 }

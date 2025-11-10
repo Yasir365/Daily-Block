@@ -21,7 +21,7 @@ const page = () => {
     });
     const { data: latestNotifications } = useQuery({
         queryKey: ["notifications", "latest"],
-        queryFn: () => fetchNotifications({ mode: "limited", limit: 3 }),
+        queryFn: () => fetchNotifications({ mode: "all", limit: 3 }),
     });
 
     const cards = [

@@ -13,7 +13,7 @@ export default function Page() {
                     <div className="absolute top-0 left-0 w-full h-full z-[-1] bg-[#8E8E93] opacity-[.3] rounded-xl"></div>
                     <h1 className="text-[42px] font-bold">Reset Your Password!</h1>
                     <p className="text-brand-muted mb-6">Please enter the email address linked to your account. We’ll email you a Verification code to create a new password.</p>
-                    <ForgetForm></ForgetForm>
+                    <ForgetForm />
                 </div>
 
                 {/* Right Side: QR Code & Illustration */}

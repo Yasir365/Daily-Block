@@ -6,12 +6,13 @@ import toast from "react-hot-toast";
 
 interface User {
     token: string;
-    id: string;
+    _id: string;
     email: string;
     name?: string;
     type?: "admin" | "user" | "guest"; // 👈 Add this
     status?: "active" | "inactive" | "banned";
     lastLogin?: Date;
+    hasCommunity?: boolean;
 
 }
 

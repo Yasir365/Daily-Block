@@ -1,8 +1,22 @@
+import { useQuery } from "@tanstack/react-query";
 import { TrendingDown, TrendingUp } from "lucide-react";
 import React from "react";
 
 
-const Sentiments = () => {
+const Sentiments = ({ selectedCoin }: { selectedCoin: { _id: string; coinName: string } }) => {
+    // console.log({ selectedCoin })
+    // const { data: sentiment } = useQuery({
+    //     queryKey: ["sentiment", selectedCoin],
+    //     queryFn: async () => {
+    //         const response = await fetch(`/api/community/${selectedCoin}/sentiment`);
+    //         if (!response.ok) {
+    //             throw new Error('Failed to fetch sentiment');
+    //         }
+    //         const data = await response.json();
+    //         return data;
+    //     },
+    //     staleTime: 1000 * 60 * 60 * 8, // 8 hours cache
+    // });
     return (
         <div className="bg-brand-glass p-4 rounded-2xl border border-gray-800 w-full">
             <h3 className="text-sm font-semibold mb-3">Community Sentiment</h3>

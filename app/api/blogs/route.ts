@@ -53,9 +53,9 @@ export async function GET(req: NextRequest) {
     // ✅ Base filter
     const filter: Record<string, any> = { isDeleted: false };
     // Non-admins can only see their own blogs
-    if (user.role !== "admin") {
-      filter.userId = user._id;
-    }
+    // if (user.role !== "admin") {
+    //   filter.userId = user._id;
+    // }
 
     // Filter by status if provided (draft/published)
     if (status && status !== "all") {
@@ -81,13 +81,33 @@ export async function GET(req: NextRequest) {
     }
 
     const blogs = await query.exec();
+    // ✅ Calculate stats (for dashboard cards)
+    const allBlogs = await BlogModel.find(filter).lean();
+    const totalBlogs = allBlogs.length;
+    const totalViews = allBlogs.reduce((sum, b) => sum + (b.views || 0), 0);
+    const avgReadTime =
+      totalBlogs > 0
+        ? allBlogs.reduce((sum, b) => sum + (b.readTime || 0), 0) / totalBlogs
+        : 0;
 
+    // Optional: Calculate change % from previous month (for future dashboard)
+    const stats = {
+      totalBlogs,
+      totalViews,
+      avgReadTime,
+      change: {
+        blogs: 0, // can be filled later with month-over-month logic
+        views: 0,
+        readTime: 0,
+      },
+    };
     return NextResponse.json({
       success: true,
       total,
       currentPage: page,
       totalPages: all ? 1 : Math.ceil(total / limit),
       data: blogs,
+      stats, // ✅ Include dashboard stats
     });
   } catch (err: any) {
     console.error("❌ Blog GET Error:", err);

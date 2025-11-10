@@ -19,6 +19,7 @@ interface InputFieldProps {
     lblHide?: boolean;
     error?: string;
     required?: boolean;
+    onFocus?: () => void;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -39,6 +40,7 @@ const InputField: React.FC<InputFieldProps> = ({
     lblHide = false,
     error = "",
     required = false,
+    onFocus
 }) => {
     const hasIcon = Boolean(icon);
     const hasError = Boolean(error);
@@ -81,6 +83,7 @@ const InputField: React.FC<InputFieldProps> = ({
                     value={value}
                     placeholder={placeholder}
                     onChange={onChange}
+                    onFocus={onFocus} // ✅ handle focus
                     disabled={disabled}
                     // ❌ Don't add required here (use react-hook-form validation instead)
                     className={`flex-1 w-full ${inputClass} text-gray-200 px-4 py-2

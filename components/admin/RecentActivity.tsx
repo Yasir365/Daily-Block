@@ -1,4 +1,5 @@
 "use client";
+import { formatDateTime } from "@/lib/helpers";
 import React from "react";
 
 type Activity = {
@@ -33,7 +34,7 @@ export const RecentActivity: React.FC<Props> = ({ activities }) => {
                             className="flex justify-between items-start cursor-pointer mx-1"
                         >
                             {/* Left side (dot + text) */}
-                            <div className="flex gap-6 items-start">
+                            <div className="flex gap-6 items-start w-[60%]">
                                 <span
                                     className={`size-3 rounded-full mt-1 ${activity.dotColor || "bg-brand-yellow"
                                         }`}
@@ -50,7 +51,7 @@ export const RecentActivity: React.FC<Props> = ({ activities }) => {
                             </div>
 
                             {/* Right side (status + time) */}
-                            <div className="flex flex-col gap-1.5 items-end">
+                            <div className="flex flex-col gap-2 items-end">
                                 <span
                                     className={`
                                             inline-flex items-center justify-center
@@ -61,13 +62,13 @@ export const RecentActivity: React.FC<Props> = ({ activities }) => {
                                             ${activity.bgColor || "bg-brand-yellow"}
                                             ${activity.borderColor || "border-brand-yellow"}
                                             ${activity.textColor || "text-black"}
-                                        `}  
+                                        `}
                                 >
                                     {activity.status}
                                 </span>
 
                                 <p className="font-inter font-normal text-[16px] leading-[20px] text-[#94A3B8]">
-                                    {activity.time}
+                                    {formatDateTime(activity.time)}
                                 </p>
                             </div>
                         </div>

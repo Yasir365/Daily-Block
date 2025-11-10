@@ -53,9 +53,9 @@ export const HeroSection = () => {
 
                             {/* CTA Buttons */}
                             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                                <button className="py-2 px-6 font-bold text-black bg-brand-yellow rounded-lg hover:bg-yellow-400 transition-colors">
+                                {/* <button className="py-2 px-6 font-bold text-black bg-brand-yellow rounded-lg hover:bg-yellow-400 transition-colors">
                                     Buy Token Now →
-                                </button>
+                                </button> */}
                                 <button className="py-2 px-6 font-bold text-white border border-brand-muted rounded-lg hover:bg-gray-700 transition-colors">
                                     Revolutore dets
                                 </button>

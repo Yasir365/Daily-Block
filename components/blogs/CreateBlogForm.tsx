@@ -36,9 +36,9 @@ type BlogFormData = z.infer<typeof BlogSchema>;
 const statusOptions = [
     { value: "draft", label: "Draft" },
     { value: "published", label: "Published" },
-    { value: "live", label: "Live" },
-    { value: "archived", label: "Archived" },
-    { value: "blocked", label: "Blocked" },
+    // { value: "live", label: "Live" },
+    // { value: "archived", label: "Archived" },
+    // { value: "blocked", label: "Blocked" },
 ];
 
 const CreateBlogForm: React.FC<Props> = ({ onClose, onSuccess, mode = "create", initialData }) => {
@@ -262,6 +262,13 @@ const CreateBlogForm: React.FC<Props> = ({ onClose, onSuccess, mode = "create", 
 
                 <div className="flex gap-2 mt-6">
                     <button
+                        type="button"
+                        onClick={onClose}
+                        className="w-full h-[40px] rounded-[10px] border border-[#3B3B3B] bg-[#0D0E12] text-[#F8FAFC] font-semibold"
+                    >
+                        Cancel
+                    </button>
+                    <button
                         type="submit"
                         disabled={createBlogMutation.isPending}
                         className="w-full h-[40px] rounded-[10px] bg-[#FACC15] text-black font-semibold disabled:opacity-50"
@@ -274,13 +281,7 @@ const CreateBlogForm: React.FC<Props> = ({ onClose, onSuccess, mode = "create", 
                                 ? "Update Blog"
                                 : "Create Blog"}
                     </button>
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        className="w-full h-[40px] rounded-[10px] border border-[#3B3B3B] bg-[#0D0E12] text-[#F8FAFC] font-semibold"
-                    >
-                        Cancel
-                    </button>
+
                 </div>
             </form>
 

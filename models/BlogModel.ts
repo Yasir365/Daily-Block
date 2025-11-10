@@ -9,7 +9,7 @@ export interface IBlog extends Document {
   views: number;
   image?: string; // ✅ New field for uploaded image path
 
-  likes: number;
+  likes: mongoose.Types.ObjectId[]; // <-- make it an array
   comments: Array<{
     userId: mongoose.Types.ObjectId;
     comment: string;
@@ -44,7 +44,7 @@ const BlogSchema = new Schema<IBlog>(
     },
     publishedDate: { type: Date, default: null },
     views: { type: Number, default: 0 },
-    likes: { type: Number, default: 0 },
+    likes: [{ type: Schema.Types.ObjectId, ref: "User", default: [] }],
     comments: [
       {
         userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
@@ -62,8 +62,9 @@ const BlogSchema = new Schema<IBlog>(
 // ✅ Auto-calculate readTime (average reading speed: 200 words/min)
 BlogSchema.pre("save", function (next) {
   if (this.isModified("content")) {
-    const words = this.content?.split(/\s+/).length || 0;
-    this.readTime = Math.ceil(words / 200);
+    const text = this.content?.trim() || "";
+    const words = text.split(/\s+/).filter(Boolean).length; // filter removes empty strings
+    this.readTime = Math.ceil(words / 200) || 1; // ✅ 200 words/min (minimum 1 minute)
   }
   next();
 });

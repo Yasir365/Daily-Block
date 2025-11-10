@@ -6,11 +6,13 @@ import axios from "axios";
 const API_URL = "/api/blogs";
 
 // ✅ Fetch all blogs
-export const useFetchBlogs = (status: string = "all") => {
+export const useFetchBlogs = (status: string = "all", search: string = "") => {
   return useQuery({
-    queryKey: ["blogs", status],
+    queryKey: ["blogs", status, search],
     queryFn: async () => {
-      const res = await axios.get(`${API_URL}?status=${status}`);
+      const res = await axios.get(
+        `${API_URL}?status=${status}&search=${search}`
+      );
       return res.data;
     },
   });

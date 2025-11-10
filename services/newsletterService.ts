@@ -12,8 +12,12 @@ export const subscribeToNewsletter = async (email: string) => {
   return data.data;
 };
 
-export const fetchSubscribers = async () => {
-  const res = await fetch("/api/newsletter", { cache: "no-store" });
+export const fetchSubscribers = async (search: string = "") => {
+  const params = new URLSearchParams({ search }); // Only adds if non-empty
+  const url = `/api/newsletter?${params.toString()}`;
+  const res = await fetch(url, {
+    cache: "no-store",
+  });
   const data = await res.json();
   if (!data.success)
     throw new Error(data.message || "Failed to fetch subscribers");

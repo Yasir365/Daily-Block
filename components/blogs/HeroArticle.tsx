@@ -1,3 +1,4 @@
+import { formatDateTime } from "@/lib/helpers";
 
 export default function BlogsNav({ blog, stats, onClick }: { blog?: any; stats?: any, onClick: (_id: string) => void }) {
     const { image, title, createdAt, excerpt } = blog
@@ -12,11 +13,11 @@ export default function BlogsNav({ blog, stats, onClick }: { blog?: any; stats?:
                 </div>
 
                 <div className="flex flex-col pt-6">
-                    <h1 className="text-2xl lg:text-3xl  font-bold leading-tight font-titilliumWeb tracking-wide text-white">
+                    <h1 className="text-2xl lg:text-3xl  font-bold leading-tight font-titilliumWeb tracking-wide text-white capitalize">
                         {title}
                     </h1>
-                    <p className="text-lg text-white mt-2 font-inter">{createdAt}</p>
-                    <p className="mt-4 text-lg text-[#9CA3AF] leading-relaxed  ">
+                    <p className="text-lg text-white mt-2 font-inter">{formatDateTime(createdAt)}</p>
+                    <p className="mt-4 text-lg text-[#9CA3AF] leading-relaxed first-letter:uppercase ">
                         {excerpt}
                     </p>
                 </div>

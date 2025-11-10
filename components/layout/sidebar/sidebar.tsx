@@ -1,16 +1,21 @@
 "use client";
+import { useAuthContext } from "@/context/AuthContext";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export const Sidebar = () => {
     const pathname = usePathname();
-
+    const { user, isAuthenticated } = useAuthContext();
     const links = [
         { href: "/user/dashboard", label: "Dashboard" },
         { href: "/user/pending-ico-listing", label: "Pending ICO Listing" },
         { href: "/user/rejected-ico-listing", label: "Rejected ICO Listing" },
         { href: "/user/downloads", label: "Downloads" },
     ];
+    // ✅ Conditionally add “Community” link
+    if (user?.hasCommunity) {
+        links.push({ href: "/user/community", label: "Community" });
+    }
     return (
         <aside className="w-full md:w-64 md:h-fit bg-brand-glass text-white rounded-lg">
             <ul

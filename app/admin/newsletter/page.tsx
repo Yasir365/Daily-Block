@@ -6,11 +6,27 @@ import { fetchDashboardStats } from '@/services/dashboardService';
 import { fetchSubscribers, updateSubscriberStatus } from '@/services/newsletterService';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Ban, Check, Download, Edit, Eye, Funnel, Mail, MessageSquare, Search, Shield, X } from 'lucide-react';
-import React from 'react'
-
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useCallback, useState } from 'react'
+import { debounce } from 'lodash'; // npm i lodash (if not installed)
 const page = () => {
     const queryClient = useQueryClient();
-
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const [localSearch, setLocalSearch] = useState(searchParams.get('search') || '');
+    // ✅ Debounced search (optional: wait 300ms after typing stops)
+    const debouncedSearch = useCallback(
+        debounce((value: string) => {
+            const params = new URLSearchParams(searchParams.toString());
+            if (value) {
+                params.set('search', value);
+            } else {
+                params.delete('search');
+            }
+            router.replace(`?${params.toString()}`, { scroll: false });
+        }, 300),
+        [searchParams, router]
+    );
     const {
         data: stats,
         isLoading,
@@ -23,8 +39,8 @@ const page = () => {
 
     // Fetch subscribers
     const { data: subscribers = [], isLoading: isSubscribersLoading } = useQuery({
-        queryKey: ["subscribers"],
-        queryFn: fetchSubscribers,
+        queryKey: ["subscribers", localSearch],
+        queryFn: () => fetchSubscribers(localSearch),
     });
     const cards = [
         {
@@ -113,8 +129,13 @@ const page = () => {
         const newStatus = currentStatus === "active" ? "blocked" : "active";
         updateStatusMutation.mutate({ id, status: newStatus });
     };
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setLocalSearch(value);
+        debouncedSearch(value);
+    };
     return (
-        <div className="flex flex-col gap-8  w-full   ">
+        <div className="flex flex-col gap-8  w-full   " >
             <TopHeader
                 pageName="ICO Management"
                 pageDescription="Review, approve, or reject ICO submissions"
@@ -122,11 +143,13 @@ const page = () => {
             </TopHeader>
 
             {/* Cards Section */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                {cards.map((card, index) => (
-                    <DashboardCard key={index} {...card} />
-                ))}
-            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6" >
+                {
+                    cards.map((card, index) => (
+                        <DashboardCard key={index} {...card} />
+                    ))
+                }
+            </div >
 
             {/* ✅ Table Section (fixed) */}
             {/* ✅ Responsive Table Section */}
@@ -140,6 +163,8 @@ const page = () => {
                                 <div className="relative w-full min-w-[200px] md:min-w-[300px] max-w-xs">
                                     <input
                                         type="text"
+                                        value={localSearch}
+                                        onChange={handleSearchChange}
                                         placeholder="Search Subscribers..."
                                         className="w-full p-3 pl-10 bg-[#313133] border border-[#90909066]/40 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-brand-yellow"
                                     />
@@ -158,7 +183,7 @@ const page = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
 

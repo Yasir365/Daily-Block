@@ -86,7 +86,6 @@ const UserDashboardMain = () => {
                                 const text = (e.currentTarget as HTMLSpanElement).innerText.replace(/\s+/g, '').trim();
                                 navigator.clipboard.writeText(text)
                                     .then(() => {
-                                        console.log("Copied to clipboard:", text);
                                         toast.custom((t) => (
                                             <CustomToast
                                                 t={t}

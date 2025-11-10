@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { X } from "lucide-react";
 import toast from "react-hot-toast";
 

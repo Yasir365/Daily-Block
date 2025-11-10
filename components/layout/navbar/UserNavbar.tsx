@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from "next/link";
 import { Search, Star, Menu, UserRoundPen, X, LogOut } from 'lucide-react';
 import Notifications from '@/components/dropdowns/Notification';
@@ -7,6 +7,7 @@ import { useAuthContext } from '@/context/AuthContext';
 import { UniversalContainer } from '@/components/ui/UniversalContainer';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 
 
 
@@ -15,10 +16,38 @@ export const UserNavbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { user, isAuthenticated, loading, logout } = useAuthContext();
     const router = useRouter();
+    const [query, setQuery] = useState("");
+    const [debouncedQuery, setDebouncedQuery] = useState(query);
+    const [isFocused, setIsFocused] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
-
+    // Debounce query updates
+    useEffect(() => {
+        const handler = setTimeout(() => setDebouncedQuery(query), 500);
+        return () => clearTimeout(handler);
+    }, [query]);
+    // Fetch search results using debouncedQuery
+    const { data, isLoading } = useQuery({
+        queryKey: ["global-search", debouncedQuery],
+        queryFn: async () => {
+            if (!debouncedQuery) return null;
+            const res = await fetch(`/api/search?query=${encodeURIComponent(debouncedQuery)}`);
+            return res.json();
+        },
+        enabled: !!debouncedQuery,
+    });
+    // Close dropdown on outside click
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsFocused(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
     const navLinkStyle = "text-sm font-medium hover:text-brand-yellow transition-colors block py-2 px-4";
     const handleLogout = async () => {
         try {
@@ -32,11 +61,16 @@ export const UserNavbar = () => {
     };
     const handleUser = () => {
         if (user && user.type === "user") {
-            router.push("/user/dashboard");
+            router.push("/user/settings");
         } else {
-            router.push("/admin");
+            router.push("/admin/settings");
         }
     }
+    const handleSelect = () => {
+        setIsFocused(false);
+        setQuery("");
+        setDebouncedQuery("");
+    };
     return (
         <nav className="py-2 px-4 md:px-12 flex justify-between items-center text-brand-muted relative z-50">
 
@@ -53,9 +87,24 @@ export const UserNavbar = () => {
                     <Link href="/" className="text-sm font-medium hover:text-brand-yellow transition-colors">
                         Cryptocurrencies
                     </Link>
-                    <Link href="/community" className="text-sm font-medium hover:text-brand-yellow transition-colors">
-                        Community
-                    </Link>
+                    {isAuthenticated ? (
+                        // ✅ Logged-in: fully active link
+                        <Link
+                            href="/community"
+                            className="text-sm font-medium hover:text-brand-yellow transition-colors"
+                        >
+                            Community
+                        </Link>
+                    ) : (
+                        // 🔒 Not logged-in: disabled appearance & no href
+                        <span
+                            className="text-sm font-medium text-gray-500 cursor-not-allowed select-none opacity-60"
+                            style={{ pointerEvents: "none" }}
+                        >
+                            Community
+                        </span>
+                    )}
+
                     <Link href="/blogs" className="text-sm font-medium hover:text-brand-yellow transition-colors">
                         Blogs
                     </Link>
@@ -75,14 +124,71 @@ export const UserNavbar = () => {
                     </Link>
 
                     {/* Search Input */}
-                    <div className="flex items-center px-4 py-2 rounded-xl bg-brand-glass">
+                    <div className="relative flex items-center px-4 py-2 rounded-xl bg-brand-glass">
                         <Search className="w-4 h-4 text-brand-muted mr-2" />
                         <input
                             type="text"
                             placeholder="Search"
                             className="bg-transparent text-sm text-white placeholder-brand-muted focus:outline-none w-40"
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                            onFocus={() => setIsFocused(true)}
                         />
+                        {isFocused && debouncedQuery && data?.success && (
+                            <div className="absolute custom-scrollbar top-full left-0 w-full mt-2 bg-[#0F1117] border border-gray-700 rounded-xl shadow-lg max-h-96 overflow-y-auto z-50">
+                                {Object.entries(data.results).map(([key, items]: any) =>
+                                    items.length > 0 ? (
+                                        <div key={key} className="mb-2">
+                                            <h4 className="text-xs uppercase text-gray-400 mb-1 px-2 font-semibold">{key}</h4>
+                                            {items.map((item: any) => {
+                                                let displayText = "";
+
+                                                switch (key) {
+                                                    case "faqs":
+                                                        displayText = item.question;
+                                                        break;
+                                                    case "users":
+                                                        displayText = `${item.firstName} ${item.lastName}`;
+                                                        break;
+                                                    case "blogs":
+                                                        displayText = item.title;
+                                                        break;
+                                                    case "icto-management":
+                                                        displayText = item.cryptoCoinName;
+                                                        break;
+                                                    case "newsletter":
+                                                        displayText = item.email;
+                                                        break;
+                                                    default:
+                                                        displayText = item.name || "";
+                                                        break;
+                                                }
+
+                                                return (
+                                                    <Link
+                                                        key={item._id}
+                                                        href={`/user/${key}`} // adjust routes as needed
+                                                        className="block px-2 py-1 rounded hover:bg-gray-800 cursor-pointer text-sm"
+                                                        onClick={handleSelect}
+                                                    >
+                                                        {displayText}
+                                                    </Link>
+                                                );
+                                            })}
+
+                                        </div>
+                                    ) : null
+                                )}
+
+                                {isLoading && <div className="p-2 text-gray-400">Searching...</div>}
+                                {!isLoading &&
+                                    Object.values(data.results).every((arr: any) => arr.length === 0) && (
+                                        <div className="p-2 text-gray-500">No results found</div>
+                                    )}
+                            </div>
+                        )}
                     </div>
+
                 </div>
 
                 {/* Notification Icon with Dropdown and Badge */}
@@ -108,15 +214,15 @@ export const UserNavbar = () => {
                     createPortal(
                         <UniversalContainer
                             size="sm"
-                            className="absolute bottom-[74px]  py-2
+                            className="absolute bottom-[74px]  py-0
                                            z-50 pointer-events-auto w-fit! px-auto  top-15 right-14 h-fit"
                             onClick={(e) => e.stopPropagation()} // ✅ prevents dropdown from closing early
-
+                            onClickOutside={() => setOpen(false)} // JUST THIS LINE
 
                         >
-                            <div className="flex flex-col py-2 items-center gap-1">
+                            <div className="flex flex-col   items-center space-y-1">
                                 {isAuthenticated && <span
-                                    className={`cursor-pointer text-[#F8FAFC] font-[600] text-[14px] leading-[20px] py-2 rounded-md   font-segoe   `}
+                                    className={`cursor-pointer   text-[#F8FAFC] font-[600] text-[14px] leading-[20px] py-2 px-4 rounded-md   font-segoe   hover:bg-white/5  `}
                                     onClick={handleUser}
                                 >
                                     My Account
@@ -143,7 +249,7 @@ export const UserNavbar = () => {
 
 
                                 <button
-                                    className={`cursor-pointer px-2 text-[#DC2828] font-[600] flex items-center gap-1.5   text-[14px] leading-[20px] py-2 rounded-md hover:bg-white/5 font-segoe text-left  `}
+                                    className={`cursor-pointer px-4 w-full  text-[#DC2828] font-[600] flex items-center gap-1.5   text-[14px] leading-[20px] py-2 rounded-md hover:bg-white/5 font-segoe text-left  `}
                                     onClick={handleLogout}
                                 >
                                     <LogOut />   Log out

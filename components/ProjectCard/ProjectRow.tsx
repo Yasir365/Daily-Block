@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import CircularProgress from '../ui/CircularProgressBar';
 import Image from 'next/image';
-
+export type cointStatus = "verified" | "pending" | "rejected" | "approved" | ""
 export interface ProjectRowProps {
   symbol: string;
   project: string;
@@ -11,7 +11,7 @@ export interface ProjectRowProps {
   price: string;
   launchpad: string;
   fundRaised: string;
-  status?: "verified" | "pending" | "rejected";
+  status?: cointStatus;
 }
 
 export const ProjectRow = ({
@@ -26,7 +26,7 @@ export const ProjectRow = ({
   status,
 }: ProjectRowProps) => {
   const statusClasses =
-    status === "verified"
+    status === "verified" || status === "approved"
       ? "bg-green-500 hover:bg-green-600 text-white"
       : status === "pending"
         ? "bg-yellow-500 hover:bg-yellow-600 text-black"

@@ -5,6 +5,7 @@ import UserUpdateModal from '@/components/modals/UserUpdateModal';
 import StatusBadge from '@/components/ui/Badge';
 import CustomConfirm from '@/components/ui/CustomAlert';
 import InputField from '@/components/ui/Input';
+import { CustomToast } from '@/components/ui/ReactToast';
 import SelectField from '@/components/ui/Select';
 import { UniversalContainer } from '@/components/ui/UniversalContainer';
 import { useUsers } from '@/hooks/useUsers';
@@ -13,6 +14,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Ban, Check, Edit, Funnel, Shield, X } from 'lucide-react';
 import Image from 'next/image'
 import React, { useEffect, useRef, useState } from 'react'
+import toast from 'react-hot-toast';
 
 // ✅ Update user status (activate/deactivate)
 const updateUserStatus = async ({
@@ -20,7 +22,7 @@ const updateUserStatus = async ({
     action,
 }: {
     id: string;
-    action: "active" | "inactive";
+    action: "active" | "suspended";
 }) => {
     const res = await fetch(`/api/users/status`, {
         method: "PATCH",
@@ -71,7 +73,13 @@ const page = () => {
             }
         },
         onSuccess: (data) => {
-            console.log("User updated successfully:", data);
+            toast.custom((t) => (
+                <CustomToast
+                    t={t}
+                    status="Success"
+                    message="User updated successfully"
+                />
+            ))
         },
         onSettled: () => {
             // ✅ Always refetch fresh data after mutation
@@ -83,7 +91,7 @@ const page = () => {
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
     const [showConfirm, setShowConfirm] = useState<{
         open: boolean;
-        action: "active" | "inactive" | null;
+        action: "active" | "suspended" | null;
     }>({ open: false, action: null });
 
 
@@ -203,7 +211,7 @@ const page = () => {
                     }}>
                         <Edit size={16} />
                     </button>
-                    {row.status === "inactive" ? (
+                    {row.status === "suspended" ? (
                         <button
                             onClick={() => {
                                 setSelectedUserId(row._id);
@@ -217,7 +225,7 @@ const page = () => {
                         <button
                             onClick={() => {
                                 setSelectedUserId(row._id);
-                                setShowConfirm({ open: true, action: "inactive" });
+                                setShowConfirm({ open: true, action: "suspended" });
                             }}
                             className="text-red-500 hover:text-red-400 cursor-pointer"
                         >

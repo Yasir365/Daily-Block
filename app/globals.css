@@ -1,7 +1,13 @@
 @import "tailwindcss";
 
+/* ✅ 2. Load Typography plugin — must be at top level */
+@plugin "@tailwindcss/typography";
+
 @import "../styles/antd-overrides.css";
 
+
+@layer base, components, utilities;
+ 
 @theme {
   --color-brand-gray: rgba(31, 40, 60, 0.49);
   --color-brand-glass: rgba(255, 255, 255, 0.2);

@@ -11,7 +11,7 @@ export async function PATCH(req: NextRequest) {
     const { id, action } = await req.json();
 
     // ✅ Validate
-    if (!id || !["active", "inactive"].includes(action)) {
+    if (!id || !["active", "suspended"].includes(action)) {
       return NextResponse.json(
         { success: false, message: "Invalid request parameters" },
         { status: 400 }
@@ -34,7 +34,7 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({
       success: true,
       message: `User ${
-        action === "active" ? "activated" : "deactivated"
+        action === "active" ? "activated" : "suspended"
       } successfully`,
       user,
     });

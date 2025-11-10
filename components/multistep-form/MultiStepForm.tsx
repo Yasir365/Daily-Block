@@ -15,6 +15,7 @@ import FaqSection from "./FaqSection";
 import { combinedSchema, stepGeneralSchema } from "@/schemas/coinSchema";
 import { stepSocialMediaSchema } from "@/schemas/socialMediaSchema";
 import { stepTokenSupplySchema } from "@/schemas/tokenSupplySchema";
+import { useQueryClient } from "@tanstack/react-query";
 
 const steps = [
     { id: 1, title: "General", desc: "Details listed into the General Group" },
@@ -42,6 +43,7 @@ const MultiStepForm = () => {
     const router = useRouter();
     const [currentStep, setCurrentStep] = useState(1);
     const [savedId, setSavedId] = useState<string | null>(null);
+    const queryClient = useQueryClient();
 
     // keep combined type for TS stability
     const methods = useForm<CombinedFormType>({
@@ -133,6 +135,9 @@ const MultiStepForm = () => {
                 if (currentStep < steps.length) {
                     setCurrentStep((prev) => prev + 1);
                 } else {
+                    await queryClient.invalidateQueries({
+                        queryKey: ["ico-projects", ""],
+                    });
                     router.push("/user/dashboard");
                 }
             } else {

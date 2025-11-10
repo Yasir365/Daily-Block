@@ -1,9 +1,10 @@
 "use client"
 import { ArrowUpDown } from 'lucide-react'
 import Image from 'next/image'
-import React, { useEffect, useState } from 'react'
-import { ProjectRow } from '../ProjectCard/ProjectRow';
+import React, { useState } from 'react'
+import { cointStatus, ProjectRow } from '../ProjectCard/ProjectRow';
 import Link from 'next/link';
+import { useIcoProjects } from '@/hooks/useIcoProjects';
 
 const columns = [
   { key: "symbol", label: "Symbol", span: 1 },
@@ -19,28 +20,12 @@ const columns = [
 
 interface Props {
   title: string;
-  status: "verified" | "pending" | "rejected" | "";
+  status: cointStatus;
 }
 const UserDataTableDiv = ({ title, status }: Props) => {
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
-  const [projects, setProjects] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: projects = [], isLoading, isError, error } = useIcoProjects(status);
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const res = await fetch(`/api/ico/list?status=${status}`, { cache: "no-store" });
-        const data = await res.json();
-        if (data.success) setProjects(data.data);
-        else console.error("Failed to load ICOs:", data.error);
-      } catch (err) {
-        console.error("Error fetching ICOs:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProjects();
-  }, []);
 
   const handleSort = (key: string) => {
     let direction = "asc";
@@ -96,7 +81,7 @@ const UserDataTableDiv = ({ title, status }: Props) => {
 
         {/* --- Table Rows --- */}
         <div className="divide-y divide-gray-700/50">
-          {loading ? (
+          {isLoading ? (
             <p className="text-center text-gray-400 p-4">Loading projects...</p>
           ) : projects.length === 0 ? (
             <p className="text-center text-gray-400 p-4">No ICO projects found.</p>

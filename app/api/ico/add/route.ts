@@ -7,6 +7,8 @@ import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import NotificationModel from "@/models/NotificationModel";
 import { notifyUsersByType } from "@/lib/notify";
+import CommunityModel from "@/models/CommunityModel";
+import UserModel from "@/models/UserModel";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 
@@ -118,9 +120,30 @@ export async function POST(req: NextRequest) {
       status: data.status || "pending",
     };
 
-    const project = new IcoProject(payload);
-    await project.save();
+    const project = await IcoProject.create(payload);
 
+    // ✅ Check if community already exists for this user
+    let community = await CommunityModel.findOne({ userId: currentUserId });
+
+    if (community) {
+      // ✅ Add new ICO to existing community
+      community.icoProjects.push(project._id);
+      await community.save();
+    } else {
+      // ✅ Create new community for this user
+      const communityImage = icoIconPath || "/default-community.png";
+      const communityName = `${cryptoCoinName} Community`;
+
+      community = await CommunityModel.create({
+        userId: currentUserId,
+        name: communityName,
+        image: communityImage,
+        icoProjects: [project._id],
+      });
+    }
+
+    // ✅ Mark user as having a community
+    await UserModel.findByIdAndUpdate(currentUserId, { hasCommunity: true });
     // ✅ Create admin notification
     // await NotificationModel.create({
     //   title: "New ICO Project Submitted",
@@ -137,6 +160,7 @@ export async function POST(req: NextRequest) {
       message: `A new coin "${cryptoCoinName}" has been added and is waiting for approval.`,
       type: "ico",
       relatedId: project._id,
+      forAdmin: true,
       status: "pending",
     });
 

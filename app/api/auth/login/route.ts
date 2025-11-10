@@ -56,6 +56,7 @@ export async function POST(req: NextRequest) {
       email: existingUser.email,
       type: existingUser.userType,
       status: existingUser.status,
+      hasCommunity: existingUser?.hasCommunity || false,
       createdAt: existingUser.createdAt,
       lastLogin: lastLogin, // ✅ send to frontend if needed
     };

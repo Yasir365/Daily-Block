@@ -147,7 +147,7 @@ export const AdminSidebar = ({ isOpen, setIsOpen }: AdminSidebarProps) => {
             >
 
                 {/* Logo Section */}
-                <div className="flex items-center h-20 px-2 mb-4 pb-2 border-b border-brand-gray justify-between cursor-pointer" onClick={() => router.push("/admin")}>
+                <div className="flex items-center h-20 px-2 mb-4 pb-2 border-b border-brand-gray justify-between cursor-pointer" onClick={() => router.push("/")}>
                     <div className="flex items-center gap-1">
                         <img src="/svg/logo.svg" alt="Logo" />
                     </div>

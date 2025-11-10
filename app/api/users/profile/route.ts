@@ -58,7 +58,9 @@ export async function PATCH(req: NextRequest) {
 
       updates.image = `/uploads/${filename}`;
     }
-
+    if (formData.get("imageRemove") === "true") {
+      updates.image = null;
+    }
     // 🔐 Handle optional password change
     const currentPassword = formData.get("password") as string;
     const newPassword = formData.get("newPassword") as string;

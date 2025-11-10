@@ -36,4 +36,7 @@ FaqSchema.pre<Query<IFaq[], IFaq>>(/^find/, function (next) {
 // ✅ Refresh schema if reloaded
 delete mongoose.models.Faq;
 
-export default mongoose.model<IFaq>("FaqModal", FaqSchema);
+const FaqModal =
+  mongoose.models.FaqModal || mongoose.model<IFaq>("FaqModal", FaqSchema);
+
+export default FaqModal;

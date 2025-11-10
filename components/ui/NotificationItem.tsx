@@ -1,4 +1,4 @@
-import { Trash2 } from "lucide-react";
+import { CheckCheck, Trash2 } from "lucide-react";
 import StatusBadge from "./Badge";
 
 
@@ -38,12 +38,14 @@ export const NotificationItem = ({
             </div>
 
             {/* Delete Icon */}
-            <button
-                onClick={onDelete}
-                className="text-[#94A3B8] hover:text-[#F8FAFC] transition cursor-pointer"
-            >
-                <Trash2 size={16} />
-            </button>
+            {!isNew && (
+
+                <span
+                    className="text-[#94A3B8] "
+                >
+                    <CheckCheck size={16} />
+                </span>
+            )}
         </div>
 
         {/* Description */}

@@ -7,28 +7,38 @@ import CreateBlogForm from "@/components/blogs/CreateBlogForm";
 import { useDeleteBlog, useFetchBlogs } from "@/hooks/useblog";
 import toast from "react-hot-toast";
 import { Search } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { CustomToast } from "@/components/ui/ReactToast";
 import { useQueryClient } from "@tanstack/react-query";
+import debounce from "lodash/debounce";
 
 const Page = () => {
     const [showModal, setShowModal] = useState(false);
     const [search, setSearch] = useState("");
+    const [inputValue, setInputValue] = useState(""); // live input value
+
     const [mode, setMode] = useState<"create" | "edit">("create");
     const [selectedBlog, setSelectedBlog] = useState<any>(null);
     const filterRef = useRef<HTMLDivElement>(null);
     const queryClient = useQueryClient();
 
-    const { data = [], isLoading, refetch } = useFetchBlogs();
+    const { data = [], isLoading, refetch } = useFetchBlogs("all", search);
     const { mutate: deleteBlog } = useDeleteBlog();
     const blogs = data.data || [];
-    // ✅ Filter blogs live as user types
-    const filteredBlogs = blogs.filter((b: any) => {
-        const title = b.title?.toLowerCase() || "";
-        const excerpt = b.excerpt?.toLowerCase() || "";
-        return title.includes(search.toLowerCase()) || excerpt.includes(search.toLowerCase());
-    });
 
+    // ✅ Debounce logic: only set "search" after 400ms of no typing
+    const debouncedSearch = useMemo(
+        () =>
+            debounce((value: string) => {
+                setSearch(value);
+            }, 400),
+        []
+    );
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setInputValue(value);
+        debouncedSearch(value);
+    };
     const handleDelete = (id: string) => {
         deleteBlog(id, {
             onSuccess: () => {
@@ -116,12 +126,21 @@ const Page = () => {
 
             {/* ✅ Table Section */}
             <div className="grid grid-cols-1 gap-4">
+
                 <div className="overflow-x-auto rounded-[12px] border border-[#90909066] bg-[#3B3B3B80] shadow backdrop-blur-[4px]">
                     <div className="min-w-full">
+                        {isLoading && (
+                            <div className="h-full min-h-[400px] flex items-center justify-center">
+
+                                <div className="h-12 w-12 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin" />
+                            </div>
+
+                        )}
+
                         <DataList
                             title="All Blog Posts"
                             desc="View and manage your articles"
-                            data={filteredBlogs.map((b: any) => ({
+                            data={blogs.map((b: any) => ({
                                 ...b,
                                 title: b.title,
                                 desc: b.excerpt,
@@ -139,8 +158,9 @@ const Page = () => {
                                     type="text"
                                     placeholder="Search Posts..."
                                     className="w-full p-3 pl-10 bg-[#313133] border border-[#90909066]/40 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-brand-yellow"
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
+                                    value={inputValue}
+                                    onChange={handleSearchChange}
+
                                 />
                                 <Search
                                     size={18}

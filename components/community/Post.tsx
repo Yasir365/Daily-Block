@@ -1,62 +1,102 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import { Heart, MessageCircle, Repeat2, Share2 } from "lucide-react";
 import Image from "next/image";
+import { Comment, CommentsSection } from "../comments/CommentsSection";
+import { useAuthContext } from "@/context/AuthContext";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { PostHeader } from "./PostHeader";
+import { PostContent } from "./PostContent";
+import { PostActions } from "./PostActions";
+import { usePostInteraction } from "@/hooks/usePostInteraction";
+import ShareModal from "../modals/ShareModal";
 
-
-const PostOptions = [
-    { id: 1, icon: <Heart size={18} />, count: 35 },
-    { id: 2, icon: <MessageCircle size={18} />, count: 35 },
-    { id: 3, icon: <Repeat2 size={18} />, count: 35 },
-    { id: 4, icon: <Share2 size={18} />, count: 35 },
-]
+interface repost {
+    userId: string;
+}
 interface Props {
     username: string;
     time: string;
     title: string;
     description: string;
     image: string;
+    active: boolean;
+    id: string;
+    comments: Comment[];
+    selectedCoin: { _id: string; coinName: string };
+    likes: string[];
+    shares: string[];
+    reposts: repost[];
+    queryKey?: [string, string];
 }
 
-const Post: React.FC<Props> = ({ username, time, title, description, image }) => {
+const Post: React.FC<Props> = ({
+    username,
+    time,
+    title,
+    description,
+    image,
+    active,
+    id,
+    comments,
+    selectedCoin,
+    likes,
+    shares,
+    reposts,
+    queryKey = ["posts", selectedCoin._id],
+
+}) => {
+    const [showComments, setShowComments] = useState(false);
+
+    // const userId = user?._id;
+
+    const { handleAction,
+        mutation,
+        userId,
+        isShareModalOpen,
+        setIsShareModalOpen,
+        confirmShare, } = usePostInteraction(id, selectedCoin._id, username, queryKey);
+
+
     return (
-        <div className="p-4">
-            <div className="flex items-center gap-3 mb-3">
-                <img
-                    src="svg/community/coin.svg"
-                    alt={username}
-                    className="w-10 h-10 rounded-full"
+        <div className="p-4 border-b border-[rgb(36,46,64)]">
+            {/* 🔹 Header */}
+            <PostHeader username={username} active={active} time={time} />
+
+            <PostContent title={title} description={description} image={image} />
+
+            <PostActions
+                likes={likes}
+                shares={shares}
+                reposts={reposts}
+                commentsCount={comments.length}
+                userId={userId}
+                handleAction={handleAction}
+                showComments={showComments}
+                onCommentClick={() => setShowComments((prev) => !prev)}
+                isPending={mutation.isPending}
+            />
+
+            {/* 🔹 Comments Section */}
+            {showComments && (
+                <CommentsSection
+                    parentId={id}
+                    comments={comments}
+                    apiBase="/api/community"
+                    queryKey={queryKey}
+                    maxHeight="250"
                 />
-                <div className="flex items-center gap-1">
-                    <h4 className="font-semibold text-sm">{username}</h4>
-                    <span className="flex gap-1 items-center">
-                        <Image src="/svg/verified.svg" alt="coin" width={16} height={16} />
-                        <span className="text-xs text-gray-500">{time}</span>
-                    </span>
-                </div>
-            </div>
-
-            <p className="text-sm mb-2">
-                <span className="text-yellow-400 font-semibold">#Bitcoin</span> {title}
-            </p>
-            <p className="text-gray-300 text-sm">{description}</p>
-
-            <div className="mt-3">
-                <img src={image} alt="post" className="w-full rounded-xl" />
-            </div>
-
-            {/* Reaction Buttons */}
-            <div className="flex justify-between items-center text-gray-400 text-sm mt-4">
-                <div className="flex gap-4">
-                    {PostOptions.map((option) => (
-                        <button key={option.id} className={`flex items-center gap-1  rounded-full px-3 py-1 border border-[rgb(36, 46, 64)] hover:text-${option.id === 1 ? "red-400" : option.id === 2 ? "blue-400" : option.id === 3 ? "green-400" : "yellow-400"}`}>
-                            {option.icon} {option.count}
-                        </button>
-                    ))}
-                </div>
-            </div>
+            )}
+            {isShareModalOpen && (
+                <ShareModal
+                    postId={id}
+                    onClose={() => setIsShareModalOpen(false)}
+                    open={isShareModalOpen}
+                    handleShare={confirmShare}
+                />
+            )}
         </div>
     );
 };
 
 export default Post;
-

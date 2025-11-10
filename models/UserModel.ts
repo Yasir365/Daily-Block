@@ -9,7 +9,7 @@ export interface IUser extends Document {
   password: string;
   userType: string;
   phone?: string;
-  status: "active" | "inactive" | "banned";
+  status: "active" | "inactive" | "banned" | "suspended";
   isDeleted: boolean;
   deletedAt?: Date | null;
   createdAt?: Date;
@@ -32,6 +32,9 @@ export interface IUser extends Document {
   github?: string;
   telegram?: string;
   website?: string;
+
+  // 🏘️ Community flag
+  hasCommunity: boolean;
 }
 const UserSchema = new Schema<IUser>(
   {
@@ -43,8 +46,8 @@ const UserSchema = new Schema<IUser>(
     phone: { type: String, default: "" },
     status: {
       type: String,
-      enum: ["active", "inactive", "banned"],
-      default: "inactive",
+      enum: ["active", "inactive", "banned", "suspended"],
+      default: "suspended",
     },
     // 🖼️ Image
 
@@ -72,6 +75,9 @@ const UserSchema = new Schema<IUser>(
     isDeleted: { type: Boolean, default: false },
     deletedAt: { type: Date, default: null },
     lastLogin: { type: Date, default: null }, // ✅ Store last login
+
+    // 🏘️ Added community flag
+    hasCommunity: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

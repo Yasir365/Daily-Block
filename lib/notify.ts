@@ -12,6 +12,7 @@ export interface CreateNotificationParams {
   userId?: mongoose.Types.ObjectId;
   receiverIds?: mongoose.Types.ObjectId[];
   status?: "pending" | "success" | "error" | "info";
+  forAdmin?: boolean;
 }
 
 /**
@@ -27,6 +28,7 @@ export async function createNotification({
   userId,
   receiverIds = [],
   status = "info",
+  forAdmin,
 }: CreateNotificationParams) {
   try {
     if (!receiverIds.length) return null;
@@ -41,6 +43,7 @@ export async function createNotification({
       userId,
       receiverId,
       status,
+      forAdmin,
     }));
 
     await NotificationModel.insertMany(notifications);

@@ -1,6 +1,7 @@
 "use client";
 import InputField from "@/components/ui/Input";
 import { CustomToast } from "@/components/ui/ReactToast";
+import { useMutation } from "@tanstack/react-query";
 import { Eye, EyeOff, MoveUpRight } from "lucide-react"
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -17,18 +18,48 @@ export const ResetForm = () => {
 
     const togglePassword = () => setShowPassword(prev => !prev);
     const toggleConfirmPassword = () => setShowConfirmPassword(prev => !prev);
+    // ✅ Mutation for password reset
+    const mutation = useMutation({
+        mutationFn: async () => {
+            const email = localStorage.getItem("reset_email");
+            const otpVerified = localStorage.getItem("otp");
+
+            if (!otpVerified) throw new Error("Please verify OTP first!");
+            if (password !== confirmPassword) throw new Error("Passwords do not match!");
+
+            const res = await fetch("/api/auth/reset-password", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, code: otpVerified, newPassword: password }),
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || "Failed to reset password");
+            return data;
+        },
+        onSuccess: (data) => {
+            toast.custom((t) => (
+                <CustomToast t={t} status="Success" message="Password reset successfully!" />
+            ));
+
+            // 🧹 Remove localStorage items
+            localStorage.removeItem("reset_email");
+            localStorage.removeItem("otp_verified");
+            localStorage.removeItem("otp");
+
+            router.push("/auth/login");
+        },
+        onError: (error: any) => {
+            toast.custom((t) => (
+                <CustomToast t={t} status="Error" message={error.message} />
+            ));
+        },
+    });
+
     const submitForm = (e: React.FormEvent) => {
         e.preventDefault();
-        toast.custom((t) => (
-            <CustomToast
-                t={t}
-                status="Success"
-                message={"Password reset successfully!"}
-            />
-        ));
-        router.push("/auth/login");
+        mutation.mutate();
     };
-
     return (
         <form className="space-y-6" onSubmit={submitForm}>
             {/* Password Field */}
@@ -72,7 +103,7 @@ export const ResetForm = () => {
 
             <p className="text-brand-muted text-center text-sm">
                 Wrong Mail
-                <Link href="/forgot-password" className="text-white ml-1">Send to different email</Link>
+                <Link href="/auth/forgot-password" className="text-white ml-1">Send to different email</Link>
             </p>
         </form>
     )

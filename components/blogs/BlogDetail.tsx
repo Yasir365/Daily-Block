@@ -1,11 +1,22 @@
 "use client";
+import { useAuthContext } from "@/context/AuthContext";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
+import toast from "react-hot-toast";
+import { CustomToast } from "../ui/ReactToast";
+import { formatDateTime } from "@/lib/helpers";
+const saveButton = "self-end inline-flex px-6 py-3 text-black bg-brand-yellow rounded-xl w-fit font-inter font-semibold text-[16px] leading-[24px]";
+
 
 // Fetch blog function
-const fetchBlog = async (id: string) => {
-    const res = await fetch(`/api/blogs/${id}`);
+const fetchBlog = async (id: string, userId: string, userRole: string) => {
+    const res = await fetch(`/api/blogs/${id}`, {
+        headers: {
+            "x-user-id": userId || "guest",
+            "x-user-role": userRole || "guest",
+        },
+    });
 
     if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
@@ -53,24 +64,27 @@ type Blog = {
     status: string;
     publishedDate?: string | null;
     views: number;
-    likes: number;
+    likes: string[];
     comments: Comment[];
+    userId: string;
 };
 
 const BlogDetail = () => {
     const params = useParams();
     const blogId = params.id as string;
     const queryClient = useQueryClient();
+    const { user, isAuthenticated, loading } = useAuthContext();
 
+    const userId = user?._id || ""; // ✅ dynamic user ID
+    const userRole = user?.type || "user"; // ✅ dynamic user role 
     const { data: blog, isLoading, isError, error } = useQuery<Blog, Error>({
         queryKey: ["blog", blogId],
-        queryFn: () => fetchBlog(blogId),
-        enabled: !!blogId,
+        queryFn: () => fetchBlog(blogId, userId, userRole),
+        enabled: !!blogId && !loading,
     });
 
 
     const [comment, setComment] = useState("");
-    const userId = "670eacb93c17bb001e3213b1"; // ✅ Replace with logged-in user id
 
     const mutation = useMutation({
         mutationFn: addComment,
@@ -80,6 +94,32 @@ const BlogDetail = () => {
             queryClient.invalidateQueries({ queryKey: ["blog", blogId] });
         },
     });
+    const likeMutation = useMutation({
+        mutationFn: async () => {
+            const res = await fetch(`/api/blogs/${blogId}/like`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId, userRole }),
+            });
+
+            const data = await res.json();
+            if (!res.ok || !data.success) throw new Error(data.message || "Failed to toggle like");
+            return data.data;
+        },
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ["blog", blogId] });
+        },
+        onError: (error) => {
+            toast.custom((t) => (
+                <CustomToast
+                    t={t}
+                    status="error"
+                    message={error.message || "Failed to toggle like"}
+                />
+            ))
+        },
+    });
+
     if (isLoading) {
         return (
             <main className="container mx-auto py-12 text-center">
@@ -97,6 +137,9 @@ const BlogDetail = () => {
             </main>
         );
     }
+    const isAuthor = blog.userId === userId;
+    const isAdmin = userRole === "admin";
+    const canInteract = !isAuthor && !isAdmin;
 
     return (
         <main className="container mx-auto py-8 px-4 md:px-0">
@@ -105,15 +148,26 @@ const BlogDetail = () => {
 
             {/* Meta info */}
             <div className="flex flex-wrap items-center text-gray-500 text-sm mb-6 space-x-4">
-                <span>Read time: {blog.readTime} min</span>
-                <span>Status: {blog.status}</span>
+                {/* <span>Read time: {blog.readTime} min</span>
+                <span>Status: {blog.status}</span> */}
                 {blog.publishedDate && (
                     <span>
                         Published: {new Date(blog.publishedDate).toLocaleDateString()}
                     </span>
                 )}
-                <span>Views: {blog.views}</span>
-                <span>Likes: {blog.likes}</span>
+                <div className="flex items-center gap-3 mb-6">
+                    <button
+                        disabled={!canInteract || likeMutation.isPending}
+                        onClick={() => likeMutation.mutate()}
+                        className={`px-4 py-2 rounded-xl border border-brand-yellow/30 
+                            ${canInteract ? "hover:bg-brand-yellow/20" : "opacity-50 cursor-not-allowed"}
+                            `}
+                    >
+                        ❤️ {blog.likes.length} {blog.likes.length > 0 ? "Like" : "Likes"}
+                    </button>
+                </div>
+                {/* <span>Views: {blog.views}</span>
+                <span>Likes: {blog.likes}</span> */}
             </div>
 
             {/* Image */}
@@ -126,11 +180,11 @@ const BlogDetail = () => {
             )}
 
             {/* Excerpt */}
-            <p className="text-gray-700 mb-6 italic">{blog.excerpt}</p>
+            <p className="text-gray-200 mb-6 italic  first-letter:uppercase">{blog.excerpt}</p>
 
             {/* Content */}
             <div
-                className="prose max-w-none mb-8"
+                className="prose max-w-none mb-8  first-letter:uppercase"
                 dangerouslySetInnerHTML={{ __html: blog.content }}
             />
 
@@ -146,17 +200,17 @@ const BlogDetail = () => {
 
                 <ul className="space-y-4 mb-6">
                     {blog.comments.map((c) => (
-                        <li key={c._id} className="border rounded-lg p-4">
-                            <p className="text-gray-800">{c.comment}</p>
-                            <span className="text-gray-500 text-sm">
-                                {new Date(c.createdAt).toLocaleString()}
+                        <li key={c._id} className="border rounded-lg p-4  border-brand-yellow/20">
+                            <p className="text-gray-300  first-letter:uppercase">{c.comment}</p>
+                            <span className="text-gray-500 text-sm ">
+                                {formatDateTime(c.createdAt)}
                             </span>
                         </li>
                     ))}
                 </ul>
 
                 {/* Add Comment Form */}
-                <form
+                {canInteract && isAuthenticated ? (<form
                     onSubmit={(e) => {
                         e.preventDefault();
                         if (!comment.trim()) return;
@@ -168,16 +222,21 @@ const BlogDetail = () => {
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
                         placeholder="Write your comment..."
-                        className="w-full p-3 border rounded-md"
+                        className="w-full p-3 border rounded-md border-brand-yellow/20 active:border-brand-yellow/20"
                     />
                     <button
                         type="submit"
                         disabled={mutation.isPending}
-                        className="self-end bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                        className={saveButton}
                     >
                         {mutation.isPending ? "Posting..." : "Post Comment"}
                     </button>
-                </form>
+                </form>) : (!isAuthenticated) ? (
+
+                    <p className="text-gray-500 italic">You must be logged in to comment or like.</p>
+                ) : (
+                    <p className="text-gray-500 italic">You cannot comment or like your own blog.</p>
+                )}
             </div>
         </main>
     );

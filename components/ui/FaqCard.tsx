@@ -49,21 +49,14 @@ const FaqCard = ({
           />
         ) : (
           <div className="relative">
-            {/* Fixed height container with scroll */}
             <div
-              className="text-white bg-[#0D0E12] border border-[#21222C] rounded-[10px] px-3 py-2 max-h-32 overflow-y-auto custom-scrollbar"
-              dangerouslySetInnerHTML={{ __html: faq.answer || "<p>No answer available</p>" }}
+              className="prose prose-invert max-w-none bg-[#0D0E12] border border-[#21222C] rounded-[10px] px-3 py-2 max-h-60 overflow-y-auto custom-scrollbar"
+              dangerouslySetInnerHTML={{
+                __html: faq.answer || "<p>No answer available</p>",
+              }}
             />
 
-            {/* Optional "See more" button */}
-            {/* {faq.answer && faq.answer.length > 200 && (
-              <button
-                className="absolute bottom-1 right-2 text-sm text-blue-400 hover:underline"
-                onClick={() => alert("Implement expand logic here")}
-              >
-                See more
-              </button>
-            )} */}
+          
           </div>
         )}
       </div>

@@ -3,6 +3,7 @@ import React from "react";
 import { X, ExternalLink } from "lucide-react";
 import { UniversalContainer } from "@/components/ui/UniversalContainer";
 import Image from "next/image";
+import { formatDateTime } from "@/lib/helpers";
 
 interface IcoProjectViewModalProps {
   open: boolean;
@@ -80,7 +81,7 @@ export default function IcoProjectViewModal({
           <p className="text-gray-400 font-medium capitalize">{label}</p>
           <div className="ml-2 space-y-1">
             {value.map((item: any, idx: number) => (
-              <p key={idx} className="text-gray-300 text-sm">{item}</p>
+              <p key={idx} className="text-gray-300 text-sm capitalize">{item}</p>
             ))}
           </div>
         </div>
@@ -90,7 +91,7 @@ export default function IcoProjectViewModal({
     return (
       <div key={key} className="mb-3">
         <p className="text-gray-400 font-medium capitalize">{label}</p>
-        <p className="text-gray-200 break-words">{String(value)}</p>
+        <p className="text-gray-200 break-words capitalize">{(key === "updatedAt" || key === "createdAt") ? formatDateTime(value) : String(value)}</p>
       </div>
     );
   };
@@ -109,11 +110,11 @@ export default function IcoProjectViewModal({
         )}
         <div className="flex-1 space-y-1">
           <h3 className="text-[#FACC15] font-semibold text-lg mb-1">User Info</h3>
-          <p><span className="text-gray-400 font-medium">First Name:</span> {firstName}</p>
-          <p><span className="text-gray-400 font-medium">Last Name:</span> {lastName}</p>
+          <p className="capitalize"><span className="text-gray-400 font-medium ">First Name:</span> {firstName}</p>
+          <p className="capitalize"><span className="text-gray-400 font-medium ">Last Name:</span> {lastName}</p>
           <p><span className="text-gray-400 font-medium">Email:</span> {email}</p>
-          <p><span className="text-gray-400 font-medium">User Type:</span> {userType}</p>
-          <p><span className="text-gray-400 font-medium">Status:</span> {status}</p>
+          <p className="capitalize"><span className="text-gray-400 font-medium ">User Type:</span> {userType}</p>
+          <p className="capitalize"><span className="text-gray-400 font-medium ">Status:</span> {status}</p>
         </div>
       </div>
     );

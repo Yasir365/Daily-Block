@@ -16,12 +16,12 @@ export const FeatureSection = () => {
 
                 {/* CTA Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 mb-10">
-                    <button className="py-2 px-6 font-bold text-black bg-brand-yellow rounded-lg hover:bg-yellow-400 transition-all duration-300 font-mulish flex items-center justify-center gap-2">
+                    {/* <button className="py-2 px-6 font-bold text-black bg-brand-yellow rounded-lg hover:bg-yellow-400 transition-all duration-300 font-mulish flex items-center justify-center gap-2">
                         Buy Token Now
                         <span className="inline-block font-semibold transform rotate-[-30deg] transition-transform duration-300 group-hover:-translate-y-1">
                             <ArrowRight size={19} strokeWidth={1.5} />
                         </span>
-                    </button>
+                    </button> */}
 
                     <button className="py-2 px-6 font-bold text-white border border-gray-600 rounded-lg hover:bg-gray-700 transition-colors">
                         Revolutore stats
