@@ -8,7 +8,6 @@ import { ObjectId } from "mongodb";
 export async function GET(req: NextRequest, { params }: any) {
   await connectDB();
   const { coin: coin } = await params;
-  // console.log({ coin });
   // Use cache if data < 8 hours old
   // const recent = await Sentiment.findOne({
   //   coin,
@@ -28,7 +27,6 @@ export async function GET(req: NextRequest, { params }: any) {
     })
     .sort({ createdAt: -1 })
     .limit(20);
-  console.log(posts);
   const coinDetail = await Icoproject.find({ _id: new ObjectId(coin) });
   const coinData = coinDetail[0];
   const textArr = posts.map((p) => `${p.username}: ${p.content}`);
@@ -36,12 +34,13 @@ export async function GET(req: NextRequest, { params }: any) {
   const analysis = await analyzeSentimentAndMetrics(
     coinData.cryptoCoinName,
     textArr,
-    coinData
+    coinData,
+    posts
   );
 
   const newSentiment = await Sentiment.create({
     coin,
-    // ...analysis,
+    ...analysis,
     analyzedAt: new Date(),
   });
 

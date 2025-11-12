@@ -13,7 +13,8 @@ export const ProjectCardsSection = () => {
       try {
         const res = await fetch("/api/dashboard/newlyListed");
         const data = await res.json();
-        setListedCoins((data.coins || []).slice(0, 6));
+        console.log(data)
+        setListedCoins((data.data || []).slice(0, 6));
       } catch (err) {
         console.error("Failed to fetch newly listed coins:", err);
       } finally {
@@ -37,7 +38,6 @@ export const ProjectCardsSection = () => {
     }
     fetchTopRanked();
   }, []);
-
   return (
     <section className="container mx-auto py-10">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -61,7 +61,7 @@ export const ProjectCardsSection = () => {
               <p className="text-gray-400">Loading...</p>
             ) : (
               listedCoins.map((coin, index) => (
-                <ProjectCard key={index} name={coin.name} />
+                <ProjectCard key={index} name={coin.cryptoCoinName} _id={coin._id} />
               ))
             )}
           </div>

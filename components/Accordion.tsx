@@ -46,11 +46,20 @@ const faqData = [
     },
 ];
 
-export const Accordion = () => {
+export const Accordion = ({ faqs }: { faqs?: any }) => {
+    let isLoading = true
+    let faqData = [];
+    if (faqs && faqs.length < 0) {
 
-    const { data = [], isLoading, refetch } = useFetchFaqs();
+        const { data = [], isLoading: loading, refetch } = useFetchFaqs();
+        faqData = data
+        isLoading = loading
+    } else {
+        faqData = faqs
+        isLoading = false
+    }
     // Map API data to AntD Collapse items
-    const items: CollapseProps["items"] = data?.map((faq: { question: string, answer: string; _id: string }, index: number) => ({
+    const items: CollapseProps["items"] = faqData?.map((faq: { question: string, answer: string; _id: string }, index: number) => ({
         key: faq._id,
         label: (
             <span className="text-white font-titilliumWeb font-semibold text-[20px] sm:text-[24px] leading-[28px]">

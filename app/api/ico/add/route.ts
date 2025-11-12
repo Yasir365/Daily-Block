@@ -89,11 +89,34 @@ export async function POST(req: NextRequest) {
 
       icoIconPath = `/ico/${cryptoCoinName}/${fileName}`;
     }
+    // Handle multiple ICO images
+    let icoImagesPaths: string[] = [];
+    const icoImagesFiles = formData.getAll("icoImages") as File[];
+
+    if (icoImagesFiles.length > 0) {
+      const folderPath = path.join(
+        process.cwd(),
+        "public",
+        "ico",
+        cryptoCoinName,
+        "images"
+      );
+      fs.mkdirSync(folderPath, { recursive: true });
+
+      for (const file of icoImagesFiles) {
+        const buffer = Buffer.from(await file.arrayBuffer()); // ✅ No stream fallback needed
+        const fileName = file.name.replace(/\s+/g, "_");
+        const filePath = path.join(folderPath, fileName);
+        fs.writeFileSync(filePath, buffer);
+        icoImagesPaths.push(`/ico/${cryptoCoinName}/images/${fileName}`);
+      }
+    }
 
     // ✅ Update existing ICO
     if (_id) {
       const updateFields: Record<string, any> = { ...data };
       if (icoIconPath) updateFields.icoIcon = icoIconPath;
+      if (icoImagesPaths.length) updateFields.icoImages = icoImagesPaths;
 
       const updated = await IcoProject.findByIdAndUpdate(
         _id,
@@ -116,6 +139,8 @@ export async function POST(req: NextRequest) {
       ...data,
       userId: new mongoose.mongo.ObjectId(currentUserId as string),
       icoIcon: icoIconPath,
+      icoImages: icoImagesPaths, // add multiple images here
+
       stepCompleted: 1,
       status: data.status || "pending",
     };

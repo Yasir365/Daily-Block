@@ -6,6 +6,7 @@ export const stepGeneralSchema = z.object({
   cryptoCoinName: z.string().min(3, "Crypto Coin Name is required"),
   coinAbbreviation: z.string().min(3, "Coin Abbreviation is required"),
   icoIcon: z.any().optional(),
+  icoImages: z.any().optional(),
   icoTokenPrice: z.string().optional(),
   additionalDetails: z.string().optional(),
   kyc: z.string().optional(),

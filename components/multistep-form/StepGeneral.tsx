@@ -3,6 +3,9 @@ import { Controller, useFormContext, useWatch } from "react-hook-form";
 import InputField from "../ui/Input";
 import SelectField from "../ui/Select";
 import Teextarea from "../ui/Textarea";
+import RichTextEditor, { modules } from "../Editior";
+import ReactQuill from "react-quill-new";
+import MultiImageUpload from "./MultiImageUpload";
 
 
 
@@ -95,6 +98,7 @@ const StepGeneral = () => {
                             id="icoIcon"
                             placeholder="Select ico icon"
                             accept="image/*"
+                            value={""}
                             onChange={handleFileChange}
                             className="hidden"
                         />
@@ -109,7 +113,7 @@ const StepGeneral = () => {
 
                     </div>
                 </div>
-
+                <MultiImageUpload control={control} name="icoImages" />
                 <Controller
                     name="icoTokenPrice"
                     control={control}
@@ -127,68 +131,38 @@ const StepGeneral = () => {
                 name="additionalDetails"
                 control={control}
                 render={({ field }) => (
-                    <Teextarea
-                        label="Additional ICO Details"
-                        placeholder="Enter detailed ICO description..."
-                        rows={4}
-                        {...field}
-                    />
+                    <div className="flex flex-col gap-2">
+                        <label
+                            htmlFor={field.name}
+                            className={` text-gray-400 text-sm capitalize flex items-center gap-1`}
+                        >Additional ICO Details</label>
+                        <ReactQuill
+                            value={field.value || ""}
+
+                            onChange={field.onChange}
+                            modules={modules}
+                            theme="snow"
+                            placeholder="Write your content here..."
+                            className="custom-quill"
+                            style={{
+                                height: "150px",
+                                color: "#ffffff",
+                                border: "none",
+                            }}
+                        />
+                    </div>
+                    // <Teextarea
+                    //     label="Additional ICO Details"
+                    //     placeholder="Enter detailed ICO description..."
+                    //     rows={4}
+                    //     {...field}
+                    // />
                 )}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                <Controller
-                    name="kyc"
-                    control={control}
-                    render={({ field }) => (
-                        <SelectField
-                            btnClass="bg-brand-glass text-gray-800"
-                            dropBg="bg-[#545454]"
-                            label="Know Your Customer (KYC)"
-                            options={[
-                                { value: "Yes", label: "Yes" },
-                                { value: "No", label: "No" },
-                            ]}
-                            {...field}
-                        />
-                    )}
-                />
+            <div className="grid grid-cols-1 md:grid-cols-2 mt-6 gap-4 md:gap-6">
 
-                <Controller
-                    name="kycDetails"
-                    control={control}
-                    render={({ field }) => (
-                        <InputField
-                            label="Know Your Customer (KYC)? Details"
-                            placeholder="Enter KYC details..."
-                            {...field}
-                        />
-                    )}
-                />
 
-                <Controller
-                    name="cantParticipate"
-                    control={control}
-                    render={({ field }) => (
-                        <InputField
-                            label="Can't participate"
-                            placeholder="E.g: 'LTC, XRT ...'"
-                            {...field}
-                        />
-                    )}
-                />
-
-                <Controller
-                    name="participationWith"
-                    control={control}
-                    render={({ field }) => (
-                        <InputField
-                            label="Participation with:"
-                            placeholder="Following Cryptos: E.g: 'BTC, LTC, ETH'"
-                            {...field}
-                        />
-                    )}
-                />
 
                 <Controller
                     name="competitionCoins"
@@ -244,25 +218,15 @@ const StepGeneral = () => {
                     )}
                 />
 
-                <Controller
-                    name="tokenRole2"
-                    control={control}
-                    render={({ field }) => (
-                        <InputField
-                            label="Token Role"
-                            placeholder="Set Token Role E.g: 'UTILITY'"
-                            {...field}
-                        />
-                    )}
-                />
+
 
                 <Controller
                     name="received"
                     control={control}
                     render={({ field }) => (
                         <InputField
-                            label="Received"
-                            placeholder="Set the money received (Eg: 40000000 BTC)"
+                            label="Supply"
+                            placeholder="Set the money supply (Eg: 40000000 BTC)"
                             {...field}
                         />
                     )}

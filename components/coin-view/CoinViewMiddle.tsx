@@ -1,10 +1,40 @@
+import Image from "next/image";
 import { Accordion } from "../Accordion";
+import { CoinData } from "./CoinView";
+import parse from "html-react-parser"; // ✅ parse HTML strings safely
 
-const CoinViewContent = () => {
+const CoinViewContent = ({ coin }: { coin: CoinData }) => {
+    const icoImages = coin?.icoImages || []; // ✅ Ensure it's always an array
     return (
         <div className="flex flex-col col-span-3">
             <div className="flex flex-col p-2 gap-2 rounded-xl">
-                <img src="/svg/coinview.svg" alt="coin" />
+                {icoImages.length > 0 && (
+                    <div className="relative w-full h-64 md:h-96 rounded-xl overflow-hidden">
+                        <Image
+                            src={icoImages[0]}
+                            alt="coin main"
+                            fill
+                            style={{ objectFit: "cover" }}
+                        />
+                    </div>
+                )}
+
+                {/* Small thumbnails */}
+                {icoImages.length > 1 && (
+                    <div className="flex items-center gap-2 mt-2">
+                        {icoImages.slice(1).map((img, i) => (
+                            <div key={i} className="relative w-24 h-24 rounded-lg overflow-hidden">
+                                <Image
+                                    src={img}
+                                    alt={`coin thumbnail ${i}`}
+                                    fill
+                                    style={{ objectFit: "cover" }}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                )}
+                {/* <img src="/svg/coinview.svg" alt="coin" />
                 <h2 className="text-white text-xl font-600">Detect New Crypto Coins With Hot IDO, IEO & ICO List</h2>
                 <ul className="text-brand-muted">
                     <li>KeetaAI is the first AI-native product suite built on Keeta Network—the fastest L1, backed by Google’s Eric Schmidt.</li>
@@ -31,14 +61,18 @@ const CoinViewContent = () => {
                         <p className="text-brand-muted">- Analyze wallet activity in real time</p>
                     </div>
                 ))
-                }
+                } */}
+                {/* Parsed HTML content */}
+                <div className="prose prose-invert max-w-none text-gray-300 font-inter font-normal text-[15.27px] leading-relaxed px-6 pb-4 space-y-2">
+                    {coin.additionalDetails ? parse(coin.additionalDetails) : null}
+                </div>
 
                 <div className="flex items-center gap-2 w-full">
                     <h4 className="text-yellow-400 font-semibold">Frequently asked questions</h4>
                     <div className="flex-1 border-t border-dotted border-yellow-400"></div>
                 </div>
 
-                <Accordion />
+                <Accordion faqs={coin.faqs} />
             </div>
         </div >
     )

@@ -101,6 +101,7 @@ const MultiStepForm = () => {
     // handle next/submit
     const handleNext = async (data: CombinedFormType) => {
         // 1) Validate only current step's schema
+        console.log({ data })
         const ok = validateCurrentStep(data);
         if (!ok) return;
 
@@ -113,13 +114,17 @@ const MultiStepForm = () => {
         const formDataToSend = new FormData();
         Object.entries(data).forEach(([key, value]) => {
             if (value !== undefined && value !== null) {
-                if (typeof value === "object" && !(value instanceof File)) {
+                if (Array.isArray(value) && value.every(v => v instanceof File)) {
+                    // Append each File individually
+                    value.forEach((file: File) => formDataToSend.append(key, file));
+                } else if (typeof value === "object" && !(value instanceof File)) {
                     formDataToSend.append(key, JSON.stringify(value));
                 } else {
                     formDataToSend.append(key, value as any);
                 }
             }
         });
+
 
         if (savedId) formDataToSend.append("_id", savedId);
 

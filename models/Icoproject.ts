@@ -10,6 +10,7 @@ export interface IIcoProject extends Document {
   cryptoCoinName: string;
   coinAbbreviation: string;
   icoIcon?: string;
+  icoImages?: string[];
   icoTokenPrice?: string;
   additionalDetails?: string;
   kyc?: string;
@@ -79,6 +80,7 @@ const IcoProjectSchema = new Schema<IIcoProject>(
     cryptoCoinName: { type: String, required: true },
     coinAbbreviation: { type: String, required: true },
     icoIcon: { type: String },
+    icoImages: [{ type: String }],
     icoTokenPrice: { type: String },
     additionalDetails: { type: String },
     kyc: { type: String },

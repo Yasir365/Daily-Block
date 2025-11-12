@@ -174,3 +174,25 @@ button{
   scrollbar-width: thin;
   scrollbar-color: var(--color-brand-yellow) rgba(59, 59, 59, 0.3);
 }
+
+/* Custom Quill Styling */
+.custom-quill .ql-container {
+  background-color: rgba(255, 255, 255, 0.2); /* same as bg-brand-glass */
+  border: none !important;
+  color: #ffffff;
+   backdrop-filter: blur(8px);
+     border-radius: 0 0 0.75rem 0.75rem; /* 👈 rounded bottom only */
+
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.custom-quill .ql-editor {
+  color: #ffffff;
+  min-height: 150px;
+}
+
+.custom-quill .ql-toolbar {
+  background-color: rgba(255, 255, 255, 0.2);
+  border: none !important;
+  border-radius: 0.75rem 0.75rem 0 0; /* 👈 rounded top only */
+}

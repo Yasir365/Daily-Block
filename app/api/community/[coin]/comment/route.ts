@@ -52,7 +52,6 @@ export async function POST(req: NextRequest, { params }: any) {
         { status: 400 }
       );
     }
-    console.log({ params });
     // ✅ Find the post
     const post = await Post.findById(postId);
     if (!post) {

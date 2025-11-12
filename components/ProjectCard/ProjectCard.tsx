@@ -5,9 +5,10 @@ interface ProjectCardProps {
     description?: string;
     logoUrl?: string;
     isTopProject?: boolean;
+    _id?: string
 }
 
-export const ProjectCard = ({ name, description, isTopProject = false }: ProjectCardProps) => {
+export const ProjectCard = ({ name, description, isTopProject = false, _id }: ProjectCardProps) => {
     return (
         <div className="flex items-center justify-between px-3 py-4 rounded-xl bg-brand-glass ">
             <div className="flex items-center space-x-3">
@@ -20,12 +21,12 @@ export const ProjectCard = ({ name, description, isTopProject = false }: Project
                     <span className="text-lg font-bold text-white">Z</span>
                 </div>
                 <div>
-                    <p className="text-white font-medium text-sm font-lato">{name}</p>
+                    <p className="text-white font-medium text-sm font-lato capitalize">{name}</p>
                     {description && <p className="text-gray-400 text-xs">{description}</p>}
                 </div>
             </div>
 
-            <Link href="/coin-view" className="flex items-center bg-brand-yellow text-black text-xs font-bold py-1 px-3 rounded-md hover:bg-yellow-400 transition-colors" >
+            <Link href={`/coin-view${_id && "?coin=" + _id || ""}`} className="flex items-center bg-brand-yellow text-black text-xs font-bold py-1 px-3 rounded-md hover:bg-yellow-400 transition-colors" >
                 Project
             </Link>
         </div>

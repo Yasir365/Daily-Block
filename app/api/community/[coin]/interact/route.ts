@@ -9,7 +9,6 @@ export async function POST(req: NextRequest, { params }: any) {
     const { coin: postId } = params;
     const { userId, username, action } = await req.json();
     // Expected body: { userId: "ObjectId", username: "John", action: "like" | "repost" | "share" }
-    console.log({ params });
 
     if (!userId || !username || !action)
       return NextResponse.json(

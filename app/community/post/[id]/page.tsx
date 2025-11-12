@@ -15,7 +15,6 @@ import { useParams, useRouter } from "next/navigation";
 
 export default function Page() {
     const { id } = useParams();
-    console.log({ id })
     const { isAuthenticated } = useAuthContext();
     const router = useRouter();
 
@@ -34,7 +33,6 @@ export default function Page() {
         enabled: !!id, // only fetch when id is ready
     });
     const post = data?.post || [];
-    console.log({ post })
 
     if (isLoading)
         return (

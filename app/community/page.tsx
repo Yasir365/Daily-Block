@@ -43,8 +43,6 @@ export default function Page() {
         enabled: !!selectedCoin._id, // only fetch when a coin is selected
         refetchInterval: 8 * 60 * 60 * 1000, // auto-refresh every 8 hours
     });
-
-    console.log({ setiment })
     // Handle tab change
     const handleSortChange = (newSort: "top" | "latest") => {
         setSort(newSort);
@@ -121,7 +119,7 @@ export default function Page() {
 
             {/* Right Sidebar */}
             <aside className="w-full md:w-120 p-4 space-y-4">
-                <Sentiments selectedCoin={selectedCoin} />
+                <Sentiments selectedCoin={selectedCoin} setiment={setiment} isLoading={sentimentLoading} />
                 <CoinCardDetail />
                 <MarketWatch />
                 <MarketCap />
