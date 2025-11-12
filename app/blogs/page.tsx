@@ -6,6 +6,5 @@ import BlogsNav from "@/components/blogs/HeroArticle";
 export default function Page() {
     return (
         <Blog />
-
     );
 }
