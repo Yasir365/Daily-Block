@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
     const response = await IcoProject.aggregate([
       { $match: query },
 
-      // 🔹 Include full user info
+      // Include full user info
       {
         $lookup: {
           from: "users",
@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
       },
       { $unwind: { path: "$userInfo", preserveNullAndEmptyArrays: true } },
 
-      // 🔹 Lookup unread messages count
+      // Lookup unread messages count
       {
         $lookup: {
           from: "messages",
@@ -80,17 +80,58 @@ export async function GET(req: NextRequest) {
         },
       },
 
-      // 🔹 Add unreadMessageCount field
+      // Add unreadMessageCount field
       {
         $addFields: {
           unreadMessageCount: {
             $ifNull: [{ $arrayElemAt: ["$unreadMessages.unreadCount", 0] }, 0],
           },
+
+          // Actual total raised percentage (can be >100%)
+          totalRaisedPercentageActual: {
+            $cond: [
+              { $eq: ["$fundraisingGoal", 0] },
+              0,
+              {
+                $multiply: [
+                  {
+                    $divide: [
+                      { $toDouble: "$soldOnPreSale" },
+                      { $toDouble: "$fundraisingGoal" },
+                    ],
+                  },
+                  100,
+                ],
+              },
+            ],
+          },
+
+          // Capped value for progress bar (0-100%)
+          totalRaisedPercentageForBar: {
+            $cond: [
+              { $eq: ["$fundraisingGoal", 0] },
+              0,
+              {
+                $min: [
+                  100,
+                  {
+                    $multiply: [
+                      {
+                        $divide: [
+                          { $toDouble: "$soldOnPreSale" },
+                          { $toDouble: "$fundraisingGoal" },
+                        ],
+                      },
+                      100,
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
         },
       },
 
-      // ✅ DO NOT LIMIT FIELDS — return everything
-      // (Remove $project entirely or only exclude heavy internal fields)
       { $sort: { createdAt: -1 } },
     ]);
 

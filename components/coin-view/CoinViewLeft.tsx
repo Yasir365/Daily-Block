@@ -1,6 +1,7 @@
 import { ChevronDown, Globe, Share2, Star } from 'lucide-react'
 import Image from 'next/image'
 import React from 'react'
+import { CoinData } from './CoinView';
 
 interface TrendComponentProps {
     trend: "up" | "down";
@@ -60,7 +61,7 @@ const TrendArray: TrendItem[] = [
         value: "12.52K"
     },
 ]
-const CoinViewLeft = () => {
+const CoinViewLeft = ({ coin }: { coin: CoinData }) => {
     return (
         <div className="flex flex-col col-span-2 gap-3">
 
@@ -94,11 +95,26 @@ const CoinViewLeft = () => {
                 <div className='flex flex-col gap-6 mt-8'>
                     <ContainerRow text='Total Volume'>
                         <div className='flex gap-2 items-center'>
-                            <Tab text="Website" icon={<Globe strokeWidth={1} />} />
-                            <Tab text="Whitepaper" icon={<Image src="/svg/coins/file.svg" alt="coin" width={28} height={28} className="object-contain" />} />
-                            <span className='flex items-center justify-center flex-col   bg-[#1A1A1A] rounded-full h-10 w-10'>
-                                <ChevronDown strokeWidth={3} />
-                            </span>
+                            <Tab
+                                text="Website"
+                                icon={<Globe strokeWidth={1} />}
+                                url={coin.websiteLink}
+                                newTab={true}
+                            />
+                            <Tab
+                                text="Whitepaper"
+                                icon={<Image src="/svg/coins/file.svg" alt="coin" width={28} height={28} className="object-contain" />}
+                                url={coin.whitepaperLink}
+                                download={true}
+                            />
+                            {/* <Tab
+                                text="Prototype"
+                                icon={<Image src="/svg/coins/prototype.svg" alt="coin" width={28} height={28} className="object-contain" />}
+                                url={coin.prototypeLink}
+                                newTab={true}
+                            /> */}
+
+                            <MoreBtn />
                         </div>
                     </ContainerRow>
                     <ContainerRow text='Total Volume'>
@@ -112,12 +128,9 @@ const CoinViewLeft = () => {
                             <span className='flex items-center justify-center flex-col   bg-[#1A1A1A] rounded-full h-10 w-10'>
                                 <Image src="/svg/coins/git.svg" alt="coin" width={20} height={20} className="object-contain" />
                             </span>
-                            <span className='flex items-center justify-center flex-col   bg-[#1A1A1A] rounded-full h-10 w-10'>
-                                <ChevronDown strokeWidth={3} />
-                            </span>
-                            <span className='flex items-center justify-center flex-col   bg-[#1A1A1A] rounded-full h-10 w-10'>
-                                <ChevronDown strokeWidth={3} />
-                            </span>
+
+                            <MoreBtn />
+                            <MoreBtn />
                         </div>
                     </ContainerRow>
                     <ContainerRow text='Total Volume'>
@@ -131,12 +144,8 @@ const CoinViewLeft = () => {
                             <span className='flex items-center justify-center flex-col   bg-[#1A1A1A] rounded-full h-10 w-10'>
                                 <Image src="/svg/coins/git.svg" alt="coin" width={20} height={20} className="object-contain" />
                             </span>
-                            <span className='flex items-center justify-center flex-col   bg-[#1A1A1A] rounded-full h-10 w-10'>
-                                <ChevronDown strokeWidth={3} />
-                            </span>
-                            <span className='flex items-center justify-center flex-col   bg-[#1A1A1A] rounded-full h-10 w-10'>
-                                <ChevronDown strokeWidth={3} />
-                            </span>
+                            <MoreBtn />
+                            <MoreBtn />
                         </div>
                     </ContainerRow>
 
@@ -183,10 +192,33 @@ const ContainerRow = ({ text, children }: { text?: string; children?: React.Reac
         </div>
     )
 }
-const Tab = ({ icon, text }: { icon: React.ReactNode, text: string }) => {
+interface TabLinkProps {
+    text: string;
+    icon: React.ReactNode;
+    url: string;
+    download?: boolean; // if true, trigger download
+    newTab?: boolean;   // if true, open in new tab
+}
+const Tab = ({ text, icon, url, download = false, newTab = true }: TabLinkProps) => {
+    const handleClick = () => {
+        if (!url) return;
+        if (download) {
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = text;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } else if (newTab) {
+            window.open(url, "_blank");
+        } else {
+            window.location.href = url;
+        }
+    };
     return (
 
-        <span className='flex items-center py-1 px-3 gap-1 bg-[#1A1A1A] rounded-full h-10'>
+        <span onClick={handleClick}
+            className='flex items-center py-1 px-3 gap-1 cursor-pointer bg-[#1A1A1A] rounded-full h-10'>
             <span className="flex items-center justify-center w-6 h-6">{icon}</span>
             <h5 className='text-white font-semibold text-sm  leading-none'>{text}</h5>
         </span>
@@ -238,3 +270,18 @@ export const MarketWatch = () => {
 
     )
 }
+
+interface MoreBtnProps {
+    onClick?: () => void;
+}
+
+const MoreBtn: React.FC<MoreBtnProps> = ({ onClick }) => {
+    return (
+        <span
+            onClick={onClick}
+            className='flex items-center justify-center cursor-pointer bg-[#1A1A1A] rounded-full h-10 w-10'
+        >
+            <ChevronDown strokeWidth={3} />
+        </span>
+    );
+};

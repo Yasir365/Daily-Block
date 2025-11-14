@@ -98,6 +98,8 @@ const UserDataTableDiv = ({ title, status }: Props) => {
                 fundRaised={p.received ? `$${p.received}` : "$0"}
                 launchpad={p.websiteLink || "------"}
                 status={p.status || status} // 👈 pass status from API or parent
+                totalRaisedPercentageActual={p.totalRaisedPercentageActual || 0} // 👈 pass status from API or parent
+                totalRaisedPercentageForBar={p.totalRaisedPercentageForBar || 0} // 👈 pass status from API or parent
 
               />
             ))

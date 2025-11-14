@@ -34,14 +34,15 @@ const fetchSentiment = async (coinId: string) => {
     return data
 }
 
-const fetchPosts = async (coinId: string) => {
-    const res = await fetch(`/api/community/${coinId}/posts?sort=latest`)
+const fetchPosts = async (coinId: string, sort: string = "latest") => {
+    const res = await fetch(`/api/community/${coinId}/posts?sort=${sort}`)
     const data = await res.json()
     if (!res.ok) throw new Error("Failed to fetch posts")
     return data || []
 }
 
 const CoinView = () => {
+    const [coinType, setCoinType] = React.useState<string>("latest");
     const searchParams = useSearchParams();
     const coinId = searchParams.get("coin");
 
@@ -76,8 +77,8 @@ const CoinView = () => {
         isError: postsError,
         error: postsErr,
     } = useQuery({
-        queryKey: ["posts", coinId],
-        queryFn: () => fetchPosts(coinId!),
+        queryKey: ["posts", coinId, coinType],
+        queryFn: () => fetchPosts(coinId!, coinType),
         enabled: !!coinId,
     })
 
@@ -94,13 +95,13 @@ const CoinView = () => {
         sentiment: sentimentData,
         posts: postsData,
     }
-
+    console.log({ coinData })
     return (
         <div>
             <div className="min-h-screen container grid grid-cols-1 md:grid-cols-7 p-12 mx-auto gap-4">
-                <CoinViewLeft />
+                <CoinViewLeft coin={coin} />
                 <CoinViewContent coin={coin} />
-                <CoinViewRight coin={coin} queryKey={["posts", coinId as string]} />
+                <CoinViewRight coin={coin} queryKey={["posts", coinId as string]} coinType={coinType} setCoinType={setCoinType} />
             </div>
             <Newsletter />
         </div>

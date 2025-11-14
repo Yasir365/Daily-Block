@@ -12,9 +12,11 @@ export interface IcoProject {
   icoTokenPrice: string;
   received?: number;
   websiteLink: string;
+  totalRaisedPercentageForBar?: number;
+  totalRaisedPercentageActual?: number;
   status: cointStatus;
   _id: string;
-} 
+}
 
 export const useIcoProjects = (status: string) => {
   return useQuery({

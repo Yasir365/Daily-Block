@@ -12,3 +12,16 @@ export const useUsers = (filters: any, enabled = false) => {
     enabled,
   });
 };
+
+export const useDownloads = (filters: any = "", enabled = false) => {
+  return useQuery({
+    queryKey: ["downloads", filters],
+    queryFn: async () => {
+      const params = new URLSearchParams(filters).toString();
+      const res = await fetch(`/api/ico/links?${params}`);
+      if (!res.ok) throw new Error("Failed to fetch downloads");
+      return res.json();
+    },
+    enabled,
+  });
+};

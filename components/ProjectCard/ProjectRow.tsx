@@ -12,8 +12,12 @@ export interface ProjectRowProps {
   launchpad: string;
   fundRaised: string;
   status?: cointStatus;
+  totalRaisedPercentageActual?: number;
+  totalRaisedPercentageForBar?: number;
 }
-
+// 
+// totalRaisedPercentageActual={p.totalRaisedPercentageActual || 0} // 👈 pass status from API or parent
+// totalRaisedPercentageForBar={p.totalRaisedPercentageForBar || 0} // 👈 pass status from API or parent
 export const ProjectRow = ({
   symbol,
   project,
@@ -24,6 +28,8 @@ export const ProjectRow = ({
   fundRaised,
   launchpad,
   status,
+  totalRaisedPercentageActual,
+  totalRaisedPercentageForBar
 }: ProjectRowProps) => {
   const statusClasses =
     status === "verified" || status === "approved"
@@ -44,7 +50,7 @@ export const ProjectRow = ({
 
       <div className="col-span-2 flex items-center text-white gap-4">
         <span className="flex items-center">
-          <CircularProgress value={30} size={45} strokeWidth={6} />
+          <CircularProgress value={totalRaisedPercentageActual || 0} progress={totalRaisedPercentageForBar} size={45} strokeWidth={6} />
         </span>
         <span className="font-lato font-semibold">{fundRaised}</span>
       </div>

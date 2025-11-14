@@ -6,6 +6,7 @@ interface CircularProgressProps {
     strokeWidth?: number;
     color?: string; // progress color
     bgColor?: string; // track color
+    progress?: number
 }
 
 const CircularProgress: React.FC<CircularProgressProps> = ({
@@ -14,10 +15,11 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
     strokeWidth = 8,
     color = "#FFD43B",
     bgColor = "##4A4A4A",
+    progress = 0
 }) => {
     const radius = (size - strokeWidth) / 2;
     const circumference = 2 * Math.PI * radius;
-    const offset = circumference - (value / 100) * circumference;
+    const offset = circumference - (progress / 100) * circumference;
 
     return (
         <div

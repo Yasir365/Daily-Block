@@ -98,7 +98,6 @@ const StepGeneral = () => {
                             id="icoIcon"
                             placeholder="Select ico icon"
                             accept="image/*"
-                            value={""}
                             onChange={handleFileChange}
                             className="hidden"
                         />
@@ -117,6 +116,8 @@ const StepGeneral = () => {
                 <Controller
                     name="icoTokenPrice"
                     control={control}
+                    defaultValue=""   // <-- ADD THIS
+
                     render={({ field }) => (
                         <InputField
                             label="ICO Token Price"
@@ -167,6 +168,7 @@ const StepGeneral = () => {
                 <Controller
                     name="competitionCoins"
                     control={control}
+                    defaultValue=""   // <-- ADD THIS
                     render={({ field }) => (
                         <InputField
                             label="Competition Coins"
@@ -179,6 +181,7 @@ const StepGeneral = () => {
                 <Controller
                     name="tokenRole1"
                     control={control}
+                    defaultValue=""   // <-- ADD THIS
                     render={({ field }) => (
                         <InputField
                             label="Token Role"
@@ -191,6 +194,7 @@ const StepGeneral = () => {
                 <Controller
                     name="tokenType"
                     control={control}
+                    defaultValue=""   // <-- ADD THIS
                     render={({ field }) => (
                         <InputField
                             label="Token Type"
@@ -203,6 +207,7 @@ const StepGeneral = () => {
                 <Controller
                     name="interest"
                     control={control}
+                    defaultValue=""   // <-- ADD THIS
                     render={({ field }) => (
                         <SelectField
                             btnClass="bg-brand-glass text-gray-800"
@@ -223,6 +228,7 @@ const StepGeneral = () => {
                 <Controller
                     name="received"
                     control={control}
+                    defaultValue=""   // <-- ADD THIS
                     render={({ field }) => (
                         <InputField
                             label="Supply"
@@ -235,6 +241,7 @@ const StepGeneral = () => {
                 <Controller
                     name="icoStartDate"
                     control={control}
+                    defaultValue=""   // <-- ADD THIS
                     render={({ field }) => (
                         <InputField
                             type="date"
@@ -248,6 +255,7 @@ const StepGeneral = () => {
                 <Controller
                     name="icoEndDate"
                     control={control}
+                    defaultValue=""   // <-- ADD THIS
                     render={({ field }) => (
                         <InputField
                             type="date"
@@ -261,6 +269,7 @@ const StepGeneral = () => {
                 <Controller
                     name="websiteLink"
                     control={control}
+                    defaultValue=""   // <-- ADD THIS
                     render={({ field }) => (
                         <InputField
                             label="Website link"
@@ -275,6 +284,7 @@ const StepGeneral = () => {
                 <Controller
                     name="whitepaperLink"
                     control={control}
+                    defaultValue=""   // <-- ADD THIS
                     render={({ field }) => (
                         <InputField
                             label="Whitepaper link"
@@ -289,6 +299,7 @@ const StepGeneral = () => {
                 <Controller
                     name="prototypeLink"
                     control={control}
+                    defaultValue=""   // <-- ADD THIS
                     render={({ field }) => (
                         <InputField
                             label="Prototype link"
@@ -303,6 +314,7 @@ const StepGeneral = () => {
                 <Controller
                     name="coinPurchaseLink"
                     control={control}
+                    defaultValue=""   // <-- ADD THIS
                     render={({ field }) => (
                         <InputField
                             label="Coin Purchase link"

@@ -1,8 +1,9 @@
 import { formatDateTime } from '@/lib/helpers';
 import Post from '../community/Post'
 import Sentiments from '../community/Sentiments';
+import { Dispatch, SetStateAction } from 'react';
 
-const CoinViewRight = ({ coin, queryKey }: { coin: any; queryKey: [string, string] }) => {
+const CoinViewRight = ({ coin, queryKey, coinType, setCoinType }: { coin: any; queryKey: [string, string], coinType: string, setCoinType: Dispatch<SetStateAction<string>> }) => {
     console.log({ coin })
     //     selectedCoin,
     // setiment,
@@ -13,10 +14,16 @@ const CoinViewRight = ({ coin, queryKey }: { coin: any; queryKey: [string, strin
                 <div className="space-y-6">
                     <Sentiments selectedCoin={{ _id: coin._id, coinName: coin.cryptoCoinName }} setiment={coin.sentiment} isLoading={false} />
                     <div className="grid grid-cols-1 md:grid-cols-2 font-inter gap-4 w-full text-[16px] bg-brand-black/50 font-inter rounded-2xl p-1 w-fit mx-auto">
-                        <button className="bg-[#0d0d0d] text-white font-semibold  px-6 py-2 rounded-xl">
+                        <button className={`${coinType === "top"
+                            ? "bg-[#0d0d0d] text-white"
+                            : "text-brand-gray2 hover:text-white bg-transparent"
+                            } font-semibold  px-6 py-2 rounded-xl`} onClick={() => setCoinType("top")}>
                             Top
                         </button>
-                        <button className="text-brand-gray2 px-6 py-2 rounded-xl hover:text-white">
+                        <button className={`${coinType === "latest"
+                            ? "bg-[#0d0d0d] text-white"
+                            : "text-brand-gray2 hover:text-white bg-transparent"
+                            } font-semibold  px-6 py-2 rounded-xl`} onClick={() => setCoinType("latest")}>
                             Latest
                         </button>
                     </div>
