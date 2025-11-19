@@ -6,19 +6,20 @@ interface ProjectCardProps {
     logoUrl?: string;
     isTopProject?: boolean;
     _id?: string
+    abbrv?: string
 }
 
-export const ProjectCard = ({ name, description, isTopProject = false, _id }: ProjectCardProps) => {
+export const ProjectCard = ({ name, description, isTopProject = false, _id, logoUrl, abbrv = "" }: ProjectCardProps) => {
     return (
         <div className="flex items-center justify-between px-3 py-4 rounded-xl bg-brand-glass ">
             <div className="flex items-center space-x-3">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isTopProject ? 'bg-yellow-500/20' : 'bg-gray-600'}`}>
 
-                    <img src="/svg/icons/smile.svg" alt="" className="w-8 h-8" />
+                    <img src={logoUrl || "/svg/icons/smile.svg"} alt="" className="w-8 h-8" />
                 </div>
 
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isTopProject ? 'bg-yellow-500/20' : 'bg-gray-600'}`}>
-                    <span className="text-lg font-bold text-white">Z</span>
+                <div className={`w-8 h-8 rounded-full p-1 flex items-center justify-center ${isTopProject ? 'bg-yellow-500/20' : 'bg-gray-600'}`}>
+                    <span className="text-lg font-bold text-white">{abbrv}</span>
                 </div>
                 <div>
                     <p className="text-white font-medium text-sm font-lato capitalize">{name}</p>

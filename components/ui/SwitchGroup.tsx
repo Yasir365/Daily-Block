@@ -1,18 +1,20 @@
 "use client";
 
 import React, { useState } from "react";
-import { Switch } from "antd";
+import { Toggle } from "./Toggle";
 
 interface SwitchGroupProps {
     options: string[];
-    defaultActive?: string[]; // pre-checked switches
+    defaultActive?: string[];
     onChange?: (activeSwitches: string[]) => void;
+    variant?: "primary" | "white";
 }
 
 const SwitchGroup: React.FC<SwitchGroupProps> = ({
     options,
     defaultActive = [],
     onChange,
+    variant = "primary",
 }) => {
     const [active, setActive] = useState<string[]>(defaultActive);
 
@@ -20,6 +22,7 @@ const SwitchGroup: React.FC<SwitchGroupProps> = ({
         const updated = checked
             ? [...active, label]
             : active.filter((item) => item !== label);
+
         setActive(updated);
         onChange?.(updated);
     };
@@ -29,10 +32,11 @@ const SwitchGroup: React.FC<SwitchGroupProps> = ({
             {options.map((label) => (
                 <div key={label} className="flex items-center gap-3">
                     <h5 className="text-sm text-white">{label}</h5>
-                    <Switch
-                        className="primary"
+
+                    <Toggle
                         checked={active.includes(label)}
                         onChange={(checked) => handleToggle(label, checked)}
+                        variant={variant}
                     />
                 </div>
             ))}

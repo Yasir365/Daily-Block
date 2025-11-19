@@ -49,11 +49,10 @@ const faqData = [
 export const Accordion = ({ faqs }: { faqs?: any }) => {
     let isLoading = true
     let faqData = [];
-    if (faqs && faqs.length < 0) {
-
-        const { data = [], isLoading: loading, refetch } = useFetchFaqs();
-        faqData = data
-        isLoading = loading
+    if (!faqs || faqs.length === 0) {
+        const { data = [], isLoading: loading } = useFetchFaqs();
+        faqData = data;
+        isLoading = loading;
     } else {
         faqData = faqs
         isLoading = false

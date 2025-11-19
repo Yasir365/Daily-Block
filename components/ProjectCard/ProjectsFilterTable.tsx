@@ -1,212 +1,226 @@
-"use client"
-import { ArrowUpDown, ChevronDown, Search } from 'lucide-react';
-import { ProjectRow, ProjectRowProps } from './ProjectRow';
-import { Switch } from 'antd';
-import SwitchGroup from '../ui/SwitchGroup';
-import { useState } from 'react';
+"use client";
 
-const TABS = ['Presale/Whitelist', 'Active', 'Upcoming', 'Past'];
+import { ChevronDown } from "lucide-react";
+import { useState } from "react";
+import SwitchGroup from "../ui/SwitchGroup";
+import { ProjectRow } from "./ProjectRow";
+import { useNewlyListed } from "@/hooks/useListedCoints";
+import SelectField from "../ui/Select";
 
-// Mock filter options (using placeholder data)
-const FILTER_OPTIONS = ['Industry', 'Type'];
-
-const mockProjectData: ProjectRowProps[] = [
-    {
-        project: "Antidote",
-        startdate: "22 Aug",
-        enddate: "22 Aug",
-        totalsupply: "100,000,000",
-        price: "$0.10",
-        fundRaised: "$4,000,000",
-        launchpad: "",
-        symbol: "$",
-        status: "verified"
-    },
-    {
-        project: "Antidote",
-        startdate: "22 Aug",
-        enddate: "22 Aug",
-        totalsupply: "100,000,000",
-        price: "$0.10",
-        fundRaised: "$4,000,000",
-        launchpad: "",
-        symbol: "$",
-        status: "verified"
-    },
-    {
-        project: "Antidote",
-        startdate: "22 Aug",
-        enddate: "22 Aug",
-        totalsupply: "100,000,000",
-        price: "$0.10",
-        fundRaised: "$4,000,000",
-        launchpad: "",
-        symbol: "$",
-        status: "verified"
-    },
-    {
-        project: "Antidote",
-        startdate: "22 Aug",
-        enddate: "22 Aug",
-        totalsupply: "100,000,000",
-        price: "$0.10",
-        fundRaised: "$4,000,000",
-        launchpad: "",
-        symbol: "$",
-        status: "verified"
-    },
-    {
-        project: "Antidote",
-        startdate: "22 Aug",
-        enddate: "22 Aug",
-        totalsupply: "100,000,000",
-        price: "$0.10",
-        fundRaised: "$4,000,000",
-        launchpad: "",
-        symbol: "$",
-        status: "verified"
-    },
-    {
-        project: "Antidote",
-        startdate: "22 Aug",
-        enddate: "22 Aug",
-        totalsupply: "100,000,000",
-        price: "$0.10",
-        fundRaised: "$4,000,000",
-        launchpad: "",
-        symbol: "$",
-        status: "verified"
-    },
-    {
-        project: "Antidote",
-        startdate: "22 Aug",
-        enddate: "22 Aug",
-        totalsupply: "100,000,000",
-        price: "$0.10",
-        fundRaised: "$4,000,000",
-        launchpad: "",
-        symbol: "$",
-        status: "verified"
-    }
+// Tabs define project phases
+const TABS = [
+    { label: "Presale/Whitelist", value: "presale" },
+    { label: "Active", value: "active" },
+    { label: "Upcoming", value: "upcoming" },
+    { label: "Past", value: "past" },
 ];
 
-
-const handleSwitchChange = (activeSwitches: string[]) => {
-};
-
-
-const columns = [
-    { key: "score", label: "Score" },
-    { key: "project", label: "Project" },
-    { key: "start", label: "Start" },
-    { key: "end", label: "End" },
-    { key: "launch", label: "Launch" },
-    { key: "launchpad", label: "Launchpad" },
-    { key: "active", label: "Active" },
-    { key: "totalRaised", label: "Total Raised" },
+// SelectField Options — MODIFY based on your need
+const industryOptions = [
+    { label: "Blockchain", value: "blockchain" },
+    { label: "DeFi", value: "defi" },
+    { label: "Gaming", value: "gaming" },
+    { label: "AI", value: "ai" },
 ];
+
+const typeOptions = [
+    { label: "ERC20", value: "ERC20" },
+    { label: "BEP20", value: "BEP20" },
+    { label: "Solana", value: "solana" },
+    { label: "Polygon", value: "polygon" },
+];
+
 export const ProjectsFilterTable = () => {
-    const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
+    // 🔥 Filters
+    const [phase, setPhase] = useState("active");
+    const [industry, setIndustry] = useState("");
+    const [type, setType] = useState("");
+    const [switchFilters, setSwitchFilters] = useState({
+        whitelist: false,
+        kyc: false,
+        bounty: false,
+    });
 
+    // Sorting
+    const [sortConfig, setSortConfig] = useState({
+        key: "",
+        direction: "",
+    });
+
+    // Fetch Data With All Filters
+    const { data: listed, isLoading } = useNewlyListed({
+        phase,
+        industry,
+        type,
+        whitelist: switchFilters.whitelist,
+        kyc: switchFilters.kyc,
+        bounty: switchFilters.bounty,
+        sort: "newest",
+        status: "approved",
+    });
+
+    const projects = listed?.data || [];
+
+    // Sorting Logic
     const handleSort = (key: string) => {
         let direction = "asc";
         if (sortConfig.key === key && sortConfig.direction === "asc") {
             direction = "desc";
         }
         setSortConfig({ key, direction });
-        onSort(key, direction);
     };
-    const onSort = (key: string, direction: string) => {
-        // Implement sorting logic here
+
+    const sortedProjects = [...projects].sort((a, b) => {
+        if (!sortConfig.key) return 0;
+
+        const x: any = a[sortConfig.key];
+        const y: any = b[sortConfig.key];
+
+        if (sortConfig.direction === "asc") return x > y ? 1 : -1;
+        return x < y ? 1 : -1;
+    });
+
+    // SwitchGroup Logic
+    const handleSwitchChange = (activeSwitches: string[]) => {
+        setSwitchFilters({
+            whitelist: activeSwitches.includes("White List"),
+            kyc: activeSwitches.includes("KYC"),
+            bounty: activeSwitches.includes("Bounty"),
+        });
     };
+
     return (
         <section className="container mx-auto px-4 py-10">
-            <div className="bg-brand-glass/70 backdrop-blur-xl border border-gray-700/50 p-4 sm:p-6 md:p-8 rounded-2xl shadow-[0_0_20px_rgba(0,0,0,0.3)]">
+            <div className="bg-brand-glass/70 backdrop-blur-xl border border-gray-700/50 p-6 rounded-2xl">
 
-                {/* --- 1. Tabs --- */}
-                <div className="flex flex-wrap justify-center sm:justify-start space-x-2 sm:space-x-4 mb-6 border-b border-gray-700/50 overflow-x-auto scrollbar-hide">
+                {/* -------- Tabs -------- */}
+                <div className="flex space-x-4 mb-6 border-b border-gray-700/50">
                     {TABS.map((tab) => (
                         <button
-                            key={tab}
-                            className={`pb-3 text-sm sm:text-base font-semibold transition-colors whitespace-nowrap ${tab === "Presale/Whitelist"
+                            key={tab.value}
+                            onClick={() => setPhase(tab.value)}
+                            className={`pb-3 font-semibold ${phase === tab.value
                                 ? "text-white border-b-2 border-white"
                                 : "text-gray-400 hover:text-white"
                                 }`}
                         >
-                            {tab}
+                            {tab.label}
                         </button>
                     ))}
                 </div>
 
-                {/* --- 2. Filters and Search --- */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                {/* ------- Filters ------- */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
 
-                    {/* Filter Dropdowns */}
-                    <div className="flex flex-wrap justify-center sm:justify-start gap-2 sm:gap-3">
-                        {FILTER_OPTIONS.map((option) => (
-                            <button
-                                key={option}
-                                className="flex items-center space-x-1 bg-brand-glass text-gray-400 text-sm py-2 px-3 sm:px-4 rounded-md hover:bg-gray-800 transition-colors"
-                            >
-                                <span>{option}</span>
-                                <ChevronDown size={16} />
-                            </button>
-                        ))}
-                        <div className="mt-2 sm:mt-0">
-                            <SwitchGroup
-                                options={["White List", "KYC", "Bounty"]}
-                                defaultActive={["White List", "KYC"]}
-                                onChange={handleSwitchChange}
-                            />
-                        </div>
+                    <div className="flex gap-3 items-center">
+
+                        {/* Industry Filter */}
+                        <SelectField
+                            label="Industry"
+                            name="industry"
+                            options={industryOptions}
+                            placeholder="Select Industry"
+                            value={industry}
+                            onChange={(val) => setIndustry(val)}
+                            lblClass="text-[14px] font-semibold"
+                            className="w-full md:w-1/3"   // 👈 width control HERE
+                            btnClass="bg-[#454646]"
+                            dropBg="  backdrop-blur-md p-4 !mt-19 bg-[linear-gradient(160.73deg,#454646_0%,#454646_100%)]"
+
+
+                        />
+
+                        {/* Type Filter */}
+                        <SelectField
+                            label="Type"
+                            name="type"
+                            options={typeOptions}
+                            placeholder="Select Type"
+                            value={type}
+                            onChange={(val) => setType(val)}
+                            lblClass="text-[14px] font-semibold"
+                            className="w-full md:w-1/3"   // 👈 width control HERE
+                            btnClass="bg-[#454646]"
+                            dropBg="  backdrop-blur-md p-4 !mt-19 bg-[linear-gradient(160.73deg,#454646_0%,#454646_100%)]"
+
+
+                        />
                     </div>
 
-
+                    {/* SwitchGroup */}
+                    <SwitchGroup
+                        options={["White List", "KYC", "Bounty"]}
+                        defaultActive={[]}
+                        onChange={handleSwitchChange}
+                    />
                 </div>
 
-                {/* --- 3 & 4. Table (Scrollable on Mobile) --- */}
-                <div className="w-full overflow-x-auto rounded-xl scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
-                    <div className="min-w-full lg:min-w-[900px]">
-                        {/* --- 3. Table Header --- */}
-                        <div className="grid grid-cols-11 items-center p-4 border-b-2 border-gray-700 text-gray-300 font-semibold text-xs uppercase select-none min-w-max">
-                            {columns.map((col, i) => (
-                                <div
-                                    key={col.key}
-                                    className={`col-span-${i === 0 ? 1 : i === 1 ? 2 : i === 5 ? 2 : 1
-                                        } flex items-center gap-1 cursor-pointer group`}
-                                    onClick={() => handleSort(col.key)}
-                                >
-                                    <span className="group-hover:text-white transition">{col.label}</span>
-                                    <ArrowUpDown
-                                        size={14}
-                                        className={`transition ${sortConfig.key === col.key
-                                            ? "text-blue-400"
-                                            : "text-gray-600 group-hover:text-gray-400"
-                                            }`}
+                {/* -------- Table -------- */}
+                <div className="w-full overflow-x-auto rounded-xl">
+                    <div className="min-w-[900px]">
+
+                        {/* Header */}
+                        <div className="grid grid-cols-12 p-4 border-b-2 border-gray-700 text-gray-300 font-semibold text-xs uppercase">
+                            <div className="col-span-1">Score</div>
+
+                            <div className="col-span-1 cursor-pointer" onClick={() => handleSort("cryptoCoinName")}>
+                                Project
+                            </div>
+
+                            <div className="col-span-1 cursor-pointer" onClick={() => handleSort("icoStartDate")}>
+                                Start
+                            </div>
+
+                            <div className="col-span-1 cursor-pointer" onClick={() => handleSort("icoEndDate")}>
+                                End
+                            </div>
+
+                            <div className="col-span-2 cursor-pointer" onClick={() => handleSort("totalSupply")}>
+                                Total Supply
+                            </div>
+
+                            <div className="col-span-2 cursor-pointer" onClick={() => handleSort("icoTokenPrice")}>
+                                Price
+                            </div>
+
+                            <div className="col-span-2">Active</div>
+                            <div className="col-span-1">Status</div>
+                        </div>
+
+                        {/* Rows */}
+                        <div className="divide-y divide-gray-700/50">
+                            {isLoading ? (
+                                <p className="text-gray-400 p-4">Loading...</p>
+                            ) : sortedProjects.length === 0 ? (
+                                <p className="text-gray-400 p-4">No projects found.</p>
+                            ) : (
+                                sortedProjects.map((item: any) => (
+                                    <ProjectRow
+                                        key={item._id}
+                                        project={item.cryptoCoinName}
+                                        startdate={item.icoStartDate}
+                                        enddate={item.icoEndDate}
+                                        totalsupply={item.totalSupply}
+                                        price={`$${item.icoTokenPrice}`}
+                                        fundRaised={item.received}
+                                        launchpad={item.websiteLink}
+                                        symbol={item.coinAbbreviation}
+                                        status={item.status}
                                     />
-                                </div>
-                            ))}
+                                ))
+                            )}
                         </div>
 
-                        {/* --- 4. Table Rows --- */}
-                        <div className="divide-y divide-gray-700/50 min-w-max">
-                            {mockProjectData.map((data, index) => (
-                                <ProjectRow key={index} {...data} />
-                            ))}
-                        </div>
                     </div>
                 </div>
 
-
-
-                {/* --- 5. Footer Button --- */}
                 <div className="text-center pt-8">
                     <button className="text-brand-yellow font-semibold hover:underline">
                         View All Projects
                     </button>
                 </div>
+
             </div>
         </section>
-
     );
 };
