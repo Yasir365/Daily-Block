@@ -4,6 +4,7 @@ import { Edit, Ban, FileText, SquarePen, Trash2 } from "lucide-react";
 import Wrapper from "../layoutCard/Wrapper";
 import StatusBadge from "@/components/ui/Badge";
 import { useRouter } from "next/navigation";
+import { Tooltip } from "@/components/ui/Tooltip";
 
 type DataListProps = {
     title?: string;
@@ -70,16 +71,22 @@ const ListDiv = ({ title, desc, date, views, status, _id, comments, onDelete, on
                 </span>
             </div>
             <div className="flex gap-4">
-                <SquarePen
-                    onClick={onEdit}
-                    className="cursor-pointer text-gray-300 hover:text-white"
-                    size={18}
-                />
-                <Trash2
-                    onClick={onDelete}
-                    className="text-brand-red cursor-pointer hover:text-red-400"
-                    size={18}
-                />
+                <Tooltip content="Edit">
+
+                    <SquarePen
+                        onClick={onEdit}
+                        className="cursor-pointer text-gray-300 hover:text-white"
+                        size={18}
+                    />
+                </Tooltip>
+                <Tooltip content="Delete">
+
+                    <Trash2
+                        onClick={onDelete}
+                        className="text-brand-red cursor-pointer hover:text-red-400"
+                        size={18}
+                    />
+                </Tooltip>
             </div>
         </div>
 

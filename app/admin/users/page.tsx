@@ -7,6 +7,7 @@ import CustomConfirm from '@/components/ui/CustomAlert';
 import InputField from '@/components/ui/Input';
 import { CustomToast } from '@/components/ui/ReactToast';
 import SelectField from '@/components/ui/Select';
+import { Tooltip } from '@/components/ui/Tooltip';
 import { UniversalContainer } from '@/components/ui/UniversalContainer';
 import { useUsers } from '@/hooks/useUsers';
 import { updateUser } from '@/services/userService';
@@ -209,7 +210,10 @@ const page = () => {
                         setSelectedUser(row);
                         setShowEditModal(true);
                     }}>
-                        <Edit size={16} />
+                        <Tooltip content="Edit">
+
+                            <Edit size={16} />
+                        </Tooltip>
                     </button>
                     {row.status === "suspended" ? (
                         <button
@@ -219,7 +223,10 @@ const page = () => {
                             }}
                             className="text-green-400 hover:text-green-300 cursor-pointer"
                         >
-                            <Check size={16} />
+                            <Tooltip content="Active">
+
+                                <Check size={16} />
+                            </Tooltip>
                         </button>
                     ) : (
                         <button
@@ -229,7 +236,10 @@ const page = () => {
                             }}
                             className="text-red-500 hover:text-red-400 cursor-pointer"
                         >
-                            <Ban size={16} />
+                            <Tooltip content="Suspend">
+
+                                <Ban size={16} />
+                            </Tooltip>
                         </button>
                     )}
                 </div>

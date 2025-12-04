@@ -9,6 +9,7 @@ import { Ban, Check, Download, Edit, Eye, Funnel, Mail, MessageSquare, Search, S
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useCallback, useState } from 'react'
 import { debounce } from 'lodash'; // npm i lodash (if not installed)
+import { Tooltip } from '@/components/ui/Tooltip';
 const page = () => {
     const queryClient = useQueryClient();
     const searchParams = useSearchParams();
@@ -99,18 +100,22 @@ const page = () => {
                     {row.status === "active" ? (
                         <span
                             className="cursor-pointer p-1 rounded-full bg-brand-red hover:bg-brand-red/60 transition"
-                            title="Block Subscriber"
                             onClick={() => handleStatusToggle(row._id, "active")}
                         >
-                            <X size={16} className="text-white" />
+                            <Tooltip content="Block Subscriber">
+
+                                <X size={16} className="text-white" />
+                            </Tooltip>
                         </span>
                     ) : (
                         <span
                             className="cursor-pointer p-1 rounded-full bg-brand-green/40 hover:bg-brand-green/60 transition"
-                            title="Activate Subscriber"
                             onClick={() => handleStatusToggle(row._id, "blocked")}
                         >
-                            <Check size={16} className="text-white" />
+                            <Tooltip content="Active Subscriber">
+
+                                <Check size={16} className="text-white" />
+                            </Tooltip>
                         </span>
                     )}
                 </div>

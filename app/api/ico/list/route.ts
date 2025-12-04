@@ -33,14 +33,14 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const status = searchParams.get("status");
-    const launchpad = searchParams.get("launchpad");
+    const interest = searchParams.get("interest");
     const raiseMin = parseFloat(searchParams.get("raiseMin") || "0");
     const raiseMax = parseFloat(searchParams.get("raiseMax") || "0");
 
     let query: {
       status?: string;
       userId?: mongoose.Types.ObjectId;
-      launchpad?: string;
+      interest?: string;
       raiseAmount?: any;
     } = {};
     if (status && status !== "all") query.status = status;
@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
       query.userId = new mongoose.Types.ObjectId(currentUserId);
     }
 
-    if (launchpad && launchpad !== "all") query.launchpad = launchpad;
+    if (interest && interest !== "all") query.interest = interest;
     if (raiseMax > 0) query.raiseAmount = { $gte: raiseMin, $lte: raiseMax };
 
     const response = await IcoProject.aggregate([

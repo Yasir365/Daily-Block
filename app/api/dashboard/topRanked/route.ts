@@ -101,8 +101,11 @@ export async function GET() {
     }
 
     const result = await response.json();
+    const coinsArray = Array.isArray(result?.data?.coins)
+      ? result.data.coins
+      : [];
 
-    const coins = result?.data?.coins?.map((coin: any) => ({
+    const coins = coinsArray?.map((coin: any) => ({
       uuid: coin.uuid,
       name: coin.name,
       symbol: coin.symbol,

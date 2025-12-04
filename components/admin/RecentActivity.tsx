@@ -31,7 +31,7 @@ export const RecentActivity: React.FC<Props> = ({ activities }) => {
                     {activities.map((activity) => (
                         <div
                             key={activity.id}
-                            className="flex justify-between items-start cursor-pointer mx-1"
+                            className="flex justify-between items-start mx-1"
                         >
                             {/* Left side (dot + text) */}
                             <div className="flex gap-6 items-start w-[60%]">

@@ -24,7 +24,7 @@ export const NotificationItem = ({
     isAdmin?: boolean
 }) => (
     <div
-        className={`h-[124px] p-4 rounded-[12px] border border-[#2B2B31] flex flex-col justify-between cursor-pointer ${isNew ? "bg-[#FACC150D]" : "bg-transparent"
+        className={`min-h-[124px] p-4 rounded-[12px] border border-[#2B2B31] flex flex-col justify-between cursor-pointer ${isNew ? "bg-[#FACC150D]" : "bg-transparent"
             }`}
 
         onClick={() => onClick && onClick(type as string, _id, isAdmin)}    >
@@ -49,7 +49,7 @@ export const NotificationItem = ({
         </div>
 
         {/* Description */}
-        <p className="font-inter font-normal text-[14px] leading-5 text-[#94A3B8] mt-2">
+        <p className="font-inter font-normal text-[14px] leading-5 text-[#94A3B8] mt-2 break-words">
             {desc}
         </p>
 

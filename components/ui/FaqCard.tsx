@@ -1,4 +1,5 @@
 import { X } from "lucide-react";
+import { Tooltip } from "./Tooltip";
 
 const FaqCard = ({
   index,
@@ -16,10 +17,12 @@ const FaqCard = ({
 }) => {
   return (
     <div className="w-full bg-[#0D0E1280] border border-[#21222C80] rounded-[12px] p-6 shadow-[0_1px_2px_0_#0000000D] relative flex flex-col gap-4">
-      <X
-        className="absolute top-1 right-2 w-5 h-5 cursor-pointer text-red-400"
-        onClick={() => onRemove(index)}
-      />
+      <Tooltip content="Delete">
+        <X
+          className="absolute top-1 right-2 w-5 h-5 cursor-pointer text-red-400"
+          onClick={() => onRemove(index)}
+        />
+      </Tooltip>
       <div className="flex flex-col gap-2 w-[95%]">
         <label className="font-semibold text-sm text-[#F8FAFC]">Question</label>
 
@@ -56,7 +59,7 @@ const FaqCard = ({
               }}
             />
 
-          
+
           </div>
         )}
       </div>

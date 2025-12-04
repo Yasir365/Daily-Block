@@ -8,6 +8,7 @@ import CustomConfirm from '@/components/ui/CustomAlert';
 import InputField from '@/components/ui/Input';
 import SelectField from '@/components/ui/Select';
 import StatusBadge from '@/components/ui/StatusBadge';
+import { Tooltip } from '@/components/ui/Tooltip';
 import { UniversalContainer } from '@/components/ui/UniversalContainer';
 import { fetchDashboardStats } from '@/services/dashboardService';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -19,14 +20,16 @@ import React, { useEffect, useRef, useState } from 'react'
 // 🔥 Fetch Projects Service
 const fetchIcos = async (filters: {
     status?: string;
-    launchpad?: string;
+    interest?: string;
     raiseMin?: string;
     raiseMax?: string;
 }) => {
     const queryParams = new URLSearchParams();
 
     if (filters.status) queryParams.append("status", filters.status);
-    if (filters.launchpad) queryParams.append("launchpad", filters.launchpad);
+    if (filters.interest && typeof filters.interest === 'string') {
+        queryParams.append("interest", filters.interest);
+    }
     if (filters.raiseMin) queryParams.append("raiseMin", filters.raiseMin);
     if (filters.raiseMax) queryParams.append("raiseMax", filters.raiseMax);
 
@@ -180,42 +183,54 @@ const page = () => {
         {
             key: "actions",
             label: "Actions",
-            render: (_: any, row: any) => (
-                <div className="flex gap-4 ">
-                    {/* View */}
-                    <button className="text-gray-300 hover:text-white cursor-pointer"
-                        onClick={() => {
-                            setSelectedProject(row);
-                            setViewModalOpen(true);
-                        }}
+            render: (_: any, row: any) => {
+                console.log({ row })
+                return (
+                    <div className="flex gap-4 ">
+                        {/* View */}
+                        <Tooltip content="View Details">
+                            <button className="text-gray-300 hover:text-white cursor-pointer"
+                                onClick={() => {
+                                    setSelectedProject(row);
+                                    setViewModalOpen(true);
+                                }}
 
-                    >
-                        <Eye size={16} />
-                    </button>
+                            >
+                                <Eye size={16} />
+                            </button>
+                        </Tooltip>
 
-                    {/* Approve (you can handle separately later) */}
-                    <button
-                        className="text-gray-300 hover:text-white cursor-pointer"
-                        onClick={() => {
-                            setSelectedApproveId(row._id);
-                            setShowApproveConfirm({ open: true, action: "approved" });
-                        }}
-                    >
-                        <Check size={16} className="text-brand-green" />
-                    </button >
-
-                    {/* Delete */}
-                    <button
-                        onClick={() => {
-                            setSelectedApproveId(row._id);
-                            setShowApproveConfirm({ open: true, action: "rejected" });
-                        }}
-                        className="text-red-500 hover:text-red-400 cursor-pointer"
-                    >
-                        <X size={16} />
-                    </button>
-                </div >
-            ),
+                        {/* Approve (you can handle separately later) */}
+                        {row.status !== "approved" && (
+                            <Tooltip content="Approve">
+                                <button
+                                    className="text-gray-300 hover:text-white cursor-pointer"
+                                    onClick={() => {
+                                        setSelectedApproveId(row._id);
+                                        setShowApproveConfirm({ open: true, action: "approved" });
+                                    }}
+                                >
+                                    <Check size={16} className="text-brand-green" />
+                                </button >
+                            </Tooltip>
+                        )}
+                        {/* Delete */}
+                        {row.status !== "rejected" && (
+                            <Tooltip content="Reject">
+                                <button
+                                    onClick={() => {
+                                        setSelectedApproveId(row._id);
+                                        setShowApproveConfirm({ open: true, action: "rejected" });
+                                    }}
+                                    className="text-red-500 hover:text-red-400 cursor-pointer"
+                                >
+                                    <X size={16} />
+                                </button>
+                            </Tooltip>
+                        )}
+                    </div >
+                )
+            },
         },
     ];
 
@@ -312,10 +327,10 @@ const page = () => {
     //     },
     // ];
     const [showFilter, setShowFilter] = useState(false);
-    const [data, setData] = useState({ status: "all", launchpad: "all", raiseMin: "0", raiseMax: "0" });
+    const [data, setData] = useState({ status: "all", interest: "", raiseMin: "0", raiseMax: "0" });
     const [filters, setFilters] = useState({
         status: "all",
-        launchpad: "all",
+        interest: "",
         raiseMin: "0",
         raiseMax: "0",
     });
@@ -374,6 +389,7 @@ const page = () => {
         },
     });
     const handleSelect = (value: string, name: string) => {
+
         setData((prev) => ({ ...prev, [name]: value }));
     };
     // Close when clicking outside
@@ -389,7 +405,7 @@ const page = () => {
 
 
     const tokenOptions = [
-        { value: "all", label: "All" },
+        { value: "", label: "All" },
         { value: "Neutral", label: "Neutral" },
         { value: "High", label: "High" },
         { value: "Low", label: "Low" },
@@ -449,13 +465,13 @@ const page = () => {
                                     onChange={(e) => handleSelect(e, "status")} // ✅ fixed type error
                                 />
                                 <SelectField
-                                    label="Launch Pad"
-                                    name="launchpad"
+                                    label="Interest"
+                                    name="interest"
                                     options={tokenOptions}
                                     placeholder="Select Launch Pad Level"
-                                    value={data.launchpad}
+                                    value={data.interest}
                                     lblClass='text-[14px] font-semibold leading-[14px] font-inter'
-                                    onChange={(value) => handleSelect(value, "launchpad")}  // ✅ Correct: `value` is a string
+                                    onChange={(value) => handleSelect(value, "interest")}  // ✅ Correct: `value` is a string
                                 />
                                 <span className='grid grid-cols-2 gap-1 items-center'>
 
@@ -554,7 +570,7 @@ const page = () => {
                             <div className="flex sm:justify-between md:justify-end gap-3 mt-8">
                                 <button
                                     className="w-full md:w-[72px] h-[40px] rounded-[10px] border border-[#3B3B3B] cursor-pointer bg-[#3B3B3B] text-[#F8FAFC] text-[14px] font-semibold"
-                                    onClick={() => setData({ status: "Neutral", launchpad: "All", raiseMin: "0", raiseMax: "0" })}
+                                    onClick={() => setData({ status: "Neutral", interest: "", raiseMin: "0", raiseMax: "0" })}
                                 >
                                     Reset
                                 </button>
